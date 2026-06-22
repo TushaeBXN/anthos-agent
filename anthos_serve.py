@@ -52,6 +52,7 @@ log = logging.getLogger(__name__)
 _model = None
 _tokenizer = None
 _device = None
+_guardrails = None
 
 DEFAULT_PORT = 8321
 DEFAULT_BASE_MODEL = "Qwen/Qwen2.5-1.5B-Instruct"
@@ -118,14 +119,45 @@ def _load_model(checkpoint: str | Path | None = None, device: str = "cpu"):
     log.info("Model loaded successfully on %s", device)
 
 
+def _get_guardrails():
+    global _guardrails
+    if _guardrails is None:
+        from anthos_guardrails import GuardrailSystem
+        _guardrails = GuardrailSystem()
+        log.info("Anthos guardrails loaded (PII redaction, HAP filter, jailbreak defense)")
+    return _guardrails
+
+
 def _generate(messages: list[dict], **kwargs) -> dict:
     """Run chat completion and return an OpenAI-compatible response."""
     import torch
+
+    guardrails = _get_guardrails()
 
     max_tokens = kwargs.get("max_tokens", 512)
     temperature = kwargs.get("temperature", 0.7)
     top_p = kwargs.get("top_p", 0.9)
     top_k = kwargs.get("top_k", 40)
+
+    user_text = " ".join(m.get("content", "") for m in messages if m.get("role") == "user")
+    input_safe, sanitized_or_err = guardrails.verify_input(user_text)
+    if not input_safe:
+        log.warning("Input blocked by guardrails")
+        return {
+            "id": f"chatcmpl-anthos-{uuid.uuid4().hex[:12]}",
+            "object": "chat.completion",
+            "created": int(time.time()),
+            "model": "anthos-qwen-1.5b",
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {"role": "assistant", "content": sanitized_or_err},
+                    "finish_reason": "content_filter",
+                }
+            ],
+            "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+            "guardrail": {"status": "BLOCKED", "layer": "input"},
+        }
 
     text = _tokenizer.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=True
@@ -160,6 +192,29 @@ def _generate(messages: list[dict], **kwargs) -> dict:
         completion_tokens, elapsed, tok_per_s,
     )
 
+    output_safe, sanitized_reply = guardrails.verify_output(reply)
+    if not output_safe:
+        log.warning("Output blocked by guardrails")
+        return {
+            "id": f"chatcmpl-anthos-{uuid.uuid4().hex[:12]}",
+            "object": "chat.completion",
+            "created": int(time.time()),
+            "model": "anthos-qwen-1.5b",
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {"role": "assistant", "content": sanitized_reply},
+                    "finish_reason": "content_filter",
+                }
+            ],
+            "usage": {
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": prompt_tokens + completion_tokens,
+            },
+            "guardrail": {"status": "BLOCKED", "layer": "output"},
+        }
+
     return {
         "id": f"chatcmpl-anthos-{uuid.uuid4().hex[:12]}",
         "object": "chat.completion",
@@ -168,7 +223,7 @@ def _generate(messages: list[dict], **kwargs) -> dict:
         "choices": [
             {
                 "index": 0,
-                "message": {"role": "assistant", "content": reply},
+                "message": {"role": "assistant", "content": sanitized_reply},
                 "finish_reason": "stop",
             }
         ],
@@ -177,6 +232,7 @@ def _generate(messages: list[dict], **kwargs) -> dict:
             "completion_tokens": completion_tokens,
             "total_tokens": prompt_tokens + completion_tokens,
         },
+        "guardrail": {"status": "PASS"},
     }
 
 
@@ -232,6 +288,20 @@ def _build_app(api_key: str | None = None):
     @app.get("/health")
     async def health():
         return {"status": "ok", "model_loaded": _model is not None}
+
+    @app.get("/v1/guardrails")
+    async def guardrails_status(request: Request):
+        _check_auth(request)
+        g = _get_guardrails()
+        return {
+            "enabled": True,
+            "layers": {
+                "pii_redaction": g.config.enable_pii_redaction,
+                "hap_filter": g.config.enable_hap_filter,
+                "race_ethnicity_filter": g.config.enable_race_ethnicity_filter,
+                "jailbreak_defense": g.config.enable_jailbreak_defense,
+            },
+        }
 
     return app
 
