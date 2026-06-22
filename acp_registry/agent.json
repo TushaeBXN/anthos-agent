@@ -1,0 +1,15 @@
+{
+  "id": "anthos-agent",
+  "name": "Anthos Agent",
+  "version": "0.1.0",
+  "description": "Self-improving open-source AI agent by Brian Tushae Thomas with ACP editor integration, persistent memory, skills, and rich tool support.",
+  "repository": "https://github.com/TushaeBXN/anthos-agent",
+  "authors": ["Brian Tushae Thomas"],
+  "license": "MIT",
+  "distribution": {
+    "uvx": {
+      "package": "anthos-agent[acp]==0.1.0",
+      "args": ["anthos-acp"]
+    }
+  }
+}
