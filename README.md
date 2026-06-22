@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="Anthos Agent Banner" width="100%">
+</p>
+
 # Anthos Agent
 
 **The self-improving AI agent built by [Brian Tushae Thomas](https://github.com/TushaeBXN).** Built on top of the open-source Hermes Agent framework (MIT licensed, by Nous Research), Anthos Agent features a built-in learning loop — it creates skills from experience, improves them during use, nudges itself to persist knowledge, searches its own past conversations, and builds a deepening model of who you are across sessions.
