@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 1280px;
+  height: 640px;
+  background: #1b1e25;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  overflow: hidden;
+}
+.logo-icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 8px;
+}
+.brand-name {
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: 6px;
+  color: #fff;
+}
+.tagline {
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: #4db8a4;
+  margin-top: 2px;
+  font-weight: 500;
+}
+.title {
+  font-size: 64px;
+  font-weight: 800;
+  margin: 16px 0 28px;
+  letter-spacing: -1px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 880px;
+  margin-bottom: 28px;
+}
+.card {
+  background: #24272f;
+  border: 1px solid #2e3240;
+  border-radius: 12px;
+  padding: 18px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card.highlight {
+  background: #1e3a3a;
+  border-color: #4db8a4;
+}
+.card-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: #4db8a4;
+}
+.card-text {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.footer {
+  text-align: center;
+  max-width: 700px;
+}
+.footer-main {
+  font-size: 13px;
+  color: #8b8f99;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.footer-main strong {
+  color: #c0c4cc;
+  font-weight: 600;
+}
+.footer-models {
+  font-size: 13px;
+  color: #5a5e68;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  letter-spacing: 0.5px;
+}
+</style>
+</head>
+<body>
+  <svg class="logo-icon" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 115 L50 55" stroke="#4db8a4" stroke-width="4" stroke-linecap="round"/>
+    <path d="M50 55 C50 35, 30 20, 20 30 C10 40, 25 55, 50 55" fill="#4db8a4" opacity="0.7"/>
+    <path d="M50 55 C50 35, 70 20, 80 30 C90 40, 75 55, 50 55" fill="#4db8a4" opacity="0.85"/>
+    <path d="M50 45 C50 25, 35 5, 30 15 C25 25, 40 45, 50 45" fill="#4db8a4" opacity="0.6"/>
+    <path d="M50 45 C50 25, 65 5, 70 15 C75 25, 60 45, 50 45" fill="#4db8a4" opacity="0.75"/>
+    <path d="M50 35 C50 20, 45 5, 50 0 C55 5, 50 20, 50 35" fill="#4db8a4" opacity="0.9"/>
+  </svg>
+  <div class="brand-name">ANTHOS</div>
+  <div class="tagline">THINK IN STREAMS</div>
+  <div class="title">ANTHOS AGENT</div>
+  <div class="grid">
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      <span class="card-text">A real terminal interface</span>
+    </div>
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span class="card-text">Lives where you do</span>
+    </div>
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 11-9-9"/><polyline points="21 3 21 9 15 9"/></svg>
+      <span class="card-text">A closed learning loop</span>
+    </div>
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span class="card-text">Scheduled automations</span>
+    </div>
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="7 8 3 12 7 16"/><polyline points="17 8 21 12 17 16"/><line x1="14" y1="4" x2="10" y2="20"/></svg>
+      <span class="card-text">Delegates and parallelizes</span>
+    </div>
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      <span class="card-text">Runs anywhere</span>
+    </div>
+    <div class="card">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3L12 7L15 3"/><path d="M12 7V15"/><path d="M8 15H16L18 21H6L8 15Z"/></svg>
+      <span class="card-text">Research-ready</span>
+    </div>
+    <div class="card highlight">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span class="card-text">Open-source, no lock-in</span>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="footer-main">Built on the Hermes agent framework (MIT, Nous Research). Powered by the <strong>Anthos</strong> model, with native guard rails and nine-tier deep defense.</div>
+    <div class="footer-models">200+ models via OpenRouter, OpenAI & Anthropic &mdash; plus the native Anthos model</div>
+  </div>
+</body>
+</html>
