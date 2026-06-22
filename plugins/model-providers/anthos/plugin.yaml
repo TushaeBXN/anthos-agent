@@ -1,0 +1,5 @@
+name: anthos-provider
+kind: model-provider
+version: 1.0.0
+description: Anthos AI model — local CPU or remote RunPod GPU
+author: Brian Tushae Thomas

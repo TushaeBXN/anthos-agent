@@ -2699,6 +2699,20 @@ def cmd_postinstall(args):
         print("✓ Post-install complete.")
 
 
+def cmd_serve(args):
+    """Start the local Anthos model server (OpenAI-compatible API)."""
+    import subprocess
+    cmd = [sys.executable, "-m", "anthos_serve"]
+    if getattr(args, "port", None):
+        cmd += ["--port", str(args.port)]
+    if getattr(args, "device", None):
+        cmd += ["--device", args.device]
+    if getattr(args, "checkpoint", None):
+        cmd += ["--checkpoint", args.checkpoint]
+    print("Starting Anthos model server...")
+    subprocess.run(cmd)
+
+
 def cmd_model(args):
     """Select default model — starts with provider selection, then model picker."""
     _require_tty("model")
@@ -11794,6 +11808,18 @@ def main():
     # model command  (parser built in hermes_cli/subcommands/model.py)
     # =========================================================================
     build_model_parser(subparsers, cmd_model=cmd_model)
+
+    # =========================================================================
+    # serve command — start local Anthos model server
+    # =========================================================================
+    serve_parser = subparsers.add_parser(
+        "serve",
+        help="Start the local Anthos model server (OpenAI-compatible API)",
+    )
+    serve_parser.add_argument("--port", type=int, default=None, help="Server port (default: 8321)")
+    serve_parser.add_argument("--device", type=str, default=None, help="Device: cpu or cuda")
+    serve_parser.add_argument("--checkpoint", type=str, default=None, help="Path to LoRA checkpoint")
+    serve_parser.set_defaults(func=cmd_serve)
 
     # =========================================================================
     # fallback command — manage the fallback provider chain
