@@ -88,7 +88,7 @@ dependencies = [
   # and GHSA-qccp-gfcp-xxvc (header leak across origins).
   "urllib3>=2.7.0,<3",
   "tornado>=6.5.7",
-  "cryptography>=48.0.1",
+  "cryptography>=50.0.0",
   "cbor2>=5.9.0",
   "msgpack>=1.2.1",
   "Pygments>=2.20.0",
