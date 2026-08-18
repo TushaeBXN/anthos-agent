@@ -1,6 +1,5 @@
-<p align="center">
-  <img src="assets/banner.png" alt="Anthos Agent Banner" width="100%">
-</p>
+<img width="1376" height="768" alt="Gemini_Generated_Image_mnd3ynmnd3ynmnd3" src="https://github.com/user-attachments/assets/6bd185c3-e771-4c2b-9a36-7b877946c523" />
+
 
 # Anthos Agent
 
