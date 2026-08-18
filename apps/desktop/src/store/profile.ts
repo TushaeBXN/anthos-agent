@@ -1,6 +1,6 @@
 import { atom, computed } from 'nanostores'
 
-import { getProfiles, setApiRequestProfile } from '@/hermes'
+import { getProfiles, setApiRequestProfile } from '@/anthos'
 import { queryClient } from '@/lib/query-client'
 import {
   arraysEqual,
@@ -13,7 +13,7 @@ import {
 } from '@/lib/storage'
 import { $gateway, ensureGatewayForProfile } from '@/store/gateway'
 import { setConnection } from '@/store/session'
-import type { ProfileInfo } from '@/types/hermes'
+import type { ProfileInfo } from '@/types/anthos'
 
 // Canonical key for a profile: trimmed, empty → "default". Used everywhere we
 // compare a session's owning profile against the live gateway's profile.
@@ -24,7 +24,7 @@ export function normalizeProfileKey(name: string | null | undefined): string {
 }
 
 // The profile the running local backend is actually scoped to (mirrors
-// /api/profiles/active `current`). "default" is the root ~/.hermes. This is the
+// /api/profiles/active `current`). "default" is the root ~/.anthos. This is the
 // display source of truth for the statusbar pill; the desktop's *stored*
 // preference (which may be unset) lives in the Electron main process.
 export const $activeProfile = atom<string>('default')
@@ -41,7 +41,7 @@ export function setActiveProfile(name: string): void {
 // User-defined order for the named (non-default) profile squares in the rail.
 // Names absent from the list fall back to alphabetical, appended at the tail —
 // so a freshly created profile lands at the end until the user drags it.
-const PROFILE_ORDER_STORAGE_KEY = 'hermes.desktop.profileOrder'
+const PROFILE_ORDER_STORAGE_KEY = 'anthos.desktop.profileOrder'
 
 export const $profileOrder = atom<string[]>(storedStringArray(PROFILE_ORDER_STORAGE_KEY))
 
@@ -73,7 +73,7 @@ export function sortByProfileOrder<T extends { name: string }>(items: T[], order
 // Optional per-profile color override (long-press a rail square to pick). Absent
 // names fall back to the deterministic hue from profileColor(); a local-only
 // cosmetic preference, so single-profile users never touch it.
-const PROFILE_COLORS_STORAGE_KEY = 'hermes.desktop.profileColors'
+const PROFILE_COLORS_STORAGE_KEY = 'anthos.desktop.profileColors'
 
 export const $profileColors = atom<Record<string, string>>(storedStringRecord(PROFILE_COLORS_STORAGE_KEY))
 
@@ -102,7 +102,7 @@ interface ActiveProfileResponse {
 // Best-effort: failures (backend not up yet) leave the prior values intact.
 export async function refreshActiveProfile(): Promise<void> {
   try {
-    const res = await window.hermesDesktop.api<ActiveProfileResponse>({ path: '/api/profiles/active' })
+    const res = await window.anthosDesktop.api<ActiveProfileResponse>({ path: '/api/profiles/active' })
 
     setActiveProfile(res.current || 'default')
   } catch {
@@ -127,7 +127,7 @@ export async function switchProfile(name: string): Promise<void> {
   }
 
   setActiveProfile(name)
-  await window.hermesDesktop.profile.set(name)
+  await window.anthosDesktop.profile.set(name)
 }
 
 // ── Swap-minimal gateway routing ──────────────────────────────────────────
@@ -192,7 +192,7 @@ let gatewaySwitch: Promise<void> | null = null
 // Best-effort: a failed descriptor fetch leaves the prior connection intact for
 // boot/reconnect to resync.
 async function syncConnectionToActiveProfile(profile: string): Promise<void> {
-  const getConnection = window.hermesDesktop?.getConnection
+  const getConnection = window.anthosDesktop?.getConnection
 
   if (!getConnection) {
     return
@@ -266,7 +266,7 @@ export async function ensureGatewayProfile(profile: string | null | undefined): 
 
 export const ALL_PROFILES = '__all__'
 
-const SHOW_ALL_PROFILES_STORAGE_KEY = 'hermes.desktop.showAllProfiles'
+const SHOW_ALL_PROFILES_STORAGE_KEY = 'anthos.desktop.showAllProfiles'
 
 // Opt-in unified view. When false, scope follows the live gateway profile, so
 // single-profile users (who never see the switcher) are completely unaffected.
@@ -340,7 +340,7 @@ function orderedProfileKeys(): string[] {
   return hasDefault ? ['default', ...named] : named
 }
 
-// Switch to the default (root ~/.hermes) profile — bound to ⌘1.
+// Switch to the default (root ~/.anthos) profile — bound to ⌘1.
 export function switchToDefaultProfile(): void {
   const def = $profiles.get().find(profile => profile.is_default)
 
@@ -391,5 +391,5 @@ export function touchActiveGatewayBackend(): void {
   // Always ping: the main process no-ops for non-pool (primary) backends, so we
   // don't need to know which profile is primary from here.
   const target = normalizeProfileKey($activeGatewayProfile.get())
-  void window.hermesDesktop?.touchBackend?.(target).catch(() => undefined)
+  void window.anthosDesktop?.touchBackend?.(target).catch(() => undefined)
 }

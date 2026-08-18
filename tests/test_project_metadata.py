@@ -31,7 +31,7 @@ def test_matrix_extra_not_in_all():
     """
     optional_dependencies = _load_optional_dependencies()
 
-    assert "matrix" in optional_dependencies, "[matrix] extra must still exist for explicit `pip install hermes-agent[matrix]`"
+    assert "matrix" in optional_dependencies, "[matrix] extra must still exist for explicit `pip install anthos-agent[matrix]`"
     # Must NOT appear in [all] in any form — neither unconditional nor
     # platform-gated. Lazy-install handles it.
     matrix_in_all = [
@@ -79,7 +79,7 @@ def test_lazy_installable_extras_excluded_from_all():
     for extra in lazy_covered_extras:
         offending = [
             spec for spec in all_extra_specs
-            if f"hermes-agent[{extra}]" in spec
+            if f"anthos-agent[{extra}]" in spec
         ]
         assert not offending, (
             f"[{extra}] is in [all] but also in LAZY_DEPS. "
@@ -128,7 +128,7 @@ def test_pyproject_aiohttp_pins_match_lazy_slack_pin():
     }
     assert not mismatches, (
         "pyproject.toml aiohttp pins must match "
-        "LAZY_DEPS['platform.slack'] to avoid hermes update downgrading "
+        "LAZY_DEPS['platform.slack'] to avoid anthos update downgrading "
         "aiohttp before Slack's lazy refresh upgrades it again. "
         f"lazy aiohttp=={lazy_aiohttp}; mismatched extras: {mismatches}"
     )
@@ -191,7 +191,7 @@ def test_dev_extra_excluded_from_all():
 
     assert "dev" in optional_dependencies
     assert not any(
-        spec == "hermes-agent[dev]"
+        spec == "anthos-agent[dev]"
         for spec in optional_dependencies["all"]
     )
 
@@ -204,7 +204,7 @@ def test_messaging_extra_includes_qrcode_for_weixin_setup():
 
 
 def test_dingtalk_extra_includes_qrcode_for_qr_auth():
-    """DingTalk's QR-code device-flow auth (hermes_cli/dingtalk_auth.py)
+    """DingTalk's QR-code device-flow auth (anthos_cli/dingtalk_auth.py)
     needs the qrcode package."""
     optional_dependencies = _load_optional_dependencies()
 
@@ -226,7 +226,7 @@ def test_nemo_relay_extra_uses_official_0_3_distribution():
 
     assert optional_dependencies["nemo-relay"] == ["nemo-relay==0.3"]
     assert not any(
-        spec == "hermes-agent[nemo-relay]"
+        spec == "anthos-agent[nemo-relay]"
         for spec in optional_dependencies["all"]
     )
 

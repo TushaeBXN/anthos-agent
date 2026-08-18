@@ -31,9 +31,9 @@ interface InsertRefsDetail {
   target: ComposerTarget
 }
 
-const FOCUS_EVENT = 'hermes:composer-focus'
-const INSERT_EVENT = 'hermes:composer-insert'
-const INSERT_REFS_EVENT = 'hermes:composer-insert-refs'
+const FOCUS_EVENT = 'anthos:composer-focus'
+const INSERT_EVENT = 'anthos:composer-insert'
+const INSERT_REFS_EVENT = 'anthos:composer-insert-refs'
 
 let activeTarget: ComposerTarget = 'main'
 

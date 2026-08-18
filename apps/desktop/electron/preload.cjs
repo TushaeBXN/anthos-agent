@@ -1,34 +1,34 @@
 const { contextBridge, ipcRenderer, webUtils } = require('electron')
 
-contextBridge.exposeInMainWorld('hermesDesktop', {
-  getConnection: profile => ipcRenderer.invoke('hermes:connection', profile),
-  revalidateConnection: () => ipcRenderer.invoke('hermes:connection:revalidate'),
-  touchBackend: profile => ipcRenderer.invoke('hermes:backend:touch', profile),
-  getGatewayWsUrl: profile => ipcRenderer.invoke('hermes:gateway:ws-url', profile),
-  openSessionWindow: (sessionId, opts) => ipcRenderer.invoke('hermes:window:openSession', sessionId, opts),
-  openNewSessionWindow: () => ipcRenderer.invoke('hermes:window:openNewSession'),
-  getBootProgress: () => ipcRenderer.invoke('hermes:boot-progress:get'),
-  getConnectionConfig: profile => ipcRenderer.invoke('hermes:connection-config:get', profile),
-  saveConnectionConfig: payload => ipcRenderer.invoke('hermes:connection-config:save', payload),
-  applyConnectionConfig: payload => ipcRenderer.invoke('hermes:connection-config:apply', payload),
-  testConnectionConfig: payload => ipcRenderer.invoke('hermes:connection-config:test', payload),
-  probeConnectionConfig: remoteUrl => ipcRenderer.invoke('hermes:connection-config:probe', remoteUrl),
-  oauthLoginConnectionConfig: remoteUrl => ipcRenderer.invoke('hermes:connection-config:oauth-login', remoteUrl),
-  oauthLogoutConnectionConfig: remoteUrl => ipcRenderer.invoke('hermes:connection-config:oauth-logout', remoteUrl),
+contextBridge.exposeInMainWorld('anthosDesktop', {
+  getConnection: profile => ipcRenderer.invoke('anthos:connection', profile),
+  revalidateConnection: () => ipcRenderer.invoke('anthos:connection:revalidate'),
+  touchBackend: profile => ipcRenderer.invoke('anthos:backend:touch', profile),
+  getGatewayWsUrl: profile => ipcRenderer.invoke('anthos:gateway:ws-url', profile),
+  openSessionWindow: (sessionId, opts) => ipcRenderer.invoke('anthos:window:openSession', sessionId, opts),
+  openNewSessionWindow: () => ipcRenderer.invoke('anthos:window:openNewSession'),
+  getBootProgress: () => ipcRenderer.invoke('anthos:boot-progress:get'),
+  getConnectionConfig: profile => ipcRenderer.invoke('anthos:connection-config:get', profile),
+  saveConnectionConfig: payload => ipcRenderer.invoke('anthos:connection-config:save', payload),
+  applyConnectionConfig: payload => ipcRenderer.invoke('anthos:connection-config:apply', payload),
+  testConnectionConfig: payload => ipcRenderer.invoke('anthos:connection-config:test', payload),
+  probeConnectionConfig: remoteUrl => ipcRenderer.invoke('anthos:connection-config:probe', remoteUrl),
+  oauthLoginConnectionConfig: remoteUrl => ipcRenderer.invoke('anthos:connection-config:oauth-login', remoteUrl),
+  oauthLogoutConnectionConfig: remoteUrl => ipcRenderer.invoke('anthos:connection-config:oauth-logout', remoteUrl),
   profile: {
-    get: () => ipcRenderer.invoke('hermes:profile:get'),
-    set: name => ipcRenderer.invoke('hermes:profile:set', name)
+    get: () => ipcRenderer.invoke('anthos:profile:get'),
+    set: name => ipcRenderer.invoke('anthos:profile:set', name)
   },
-  api: request => ipcRenderer.invoke('hermes:api', request),
-  notify: payload => ipcRenderer.invoke('hermes:notify', payload),
-  requestMicrophoneAccess: () => ipcRenderer.invoke('hermes:requestMicrophoneAccess'),
-  readFileDataUrl: filePath => ipcRenderer.invoke('hermes:readFileDataUrl', filePath),
-  readFileText: filePath => ipcRenderer.invoke('hermes:readFileText', filePath),
-  selectPaths: options => ipcRenderer.invoke('hermes:selectPaths', options),
-  writeClipboard: text => ipcRenderer.invoke('hermes:writeClipboard', text),
-  saveImageFromUrl: url => ipcRenderer.invoke('hermes:saveImageFromUrl', url),
-  saveImageBuffer: (data, ext) => ipcRenderer.invoke('hermes:saveImageBuffer', { data, ext }),
-  saveClipboardImage: () => ipcRenderer.invoke('hermes:saveClipboardImage'),
+  api: request => ipcRenderer.invoke('anthos:api', request),
+  notify: payload => ipcRenderer.invoke('anthos:notify', payload),
+  requestMicrophoneAccess: () => ipcRenderer.invoke('anthos:requestMicrophoneAccess'),
+  readFileDataUrl: filePath => ipcRenderer.invoke('anthos:readFileDataUrl', filePath),
+  readFileText: filePath => ipcRenderer.invoke('anthos:readFileText', filePath),
+  selectPaths: options => ipcRenderer.invoke('anthos:selectPaths', options),
+  writeClipboard: text => ipcRenderer.invoke('anthos:writeClipboard', text),
+  saveImageFromUrl: url => ipcRenderer.invoke('anthos:saveImageFromUrl', url),
+  saveImageBuffer: (data, ext) => ipcRenderer.invoke('anthos:saveImageBuffer', { data, ext }),
+  saveClipboardImage: () => ipcRenderer.invoke('anthos:saveClipboardImage'),
   getPathForFile: file => {
     try {
       return webUtils.getPathForFile(file) || ''
@@ -36,39 +36,39 @@ contextBridge.exposeInMainWorld('hermesDesktop', {
       return ''
     }
   },
-  normalizePreviewTarget: (target, baseDir) => ipcRenderer.invoke('hermes:normalizePreviewTarget', target, baseDir),
-  watchPreviewFile: url => ipcRenderer.invoke('hermes:watchPreviewFile', url),
-  stopPreviewFileWatch: id => ipcRenderer.invoke('hermes:stopPreviewFileWatch', id),
-  setTitleBarTheme: payload => ipcRenderer.send('hermes:titlebar-theme', payload),
-  setNativeTheme: mode => ipcRenderer.send('hermes:native-theme', mode),
-  setTranslucency: payload => ipcRenderer.send('hermes:translucency', payload),
-  setPreviewShortcutActive: active => ipcRenderer.send('hermes:previewShortcutActive', Boolean(active)),
-  openExternal: url => ipcRenderer.invoke('hermes:openExternal', url),
-  fetchLinkTitle: url => ipcRenderer.invoke('hermes:fetchLinkTitle', url),
-  sanitizeWorkspaceCwd: cwd => ipcRenderer.invoke('hermes:workspace:sanitize', cwd),
+  normalizePreviewTarget: (target, baseDir) => ipcRenderer.invoke('anthos:normalizePreviewTarget', target, baseDir),
+  watchPreviewFile: url => ipcRenderer.invoke('anthos:watchPreviewFile', url),
+  stopPreviewFileWatch: id => ipcRenderer.invoke('anthos:stopPreviewFileWatch', id),
+  setTitleBarTheme: payload => ipcRenderer.send('anthos:titlebar-theme', payload),
+  setNativeTheme: mode => ipcRenderer.send('anthos:native-theme', mode),
+  setTranslucency: payload => ipcRenderer.send('anthos:translucency', payload),
+  setPreviewShortcutActive: active => ipcRenderer.send('anthos:previewShortcutActive', Boolean(active)),
+  openExternal: url => ipcRenderer.invoke('anthos:openExternal', url),
+  fetchLinkTitle: url => ipcRenderer.invoke('anthos:fetchLinkTitle', url),
+  sanitizeWorkspaceCwd: cwd => ipcRenderer.invoke('anthos:workspace:sanitize', cwd),
   settings: {
-    getDefaultProjectDir: () => ipcRenderer.invoke('hermes:setting:defaultProjectDir:get'),
-    setDefaultProjectDir: dir => ipcRenderer.invoke('hermes:setting:defaultProjectDir:set', dir),
-    pickDefaultProjectDir: () => ipcRenderer.invoke('hermes:setting:defaultProjectDir:pick')
+    getDefaultProjectDir: () => ipcRenderer.invoke('anthos:setting:defaultProjectDir:get'),
+    setDefaultProjectDir: dir => ipcRenderer.invoke('anthos:setting:defaultProjectDir:set', dir),
+    pickDefaultProjectDir: () => ipcRenderer.invoke('anthos:setting:defaultProjectDir:pick')
   },
-  revealLogs: () => ipcRenderer.invoke('hermes:logs:reveal'),
-  getRecentLogs: () => ipcRenderer.invoke('hermes:logs:recent'),
-  readDir: dirPath => ipcRenderer.invoke('hermes:fs:readDir', dirPath),
-  gitRoot: startPath => ipcRenderer.invoke('hermes:fs:gitRoot', startPath),
-  worktrees: cwds => ipcRenderer.invoke('hermes:fs:worktrees', cwds),
+  revealLogs: () => ipcRenderer.invoke('anthos:logs:reveal'),
+  getRecentLogs: () => ipcRenderer.invoke('anthos:logs:recent'),
+  readDir: dirPath => ipcRenderer.invoke('anthos:fs:readDir', dirPath),
+  gitRoot: startPath => ipcRenderer.invoke('anthos:fs:gitRoot', startPath),
+  worktrees: cwds => ipcRenderer.invoke('anthos:fs:worktrees', cwds),
   terminal: {
-    dispose: id => ipcRenderer.invoke('hermes:terminal:dispose', id),
-    resize: (id, size) => ipcRenderer.invoke('hermes:terminal:resize', id, size),
-    start: options => ipcRenderer.invoke('hermes:terminal:start', options),
-    write: (id, data) => ipcRenderer.invoke('hermes:terminal:write', id, data),
+    dispose: id => ipcRenderer.invoke('anthos:terminal:dispose', id),
+    resize: (id, size) => ipcRenderer.invoke('anthos:terminal:resize', id, size),
+    start: options => ipcRenderer.invoke('anthos:terminal:start', options),
+    write: (id, data) => ipcRenderer.invoke('anthos:terminal:write', id, data),
     onData: (id, callback) => {
-      const channel = `hermes:terminal:${id}:data`
+      const channel = `anthos:terminal:${id}:data`
       const listener = (_event, payload) => callback(payload)
       ipcRenderer.on(channel, listener)
       return () => ipcRenderer.removeListener(channel, listener)
     },
     onExit: (id, callback) => {
-      const channel = `hermes:terminal:${id}:exit`
+      const channel = `anthos:terminal:${id}:exit`
       const listener = (_event, payload) => callback(payload)
       ipcRenderer.on(channel, listener)
       return () => ipcRenderer.removeListener(channel, listener)
@@ -76,88 +76,88 @@ contextBridge.exposeInMainWorld('hermesDesktop', {
   },
   onClosePreviewRequested: callback => {
     const listener = () => callback()
-    ipcRenderer.on('hermes:close-preview-requested', listener)
-    return () => ipcRenderer.removeListener('hermes:close-preview-requested', listener)
+    ipcRenderer.on('anthos:close-preview-requested', listener)
+    return () => ipcRenderer.removeListener('anthos:close-preview-requested', listener)
   },
   onOpenUpdatesRequested: callback => {
     const listener = () => callback()
-    ipcRenderer.on('hermes:open-updates', listener)
-    return () => ipcRenderer.removeListener('hermes:open-updates', listener)
+    ipcRenderer.on('anthos:open-updates', listener)
+    return () => ipcRenderer.removeListener('anthos:open-updates', listener)
   },
   onDeepLink: callback => {
     const listener = (_event, payload) => callback(payload)
-    ipcRenderer.on('hermes:deep-link', listener)
-    return () => ipcRenderer.removeListener('hermes:deep-link', listener)
+    ipcRenderer.on('anthos:deep-link', listener)
+    return () => ipcRenderer.removeListener('anthos:deep-link', listener)
   },
-  signalDeepLinkReady: () => ipcRenderer.invoke('hermes:deep-link-ready'),
+  signalDeepLinkReady: () => ipcRenderer.invoke('anthos:deep-link-ready'),
   onWindowStateChanged: callback => {
     const listener = (_event, payload) => callback(payload)
-    ipcRenderer.on('hermes:window-state-changed', listener)
-    return () => ipcRenderer.removeListener('hermes:window-state-changed', listener)
+    ipcRenderer.on('anthos:window-state-changed', listener)
+    return () => ipcRenderer.removeListener('anthos:window-state-changed', listener)
   },
   onFocusSession: callback => {
     const listener = (_event, sessionId) => callback(sessionId)
-    ipcRenderer.on('hermes:focus-session', listener)
-    return () => ipcRenderer.removeListener('hermes:focus-session', listener)
+    ipcRenderer.on('anthos:focus-session', listener)
+    return () => ipcRenderer.removeListener('anthos:focus-session', listener)
   },
   onNotificationAction: callback => {
     const listener = (_event, payload) => callback(payload)
-    ipcRenderer.on('hermes:notification-action', listener)
-    return () => ipcRenderer.removeListener('hermes:notification-action', listener)
+    ipcRenderer.on('anthos:notification-action', listener)
+    return () => ipcRenderer.removeListener('anthos:notification-action', listener)
   },
   onPreviewFileChanged: callback => {
     const listener = (_event, payload) => callback(payload)
-    ipcRenderer.on('hermes:preview-file-changed', listener)
-    return () => ipcRenderer.removeListener('hermes:preview-file-changed', listener)
+    ipcRenderer.on('anthos:preview-file-changed', listener)
+    return () => ipcRenderer.removeListener('anthos:preview-file-changed', listener)
   },
   onBackendExit: callback => {
     const listener = (_event, payload) => callback(payload)
-    ipcRenderer.on('hermes:backend-exit', listener)
-    return () => ipcRenderer.removeListener('hermes:backend-exit', listener)
+    ipcRenderer.on('anthos:backend-exit', listener)
+    return () => ipcRenderer.removeListener('anthos:backend-exit', listener)
   },
   onPowerResume: callback => {
     const listener = () => callback()
-    ipcRenderer.on('hermes:power-resume', listener)
-    return () => ipcRenderer.removeListener('hermes:power-resume', listener)
+    ipcRenderer.on('anthos:power-resume', listener)
+    return () => ipcRenderer.removeListener('anthos:power-resume', listener)
   },
   onBootProgress: callback => {
     const listener = (_event, payload) => callback(payload)
-    ipcRenderer.on('hermes:boot-progress', listener)
-    return () => ipcRenderer.removeListener('hermes:boot-progress', listener)
+    ipcRenderer.on('anthos:boot-progress', listener)
+    return () => ipcRenderer.removeListener('anthos:boot-progress', listener)
   },
   // First-launch bootstrap progress -- emitted by the install.ps1 stage
   // runner in main.cjs (apps/desktop/electron/bootstrap-runner.cjs).
   // Renderer's install overlay subscribes to live events and queries the
   // current snapshot via getBootstrapState() to recover after a devtools
   // reload mid-bootstrap.
-  getBootstrapState: () => ipcRenderer.invoke('hermes:bootstrap:get'),
-  resetBootstrap: () => ipcRenderer.invoke('hermes:bootstrap:reset'),
-  repairBootstrap: () => ipcRenderer.invoke('hermes:bootstrap:repair'),
-  cancelBootstrap: () => ipcRenderer.invoke('hermes:bootstrap:cancel'),
+  getBootstrapState: () => ipcRenderer.invoke('anthos:bootstrap:get'),
+  resetBootstrap: () => ipcRenderer.invoke('anthos:bootstrap:reset'),
+  repairBootstrap: () => ipcRenderer.invoke('anthos:bootstrap:repair'),
+  cancelBootstrap: () => ipcRenderer.invoke('anthos:bootstrap:cancel'),
   onBootstrapEvent: callback => {
     const listener = (_event, payload) => callback(payload)
-    ipcRenderer.on('hermes:bootstrap:event', listener)
-    return () => ipcRenderer.removeListener('hermes:bootstrap:event', listener)
+    ipcRenderer.on('anthos:bootstrap:event', listener)
+    return () => ipcRenderer.removeListener('anthos:bootstrap:event', listener)
   },
-  getVersion: () => ipcRenderer.invoke('hermes:version'),
-  getRemoteDisplayReason: () => ipcRenderer.invoke('hermes:get-remote-display-reason'),
+  getVersion: () => ipcRenderer.invoke('anthos:version'),
+  getRemoteDisplayReason: () => ipcRenderer.invoke('anthos:get-remote-display-reason'),
   uninstall: {
-    summary: () => ipcRenderer.invoke('hermes:uninstall:summary'),
-    run: mode => ipcRenderer.invoke('hermes:uninstall:run', { mode })
+    summary: () => ipcRenderer.invoke('anthos:uninstall:summary'),
+    run: mode => ipcRenderer.invoke('anthos:uninstall:run', { mode })
   },
   updates: {
-    check: () => ipcRenderer.invoke('hermes:updates:check'),
-    apply: opts => ipcRenderer.invoke('hermes:updates:apply', opts),
-    getBranch: () => ipcRenderer.invoke('hermes:updates:branch:get'),
-    setBranch: name => ipcRenderer.invoke('hermes:updates:branch:set', name),
+    check: () => ipcRenderer.invoke('anthos:updates:check'),
+    apply: opts => ipcRenderer.invoke('anthos:updates:apply', opts),
+    getBranch: () => ipcRenderer.invoke('anthos:updates:branch:get'),
+    setBranch: name => ipcRenderer.invoke('anthos:updates:branch:set', name),
     onProgress: callback => {
       const listener = (_event, payload) => callback(payload)
-      ipcRenderer.on('hermes:updates:progress', listener)
-      return () => ipcRenderer.removeListener('hermes:updates:progress', listener)
+      ipcRenderer.on('anthos:updates:progress', listener)
+      return () => ipcRenderer.removeListener('anthos:updates:progress', listener)
     }
   },
   themes: {
-    fetchMarketplace: id => ipcRenderer.invoke('hermes:vscode-theme:fetch', id),
-    searchMarketplace: query => ipcRenderer.invoke('hermes:vscode-theme:search', query)
+    fetchMarketplace: id => ipcRenderer.invoke('anthos:vscode-theme:fetch', id),
+    searchMarketplace: query => ipcRenderer.invoke('anthos:vscode-theme:search', query)
   }
 })

@@ -8,10 +8,10 @@ Original PR #2933 by kartik-mem0, adapted to MemoryProvider ABC.
 Config via environment variables:
   MEM0_API_KEY       — Mem0 API key (required for cloud, optional for self-hosted)
   MEM0_HOST          — Self-hosted Mem0 URL (default: https://api.mem0.ai)
-  MEM0_USER_ID       — User identifier (default: hermes-user)
-  MEM0_AGENT_ID      — Agent identifier (default: hermes)
+  MEM0_USER_ID       — User identifier (default: anthos-user)
+  MEM0_AGENT_ID      — Agent identifier (default: anthos)
 
-Or via $HERMES_HOME/mem0.json.
+Or via $ANTHOS_HOME/mem0.json.
 """
 
 from __future__ import annotations
@@ -40,24 +40,24 @@ _BREAKER_COOLDOWN_SECS = 120
 
 
 def _load_config() -> dict:
-    """Load config from env vars, with $HERMES_HOME/mem0.json overrides.
+    """Load config from env vars, with $ANTHOS_HOME/mem0.json overrides.
 
     Environment variables provide defaults; mem0.json (if present) overrides
     individual keys.  This avoids a silent failure when the JSON file exists
     but is missing fields like ``api_key`` that the user set in ``.env``.
     """
-    from hermes_constants import get_hermes_home
+    from anthos_constants import get_anthos_home
 
     config = {
         "api_key": os.environ.get("MEM0_API_KEY", ""),
         "host": os.environ.get("MEM0_HOST", ""),
-        "user_id": os.environ.get("MEM0_USER_ID", "hermes-user"),
-        "agent_id": os.environ.get("MEM0_AGENT_ID", "hermes"),
+        "user_id": os.environ.get("MEM0_USER_ID", "anthos-user"),
+        "agent_id": os.environ.get("MEM0_AGENT_ID", "anthos"),
         "rerank": True,
         "keyword_search": False,
     }
 
-    config_path = get_hermes_home() / "mem0.json"
+    config_path = get_anthos_home() / "mem0.json"
     if config_path.exists():
         try:
             file_cfg = json.loads(config_path.read_text(encoding="utf-8"))
@@ -132,8 +132,8 @@ class Mem0MemoryProvider(MemoryProvider):
         self._client_lock = threading.Lock()
         self._api_key = ""
         self._host = ""
-        self._user_id = "hermes-user"
-        self._agent_id = "hermes"
+        self._user_id = "anthos-user"
+        self._agent_id = "anthos"
         self._rerank = True
         self._prefetch_result = ""
         self._prefetch_lock = threading.Lock()
@@ -153,11 +153,11 @@ class Mem0MemoryProvider(MemoryProvider):
         api_key = cfg.get("api_key", "")
         return bool(host) or bool(api_key)
 
-    def save_config(self, values, hermes_home):
-        """Write config to $HERMES_HOME/mem0.json."""
+    def save_config(self, values, anthos_home):
+        """Write config to $ANTHOS_HOME/mem0.json."""
         import json
         from pathlib import Path
-        config_path = Path(hermes_home) / "mem0.json"
+        config_path = Path(anthos_home) / "mem0.json"
         existing = {}
         if config_path.exists():
             try:
@@ -172,8 +172,8 @@ class Mem0MemoryProvider(MemoryProvider):
         return [
             {"key": "api_key", "description": "Mem0 API key (cloud or self-hosted)", "secret": True, "required": True, "env_var": "MEM0_API_KEY", "url": "https://app.mem0.ai"},
             {"key": "host", "description": "Self-hosted Mem0 URL (e.g. http://localhost:24220)", "default": "", "env_var": "MEM0_HOST"},
-            {"key": "user_id", "description": "User identifier", "default": "hermes-user"},
-            {"key": "agent_id", "description": "Agent identifier", "default": "hermes"},
+            {"key": "user_id", "description": "User identifier", "default": "anthos-user"},
+            {"key": "agent_id", "description": "Agent identifier", "default": "anthos"},
             {"key": "rerank", "description": "Enable reranking for recall", "default": "true", "choices": ["true", "false"]},
         ]
 
@@ -225,8 +225,8 @@ class Mem0MemoryProvider(MemoryProvider):
         self._host = self._config.get("host", "")
         # Prefer gateway-provided user_id for per-user memory scoping;
         # fall back to config/env default for CLI (single-user) sessions.
-        self._user_id = kwargs.get("user_id") or self._config.get("user_id", "hermes-user")
-        self._agent_id = self._config.get("agent_id", "hermes")
+        self._user_id = kwargs.get("user_id") or self._config.get("user_id", "anthos-user")
+        self._agent_id = self._config.get("agent_id", "anthos")
         self._rerank = self._config.get("rerank", True)
 
     def _read_filters(self) -> Dict[str, Any]:

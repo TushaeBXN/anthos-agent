@@ -22,16 +22,16 @@ import pytest
 
 @pytest.fixture
 def curator_env(tmp_path, monkeypatch):
-    home = tmp_path / ".hermes"
+    home = tmp_path / ".anthos"
     home.mkdir()
     (home / "skills").mkdir()
     (home / "logs").mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("ANTHOS_HOME", str(home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
     import importlib
-    import hermes_constants
-    importlib.reload(hermes_constants)
+    import anthos_constants
+    importlib.reload(anthos_constants)
     from agent import curator
     importlib.reload(curator)
     yield curator
@@ -759,16 +759,16 @@ def test_reconcile_absorbed_into_beats_everything_else(curator_env):
         removed=["pr-review-format"],
         heuristic={"consolidated": [], "pruned": [{"name": "pr-review-format"}]},
         model_block={"consolidations": [], "prunings": []},  # model forgot YAML block
-        destinations={"hermes-agent-dev"},
+        destinations={"anthos-agent-dev"},
         absorbed_declarations={
-            "pr-review-format": {"into": "hermes-agent-dev", "declared": True},
+            "pr-review-format": {"into": "anthos-agent-dev", "declared": True},
         },
     )
     assert len(out["consolidated"]) == 1
     assert out["pruned"] == []
     e = out["consolidated"][0]
     assert e["name"] == "pr-review-format"
-    assert e["into"] == "hermes-agent-dev"
+    assert e["into"] == "anthos-agent-dev"
     assert "absorbed_into" in e["source"]
 
 
@@ -938,7 +938,7 @@ def test_rename_summary_consolidation_shows_target(curator_env):
     assert "archived 2 skill(s):" in result
     assert "pdf-extraction → document-tools" in result
     assert "docx-extraction → document-tools" in result
-    assert "full report: hermes curator status" in result
+    assert "full report: anthos curator status" in result
 
 
 def test_rename_summary_pruned_marked_explicitly(curator_env):
@@ -1055,7 +1055,7 @@ def test_rename_summary_pin_hint_appears_when_consolidation_produced_umbrella(cu
         ],
         model_final="",
     )
-    assert "hermes curator pin document-tools" in result
+    assert "anthos curator pin document-tools" in result
     assert "keep an umbrella stable" in result
 
 
@@ -1086,7 +1086,7 @@ def test_rename_summary_pin_hint_skipped_for_pruned_only_runs(curator_env):
     )
     # Block still renders (skills were archived) but no pin hint.
     assert "archived 2 skill(s):" in result
-    assert "hermes curator pin" not in result
+    assert "anthos curator pin" not in result
     assert "keep an umbrella stable" not in result
 
 
@@ -1119,7 +1119,7 @@ def test_rename_summary_pin_hint_picks_one_umbrella_when_multiple_absorbed(curat
         model_final="",
     )
     # Sorted picks alphabetically first.
-    assert "hermes curator pin umbrella-alpha" in result
+    assert "anthos curator pin umbrella-alpha" in result
     # Exactly one hint line, not one per umbrella.
-    pin_lines = [ln for ln in result.splitlines() if "hermes curator pin" in ln]
+    pin_lines = [ln for ln in result.splitlines() if "anthos curator pin" in ln]
     assert len(pin_lines) == 1

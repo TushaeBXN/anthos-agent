@@ -10,7 +10,7 @@ Subcommands:
     telemetry          show or toggle Spectrum SDK telemetry (on/off)
 
 The device-code login runs automatically as the first step of ``setup``;
-there is no standalone ``login`` verb (matching how every other Hermes
+there is no standalone ``login`` verb (matching how every other Anthos
 gateway channel onboards through a single setup surface).
 
 Photon uses the spectrum-ts gRPC stream for inbound — there is no webhook
@@ -26,7 +26,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from hermes_cli.colors import Colors, color
+from anthos_cli.colors import Colors, color
 
 from . import auth as photon_auth
 
@@ -164,7 +164,7 @@ def _cmd_setup(args: argparse.Namespace) -> int:
         print("could not resolve a Photon project id", file=sys.stderr)
         return 1
 
-    # 3. Rotate the project secret and persist creds (runtime -> ~/.hermes/.env,
+    # 3. Rotate the project secret and persist creds (runtime -> ~/.anthos/.env,
     #    ids -> auth.json). Spectrum is always enabled and provisioned at
     #    create-time, and the dashboard project id *is* the Spectrum project id
     #    (ids unified), so there's nothing to enable — the id we already have is
@@ -272,7 +272,7 @@ def _cmd_setup(args: argparse.Namespace) -> int:
 
     print()
     print("✓ Photon setup complete.")
-    print("  Start the gateway:  hermes gateway start")
+    print("  Start the gateway:  anthos gateway start")
     return 0
 
 
@@ -286,7 +286,7 @@ def _autoconfigure_access(phone: str) -> None:
     never clobbered on a re-run.
     """
     try:
-        from hermes_cli.config import get_env_value, save_env_value
+        from anthos_cli.config import get_env_value, save_env_value
     except ImportError:
         return
     for key, label in (
@@ -335,13 +335,13 @@ def _cmd_install_sidecar(_args: argparse.Namespace) -> int:
 
 
 def _telemetry_enabled() -> bool:
-    """Read PHOTON_TELEMETRY from the env / ~/.hermes/.env.
+    """Read PHOTON_TELEMETRY from the env / ~/.anthos/.env.
 
     Mirrors the sidecar's truthy set (index.mjs) so the state shown here
     always matches what the sidecar will actually do.
     """
     try:
-        from hermes_cli.config import get_env_value
+        from anthos_cli.config import get_env_value
         raw = get_env_value("PHOTON_TELEMETRY")
     except ImportError:
         raw = os.getenv("PHOTON_TELEMETRY")
@@ -355,13 +355,13 @@ def _cmd_telemetry(args: argparse.Namespace) -> int:
         print("  Toggle with `anthos photon telemetry on` / `anthos photon telemetry off`.")
         return 0
     try:
-        from hermes_cli.config import save_env_value
+        from anthos_cli.config import save_env_value
         save_env_value("PHOTON_TELEMETRY", "true" if state == "on" else "false")
     except Exception as e:
         print(f"could not save PHOTON_TELEMETRY: {e}", file=sys.stderr)
         return 1
-    print(f"✓ Spectrum telemetry turned {state} (PHOTON_TELEMETRY in ~/.hermes/.env)")
-    print("  Restart the gateway for the sidecar to pick it up:  hermes gateway restart")
+    print(f"✓ Spectrum telemetry turned {state} (PHOTON_TELEMETRY in ~/.anthos/.env)")
+    print("  Restart the gateway for the sidecar to pick it up:  anthos gateway restart")
     return 0
 
 

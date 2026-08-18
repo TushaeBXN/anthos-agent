@@ -65,7 +65,7 @@ export interface Translations {
       loadingSettings: string
       loadingSessions: string
       startingDesktopConnection: string
-      startingHermesDesktop: string
+      startingAnthosDesktop: string
     }
     errors: {
       backgroundExited: string
@@ -632,7 +632,7 @@ export interface Translations {
     noSessions: string
     gatewayRunning: string
     gatewayStopped: string
-    hermesActiveSessions: (version: string, count: number) => string
+    anthosActiveSessions: (version: string, count: number) => string
     restartGateway: string
     gatewayRestartFailed: string
     updateHermes: string
