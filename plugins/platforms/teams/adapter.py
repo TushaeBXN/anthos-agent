@@ -1,5 +1,5 @@
 """
-Microsoft Teams platform adapter for Hermes Agent.
+Microsoft Teams platform adapter for Anthos Agent.
 
 Uses the microsoft-teams-apps SDK for authentication and activity processing.
 Runs an aiohttp webhook server to receive messages from Teams.
@@ -746,7 +746,7 @@ class TeamsAdapter(BasePlatformAdapter):
                 client_secret=self._client_secret,
                 tenant_id=self._tenant_id,
                 http_server_adapter=_AiohttpBridgeAdapter(aiohttp_app),
-                client=ClientOptions(headers={"User-Agent": "Hermes"}),
+                client=ClientOptions(headers={"User-Agent": "Anthos"}),
             )
 
             # Register message handler before initialize()
@@ -819,7 +819,7 @@ class TeamsAdapter(BasePlatformAdapter):
         ) as client:
             response = await client.get(
                 url,
-                headers={"User-Agent": "Mozilla/5.0 (compatible; HermesAgent/1.0)"},
+                headers={"User-Agent": "Mozilla/5.0 (compatible; AnthosAgent/1.0)"},
             )
             response.raise_for_status()
             return response.content
@@ -996,10 +996,10 @@ class TeamsAdapter(BasePlatformAdapter):
 
         action = ctx.activity.value.action
         data = action.data or {}
-        hermes_action = data.get("hermes_action", "")
+        anthos_action = data.get("anthos_action", "")
         session_key = data.get("session_key", "")
 
-        if not hermes_action or not session_key:
+        if not anthos_action or not session_key:
             return InvokeResponse(
                 status=200,
                 body=AdaptiveCardActionMessageResponse(value="Unknown action."),
@@ -1041,7 +1041,7 @@ class TeamsAdapter(BasePlatformAdapter):
             "approve_always": "always",
             "deny": "deny",
         }
-        choice = choice_map.get(hermes_action)
+        choice = choice_map.get(anthos_action)
         if not choice:
             return InvokeResponse(
                 status=200,
@@ -1114,24 +1114,24 @@ class TeamsAdapter(BasePlatformAdapter):
             .with_actions([
                 ExecuteAction(
                     title="Allow Once",
-                    verb="hermes_approve",
-                    data={**btn_data_base, "hermes_action": "approve_once"},
+                    verb="anthos_approve",
+                    data={**btn_data_base, "anthos_action": "approve_once"},
                     style="positive",
                 ),
                 ExecuteAction(
                     title="Allow Session",
-                    verb="hermes_approve",
-                    data={**btn_data_base, "hermes_action": "approve_session"},
+                    verb="anthos_approve",
+                    data={**btn_data_base, "anthos_action": "approve_session"},
                 ),
                 ExecuteAction(
                     title="Always Allow",
-                    verb="hermes_approve",
-                    data={**btn_data_base, "hermes_action": "approve_always"},
+                    verb="anthos_approve",
+                    data={**btn_data_base, "anthos_action": "approve_always"},
                 ),
                 ExecuteAction(
                     title="Deny",
-                    verb="hermes_approve",
-                    data={**btn_data_base, "hermes_action": "deny"},
+                    verb="anthos_approve",
+                    data={**btn_data_base, "anthos_action": "deny"},
                     style="destructive",
                 ),
             ])
@@ -1330,11 +1330,11 @@ class TeamsAdapter(BasePlatformAdapter):
 
 def interactive_setup() -> None:
     """Guide the user through Teams setup using the Teams CLI."""
-    from hermes_cli.config import (
+    from anthos_cli.config import (
         get_env_value,
         save_env_value,
     )
-    from hermes_cli.cli_output import (
+    from anthos_cli.cli_output import (
         prompt,
         prompt_yes_no,
         print_info,
@@ -1354,7 +1354,7 @@ def interactive_setup() -> None:
     print()
     print_info("Then expose port 3978 publicly (devtunnel / ngrok / cloudflared),")
     print_info("and create your bot:")
-    print_info("  teams app create --name \"Hermes\" --endpoint \"https://<tunnel>/api/messages\"")
+    print_info("  teams app create --name \"Anthos\" --endpoint \"https://<tunnel>/api/messages\"")
     print()
     print_info("The CLI will print CLIENT_ID, CLIENT_SECRET, and TENANT_ID. Paste them below.")
     print()
@@ -1394,15 +1394,15 @@ def interactive_setup() -> None:
         print_warning("⚠️  Open access — anyone who can message the bot can command it.")
 
     print()
-    print_success("Teams configuration saved to ~/.hermes/.env")
+    print_success("Teams configuration saved to ~/.anthos/.env")
     print_info("Install the app in Teams:  teams app install --id <teamsAppId>")
-    print_info("Restart the gateway:       hermes gateway restart")
+    print_info("Restart the gateway:       anthos gateway restart")
 
 
 # ── Plugin entry point ────────────────────────────────────────────────────────
 
 def register(ctx) -> None:
-    """Plugin entry point — called by the Hermes plugin system."""
+    """Plugin entry point — called by the Anthos plugin system."""
     ctx.register_platform(
         name="teams",
         label="Microsoft Teams",

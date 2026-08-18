@@ -4,7 +4,7 @@
 
 # Anthos Agent
 
-**The self-improving AI agent built by [Brian Tushae Thomas](https://github.com/TushaeBXN).** Built on top of the open-source Hermes Agent framework (MIT licensed, by Nous Research), Anthos Agent features a built-in learning loop — it creates skills from experience, improves them during use, nudges itself to persist knowledge, searches its own past conversations, and builds a deepening model of who you are across sessions.
+**The self-improving AI agent built by [Brian Tushae Thomas](https://github.com/TushaeBXN).** Built on top of the open-source Anthos Agent framework (MIT licensed, by Anthos Intelligence), Anthos Agent features a built-in learning loop — it creates skills from experience, improves them during use, nudges itself to persist knowledge, searches its own past conversations, and builds a deepening model of who you are across sessions.
 
 Use any model you want — OpenRouter (200+ models), OpenAI, Anthropic, or your own endpoint. Switch with `anthos model` — no code changes, no lock-in.
 
@@ -55,7 +55,7 @@ Anthos Agent stores its configuration in `~/.anthos/` (or `%LOCALAPPDATA%\anthos
 
 ## Credits
 
-Anthos Agent is a fork of [Hermes Agent](https://github.com/NousResearch/hermes-agent) by Nous Research, released under the MIT License. Full credit to the Nous Research team for the incredible foundation.
+Anthos Agent is a fork of [Anthos Agent](https://github.com/TushaeBXN/anthos-agent) by Anthos Intelligence, released under the MIT License. Full credit to the Anthos Intelligence team for the incredible foundation.
 
 ## License
 

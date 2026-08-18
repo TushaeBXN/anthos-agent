@@ -1,5 +1,5 @@
 """
-Cron job scheduling system for Hermes Agent.
+Cron job scheduling system for Anthos Agent.
 
 This module provides scheduled task execution, allowing the agent to:
 - Run automated tasks on schedules (cron expressions, intervals, one-shot)
@@ -7,9 +7,9 @@ This module provides scheduled task execution, allowing the agent to:
 - Execute tasks in isolated sessions (no prior context)
 
 Cron jobs are executed automatically by the gateway daemon:
-    hermes gateway install    # Install as a user service
-    sudo hermes gateway install --system  # Linux servers: boot-time system service
-    hermes gateway            # Or run in foreground
+    anthos gateway install    # Install as a user service
+    sudo anthos gateway install --system  # Linux servers: boot-time system service
+    anthos gateway            # Or run in foreground
 
 The gateway ticks the scheduler every 60 seconds. A file lock prevents
 duplicate execution if multiple processes overlap.

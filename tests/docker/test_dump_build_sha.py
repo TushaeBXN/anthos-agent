@@ -3,8 +3,8 @@
 Background: ``.dockerignore`` excludes ``.git``, so ``git rev-parse HEAD``
 fails inside the published image and ``anthos dump`` used to report
 ``version: ... [(unknown)]``.  The Dockerfile now writes the build-time
-``$HERMES_GIT_SHA`` build-arg to ``/opt/hermes/.hermes_build_sha`` and
-``hermes_cli/build_info.py`` reads it as a fallback.
+``$ANTHOS_GIT_SHA`` build-arg to ``/opt/anthos/.anthos_build_sha`` and
+``anthos_cli/build_info.py`` reads it as a fallback.
 
 CI (``.github/workflows/docker-publish.yml``) always sets the build-arg
 to ``${{ github.sha }}``.  Local ``docker build`` (the ``built_image``
@@ -13,7 +13,7 @@ is absent and ``anthos dump`` correctly falls back to ``(unknown)``.
 
 This test handles both cases:
 
-* If ``/opt/hermes/.hermes_build_sha`` exists in the image, assert that
+* If ``/opt/anthos/.anthos_build_sha`` exists in the image, assert that
   ``anthos dump`` surfaces its content as the version SHA (not
   ``(unknown)``).
 * If the file is absent, assert the legacy behaviour (``(unknown)``)
@@ -34,7 +34,7 @@ def _run_dump(image: str) -> str:
     """Return the stdout of ``docker run <image> dump``.
 
     Relies on Docker's anonymous VOLUME for ``/opt/data`` (declared by the
-    Dockerfile) so the container's hermes user (UID 10000) can bootstrap
+    Dockerfile) so the container's anthos user (UID 10000) can bootstrap
     its config.  Anonymous volumes are auto-cleaned by ``--rm``, so unlike
     a host bind-mount we don't have to chown anything to UID 10000 (which
     would break cleanup on non-root hosts).
@@ -44,18 +44,18 @@ def _run_dump(image: str) -> str:
         capture_output=True, text=True, timeout=120,
     )
     assert r.returncode == 0, (
-        f"hermes dump exited {r.returncode}: "
+        f"anthos dump exited {r.returncode}: "
         f"stderr={r.stderr[-1000:]!r}\nstdout={r.stdout[-1000:]!r}"
     )
     return r.stdout
 
 
 def _read_baked_sha_from_image(image: str) -> str | None:
-    """Return the ``/opt/hermes/.hermes_build_sha`` content, or None if absent."""
+    """Return the ``/opt/anthos/.anthos_build_sha`` content, or None if absent."""
     r = subprocess.run(
         [
             "docker", "run", "--rm", "--entrypoint", "cat", image,
-            "/opt/hermes/.hermes_build_sha",
+            "/opt/anthos/.anthos_build_sha",
         ],
         capture_output=True, text=True, timeout=30,
     )
@@ -65,7 +65,7 @@ def _read_baked_sha_from_image(image: str) -> str | None:
 
 
 def test_dump_reports_baked_sha_when_present(built_image: str) -> None:
-    """When the image was built with ``HERMES_GIT_SHA``, dump must surface it.
+    """When the image was built with ``ANTHOS_GIT_SHA``, dump must surface it.
 
     Together with the smoke-test action (which exercises ``--help``), this
     closes the regression loop for the missing-sha bug: any future change

@@ -124,7 +124,7 @@ class TestComputeNextRun:
     def test_once_recent_past_within_grace_returns_time(self, monkeypatch):
         now = datetime(2026, 3, 18, 4, 22, 3, tzinfo=timezone.utc)
         run_at = "2026-03-18T04:22:00+00:00"
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
 
         schedule = {"kind": "once", "run_at": run_at}
 
@@ -138,7 +138,7 @@ class TestComputeNextRun:
     def test_once_with_last_run_returns_none_even_within_grace(self, monkeypatch):
         now = datetime(2026, 3, 18, 4, 22, 3, tzinfo=timezone.utc)
         run_at = "2026-03-18T04:22:00+00:00"
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
 
         schedule = {"kind": "once", "run_at": run_at}
 
@@ -601,9 +601,9 @@ class TestAdvanceNextRun:
         assert result is True
 
         updated = get_job(job["id"])
-        from cron.jobs import _ensure_aware, _hermes_now
+        from cron.jobs import _ensure_aware, _anthos_now
         new_next_dt = _ensure_aware(datetime.fromisoformat(updated["next_run_at"]))
-        assert new_next_dt > _hermes_now(), "next_run_at should be in the future after advance"
+        assert new_next_dt > _anthos_now(), "next_run_at should be in the future after advance"
 
     def test_advances_cron_job(self, tmp_cron_dir):
         """Cron-expression jobs should have next_run_at bumped to the next occurrence."""
@@ -619,9 +619,9 @@ class TestAdvanceNextRun:
         assert result is True
 
         updated = get_job(job["id"])
-        from cron.jobs import _ensure_aware, _hermes_now
+        from cron.jobs import _ensure_aware, _anthos_now
         new_next_dt = _ensure_aware(datetime.fromisoformat(updated["next_run_at"]))
-        assert new_next_dt > _hermes_now(), "next_run_at should be in the future after advance"
+        assert new_next_dt > _anthos_now(), "next_run_at should be in the future after advance"
 
     def test_skips_oneshot_job(self, tmp_cron_dir):
         """One-shot jobs should NOT be advanced — they need to retry on restart."""
@@ -645,9 +645,9 @@ class TestAdvanceNextRun:
         advance_next_run(job["id"])
         # Regardless of return value, the job should still be in the future
         updated = get_job(job["id"])
-        from cron.jobs import _ensure_aware, _hermes_now
+        from cron.jobs import _ensure_aware, _anthos_now
         new_next_dt = _ensure_aware(datetime.fromisoformat(updated["next_run_at"]))
-        assert new_next_dt > _hermes_now(), "next_run_at should remain in the future"
+        assert new_next_dt > _anthos_now(), "next_run_at should remain in the future"
 
     def test_crash_safety_scenario(self, tmp_cron_dir):
         """Simulate the crash-loop scenario: after advance, the job should NOT be due."""
@@ -700,9 +700,9 @@ class TestGetDueJobs:
         assert len(due) == 0
         # next_run_at should be fast-forwarded to the future
         updated = get_job(job["id"])
-        from cron.jobs import _ensure_aware, _hermes_now
+        from cron.jobs import _ensure_aware, _anthos_now
         next_dt = _ensure_aware(datetime.fromisoformat(updated["next_run_at"]))
-        assert next_dt > _hermes_now()
+        assert next_dt > _anthos_now()
 
     def test_future_not_returned(self, tmp_cron_dir):
         create_job(prompt="Not yet", schedule="every 1h")
@@ -721,7 +721,7 @@ class TestGetDueJobs:
 
     def test_broken_recent_one_shot_without_next_run_is_recovered(self, tmp_cron_dir, monkeypatch):
         now = datetime(2026, 3, 18, 4, 22, 30, tzinfo=timezone.utc)
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
 
         run_at = "2026-03-18T04:22:00+00:00"
         save_jobs(
@@ -753,7 +753,7 @@ class TestGetDueJobs:
 
     def test_broken_stale_one_shot_without_next_run_is_not_recovered(self, tmp_cron_dir, monkeypatch):
         now = datetime(2026, 3, 18, 4, 30, 0, tzinfo=timezone.utc)
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
 
         save_jobs(
             [{
@@ -782,7 +782,7 @@ class TestGetDueJobs:
 
     def test_broken_cron_without_next_run_is_recovered(self, tmp_cron_dir, monkeypatch):
         now = datetime(2026, 3, 18, 10, 0, 0, tzinfo=timezone.utc)
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
 
         save_jobs(
             [{
@@ -816,7 +816,7 @@ class TestGetDueJobs:
 
     def test_broken_interval_without_next_run_is_recovered(self, tmp_cron_dir, monkeypatch):
         now = datetime(2026, 3, 18, 10, 0, 0, tzinfo=timezone.utc)
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
 
         save_jobs(
             [{
@@ -852,9 +852,9 @@ class TestGetDueJobs:
     def test_cron_next_run_offset_migration_is_rescheduled_not_fired(self, tmp_cron_dir, monkeypatch):
         current_tz = timezone(timedelta(hours=2))
         now = datetime(2026, 5, 19, 13, 2, 0, tzinfo=current_tz)
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
 
-        # A 21:00 cron was stored while Hermes/system local time was UTC+10.
+        # A 21:00 cron was stored while Anthos/system local time was UTC+10.
         # After the host moves to UTC+02, that absolute timestamp converts to
         # 13:00+02.  At 13:02+02 the old code considered it due and fired, even
         # though the user's local wall-clock cron intent is still 21:00.
@@ -887,7 +887,7 @@ class TestGetDueJobs:
     def test_cron_offset_migration_does_not_repair_already_passed_wall_time(self, tmp_cron_dir, monkeypatch):
         current_tz = timezone(timedelta(hours=2))
         now = datetime(2026, 5, 19, 13, 2, 0, tzinfo=current_tz)
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
 
         save_jobs(
             [{
@@ -922,7 +922,7 @@ class TestGetDueJobs:
         """Guard must NOT over-fire: a due cron in the SAME offset fires normally."""
         current_tz = timezone(timedelta(hours=2))
         now = datetime(2026, 5, 19, 21, 0, 30, tzinfo=current_tz)
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
         save_jobs([{
             "id": "cron-same-tz", "name": "same tz", "prompt": "...",
             "schedule": {"kind": "cron", "expr": "0 21 * * 2", "display": "0 21 * * 2"},
@@ -948,7 +948,7 @@ class TestGetDueJobs:
         """
         current_tz = timezone(timedelta(hours=2))
         now = datetime(2026, 5, 19, 13, 2, 0, tzinfo=current_tz)
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
         save_jobs([{
             "id": "interval-stale-tz", "name": "interval", "prompt": "...",
             "schedule": {"kind": "interval", "minutes": 60, "display": "every 1h"},
@@ -972,7 +972,7 @@ class TestGetDueJobs:
         the repair path — it falls through to the existing due/fast-forward logic."""
         current_tz = timezone(timedelta(hours=2))
         now = datetime(2026, 5, 19, 13, 0, 0, tzinfo=current_tz)
-        monkeypatch.setattr("cron.jobs._hermes_now", lambda: now)
+        monkeypatch.setattr("cron.jobs._anthos_now", lambda: now)
         save_jobs([{
             "id": "cron-wall-equal", "name": "wall equal", "prompt": "...",
             "schedule": {"kind": "cron", "expr": "0 13 * * 2", "display": "0 13 * * 2"},

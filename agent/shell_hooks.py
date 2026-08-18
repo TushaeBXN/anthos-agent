@@ -10,19 +10,19 @@ zero changes to call sites.
 Design notes
 ------------
 * Python plugins and shell hooks compose naturally: both flow through
-  :func:`hermes_cli.plugins.invoke_hook` and its aggregators.  Python
+  :func:`anthos_cli.plugins.invoke_hook` and its aggregators.  Python
   plugins are registered first (via ``discover_and_load()``) so their
   block decisions win ties over shell-hook blocks.
 * Subprocess execution uses ``shlex.split(os.path.expanduser(command))``
   with ``shell=False`` — no shell injection footguns.  Users that need
   pipes/redirection wrap their logic in a script.
 * First-use consent is gated by the allowlist under
-  ``~/.hermes/shell-hooks-allowlist.json``.  Non-TTY callers must pass
+  ``~/.anthos/shell-hooks-allowlist.json``.  Non-TTY callers must pass
   ``accept_hooks=True`` (resolved from ``--accept-hooks``,
-  ``HERMES_ACCEPT_HOOKS``, or ``hooks_auto_accept: true`` in config)
+  ``ANTHOS_ACCEPT_HOOKS``, or ``hooks_auto_accept: true`` in config)
   for registration to succeed without a prompt.
 * Registration is idempotent — safe to invoke from both the CLI entry
-  point (``hermes_cli/main.py``) and the gateway entry point
+  point (``anthos_cli/main.py``) and the gateway entry point
   (``gateway/run.py``).
 
 Wire protocol
@@ -42,7 +42,7 @@ Wire protocol
 
     # Block a pre_tool_call (either shape accepted; normalised internally):
     {"decision": "block", "reason":  "Forbidden command"}   # Claude-Code-style
-    {"action":   "block", "message": "Forbidden command"}   # Hermes-canonical
+    {"action":   "block", "message": "Forbidden command"}   # Anthos-canonical
 
     # Inject context for pre_llm_call:
     {"context": "Today is Friday"}
@@ -127,7 +127,7 @@ try:
 except ImportError:  # pragma: no cover
     fcntl = None  # type: ignore[assignment]
 
-from hermes_constants import get_hermes_home
+from anthos_constants import get_anthos_home
 from utils import atomic_replace
 
 logger = logging.getLogger(__name__)
@@ -205,13 +205,13 @@ def register_from_config(
 ) -> List[ShellHookSpec]:
     """Register every configured shell hook on the plugin manager.
 
-    ``cfg`` is the full parsed config dict (``hermes_cli.config.load_config``
+    ``cfg`` is the full parsed config dict (``anthos_cli.config.load_config``
     output).  The ``hooks:`` key is read out of it.  Missing, empty, or
     non-dict ``hooks`` is treated as zero configured hooks.
 
     ``accept_hooks=True`` skips the TTY consent prompt — the caller is
     promising that the user has opted in via a flag, env var, or config
-    setting.  ``HERMES_ACCEPT_HOOKS=1`` and ``hooks_auto_accept: true`` are
+    setting.  ``ANTHOS_ACCEPT_HOOKS=1`` and ``hooks_auto_accept: true`` are
     also honored inside this function so either CLI or gateway call sites
     pick them up.
 
@@ -231,7 +231,7 @@ def register_from_config(
     registered: List[ShellHookSpec] = []
 
     # Import lazily — avoids circular imports at module-load time.
-    from hermes_cli.plugins import get_plugin_manager
+    from anthos_cli.plugins import get_plugin_manager
 
     manager = get_plugin_manager()
 
@@ -252,7 +252,7 @@ def register_from_config(
             ):
                 logger.warning(
                     "shell hook for %s (%s) not allowlisted — skipped. "
-                    "Use --accept-hooks / HERMES_ACCEPT_HOOKS=1 / "
+                    "Use --accept-hooks / ANTHOS_ACCEPT_HOOKS=1 / "
                     "hooks_auto_accept: true, or approve at the TTY "
                     "prompt next run.",
                     spec.event, spec.command,
@@ -297,7 +297,7 @@ def _parse_hooks_block(hooks_cfg: Any) -> List[ShellHookSpec]:
     Malformed entries warn-and-skip — we never raise from config parsing
     because a broken hook must not crash the agent.
     """
-    from hermes_cli.plugins import VALID_HOOKS
+    from anthos_cli.plugins import VALID_HOOKS
 
     if not isinstance(hooks_cfg, dict):
         return []
@@ -546,12 +546,12 @@ def _block_message(primary: Any, secondary: Any) -> str:
 
 
 def _parse_response(event: str, stdout: str) -> Optional[Dict[str, Any]]:
-    """Translate stdout JSON into a Hermes wire-shape dict.
+    """Translate stdout JSON into a Anthos wire-shape dict.
 
     For ``pre_tool_call`` the Claude-Code-style ``{"decision": "block",
-    "reason": "..."}`` payload is translated into the canonical Hermes
+    "reason": "..."}`` payload is translated into the canonical Anthos
     ``{"action": "block", "message": "..."}`` shape expected by
-    :func:`hermes_cli.plugins.get_pre_tool_call_block_message`.  This is
+    :func:`anthos_cli.plugins.get_pre_tool_call_block_message`.  This is
     the single most important correctness invariant in this module —
     skipping the translation silently breaks every ``pre_tool_call``
     block directive.
@@ -597,7 +597,7 @@ def _parse_response(event: str, stdout: str) -> Optional[Dict[str, Any]]:
 
 def allowlist_path() -> Path:
     """Path to the per-user shell-hook allowlist file."""
-    return get_hermes_home() / ALLOWLIST_FILENAME
+    return get_anthos_home() / ALLOWLIST_FILENAME
 
 
 def load_allowlist() -> Dict[str, Any]:
@@ -641,7 +641,7 @@ def save_allowlist(data: Dict[str, Any]) -> None:
             "Failed to persist shell hook allowlist to %s: %s. "
             "The approval is in-memory for this run, but the next "
             "startup will re-prompt (or skip registration on non-TTY "
-            "runs without --accept-hooks / HERMES_ACCEPT_HOOKS).",
+            "runs without --accept-hooks / ANTHOS_ACCEPT_HOOKS).",
             p, exc,
         )
 
@@ -708,7 +708,7 @@ def _prompt_and_record(
         return False
 
     print(
-        f"\n⚠ Hermes is about to register a shell hook that will run a\n"
+        f"\n⚠ Anthos is about to register a shell hook that will run a\n"
         f"  command on your behalf.\n\n"
         f"    Event:   {event}\n"
         f"    Command: {command}\n\n"
@@ -809,12 +809,12 @@ def _resolve_effective_accept(
 
     Precedence (any truthy source flips us on):
       1. ``--accept-hooks`` flag (CLI) / explicit argument
-      2. ``HERMES_ACCEPT_HOOKS`` env var
+      2. ``ANTHOS_ACCEPT_HOOKS`` env var
       3. ``hooks_auto_accept: true`` in ``cli-config.yaml``
     """
     if accept_hooks_arg:
         return True
-    env = os.environ.get("HERMES_ACCEPT_HOOKS", "").strip().lower()
+    env = os.environ.get("ANTHOS_ACCEPT_HOOKS", "").strip().lower()
     if env in {"1", "true", "yes", "on"}:
         return True
     cfg_val = cfg.get("hooks_auto_accept", False)
@@ -885,14 +885,14 @@ def run_once(
     """Fire a single shell-hook invocation with a synthetic payload.
     Used by ``anthos hooks test`` and ``anthos hooks doctor``.
 
-    ``kwargs`` is the same dict that :func:`hermes_cli.plugins.invoke_hook`
+    ``kwargs`` is the same dict that :func:`anthos_cli.plugins.invoke_hook`
     would pass at runtime.  It is routed through :func:`_serialize_payload`
     so the synthetic stdin exactly matches what a real hook firing would
     produce — otherwise scripts tested via ``anthos hooks test`` could
     diverge silently from production behaviour.
 
     Returns the :func:`_spawn` diagnostic dict plus a ``parsed`` field
-    holding the canonical Hermes-wire-shape response."""
+    holding the canonical Anthos-wire-shape response."""
     stdin_json = _serialize_payload(spec.event, kwargs)
     result = _spawn(spec, stdin_json)
     result["parsed"] = _parse_response(spec.event, result["stdout"])

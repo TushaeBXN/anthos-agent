@@ -25,7 +25,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_state import SessionDB
+from anthos_state import SessionDB
 
 
 # ---------------------------------------------------------------------------

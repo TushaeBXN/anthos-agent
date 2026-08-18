@@ -14,34 +14,34 @@ Supports both [Mem0 Cloud](https://app.mem0.ai) and self-hosted instances.
 ### Cloud
 
 ```bash
-hermes memory setup    # select "mem0"
+anthos memory setup    # select "mem0"
 ```
 
 Or manually:
 
 ```bash
-hermes config set memory.provider mem0
-echo "MEM0_API_KEY=your-key" >> ~/.hermes/.env
+anthos config set memory.provider mem0
+echo "MEM0_API_KEY=your-key" >> ~/.anthos/.env
 ```
 
 ### Self-Hosted
 
 ```bash
-hermes config set memory.provider mem0
-echo "MEM0_HOST=http://your-mem0-server:24220" >> ~/.hermes/.env
-echo "MEM0_API_KEY=your-api-key" >> ~/.hermes/.env   # if auth is enabled
+anthos config set memory.provider mem0
+echo "MEM0_HOST=http://your-mem0-server:24220" >> ~/.anthos/.env
+echo "MEM0_API_KEY=your-api-key" >> ~/.anthos/.env   # if auth is enabled
 ```
 
 ## Config
 
-Config file: `$HERMES_HOME/mem0.json`
+Config file: `$ANTHOS_HOME/mem0.json`
 
 | Key | Default | Description |
 |-----|---------|-------------|
 | `api_key` | — | API key (required for cloud; optional for self-hosted without auth) |
 | `host` | `https://api.mem0.ai` | Self-hosted Mem0 URL. When set, overrides the cloud endpoint. |
-| `user_id` | `hermes-user` | User identifier |
-| `agent_id` | `hermes` | Agent identifier |
+| `user_id` | `anthos-user` | User identifier |
+| `agent_id` | `anthos` | Agent identifier |
 | `rerank` | `true` | Enable reranking for recall |
 
 ## Tools

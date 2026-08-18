@@ -29,7 +29,7 @@ def register_cli(subparser: argparse.ArgumentParser) -> None:
     run = sp.add_parser("run", help="Start a node server on this machine.")
     run.add_argument("--host", default="0.0.0.0")
     run.add_argument("--port", type=int, default=18789)
-    run.add_argument("--display-name", default="hermes-meet-node")
+    run.add_argument("--display-name", default="anthos-meet-node")
     run.set_defaults(func=node_command)
 
     lst = sp.add_parser("list", help="List approved remote nodes.")
@@ -72,7 +72,7 @@ def node_command(args: argparse.Namespace) -> int:
         print(f"[meet-node] listening on ws://{args.host}:{args.port}")
         print(f"[meet-node] token (copy to gateway): {token}")
         print(f"[meet-node] approve with:")
-        print(f"             hermes meet node approve <name> ws://<host>:{args.port} {token}")
+        print(f"             anthos meet node approve <name> ws://<host>:{args.port} {token}")
         try:
             asyncio.run(server.serve())
         except KeyboardInterrupt:

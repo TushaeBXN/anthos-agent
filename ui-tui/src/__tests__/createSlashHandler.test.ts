@@ -136,14 +136,14 @@ describe('createSlashHandler', () => {
 
   it('routes /status to live session.status instead of slash worker', async () => {
     patchUiState({ sid: 'sid-abc' })
-    const rpc = vi.fn(() => Promise.resolve({ output: 'Hermes TUI Status' }))
+    const rpc = vi.fn(() => Promise.resolve({ output: 'Anthos TUI Status' }))
     const ctx = buildCtx({ gateway: { ...buildGateway(), rpc } })
 
     expect(createSlashHandler(ctx)('/status')).toBe(true)
     expect(rpc).toHaveBeenCalledWith('session.status', { session_id: 'sid-abc' })
     expect(ctx.gateway.gw.request).not.toHaveBeenCalled()
     await vi.waitFor(() => {
-      expect(ctx.transcript.page).toHaveBeenCalledWith('Hermes TUI Status', 'Status')
+      expect(ctx.transcript.page).toHaveBeenCalledWith('Anthos TUI Status', 'Status')
     })
   })
 
@@ -676,7 +676,7 @@ describe('createSlashHandler', () => {
             }
 
             if (method === 'command.dispatch') {
-              return Promise.resolve({ type: 'skill', message: skillMessage, name: 'hermes-agent-dev' })
+              return Promise.resolve({ type: 'skill', message: skillMessage, name: 'anthos-agent-dev' })
             }
 
             return Promise.resolve({})
@@ -687,9 +687,9 @@ describe('createSlashHandler', () => {
     })
 
     const h = createSlashHandler(ctx)
-    expect(h('/hermes-agent-dev')).toBe(true)
+    expect(h('/anthos-agent-dev')).toBe(true)
     await vi.waitFor(() => {
-      expect(ctx.transcript.sys).toHaveBeenCalledWith('⚡ loading skill: hermes-agent-dev')
+      expect(ctx.transcript.sys).toHaveBeenCalledWith('⚡ loading skill: anthos-agent-dev')
     })
     expect(ctx.transcript.send).toHaveBeenCalledWith(skillMessage)
   })
@@ -751,7 +751,7 @@ describe('createSlashHandler', () => {
     expect(title).toBe('History')
     expect(body).toContain('[You #1]')
     expect(body).toContain('hello')
-    expect(body).toContain('[Hermes #2]')
+    expect(body).toContain('[Anthos #2]')
     expect(body).toContain('hi there')
     expect(body).toContain('[You #3]')
     expect(body).not.toContain('ignore me')
@@ -769,7 +769,7 @@ describe('createSlashHandler', () => {
   it('/save forwards to session.save RPC and reports the returned file', async () => {
     patchUiState({ sid: 'sid-abc' })
 
-    const rpc = vi.fn(() => Promise.resolve({ file: '/tmp/hermes_conversation_test.json' }))
+    const rpc = vi.fn(() => Promise.resolve({ file: '/tmp/anthos_conversation_test.json' }))
 
     const ctx = buildCtx({
       gateway: { ...buildGateway(), rpc },
@@ -789,7 +789,7 @@ describe('createSlashHandler', () => {
     expect(rpc).toHaveBeenCalledWith('session.save', { session_id: 'sid-abc' })
 
     await vi.waitFor(() => {
-      expect(ctx.transcript.sys).toHaveBeenCalledWith('conversation saved to: /tmp/hermes_conversation_test.json')
+      expect(ctx.transcript.sys).toHaveBeenCalledWith('conversation saved to: /tmp/anthos_conversation_test.json')
     })
   })
 

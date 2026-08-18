@@ -1,1 +1,1 @@
-# Hermes plugins package
+# Anthos plugins package

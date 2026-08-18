@@ -1,4 +1,4 @@
-import { forceRedraw, useInput } from '@hermes/ink'
+import { forceRedraw, useInput } from '@anthos/ink'
 import { useStore } from '@nanostores/react'
 import { useEffect, useRef } from 'react'
 
