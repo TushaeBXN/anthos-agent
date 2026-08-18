@@ -1,0 +1,41 @@
+name: smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]" rich
+
+      - name: Core state tests
+        run: |
+          python -m pytest \
+            tests/test_hermes_state.py \
+            tests/hermes_state/ \
+            tests/test_hermes_state_compression_locks.py \
+            tests/test_hermes_state_wal_fallback.py \
+            -q --tb=short
+
+      - name: Trajectory viewer import check
+        run: |
+          python -c "
+          from hermes_cli.trajectory_server import _list_sessions, _get_messages, _get_session
+          from hermes_cli.subcommands.trajectory import build_trajectory_parser
+          import argparse
+          p = argparse.ArgumentParser()
+          build_trajectory_parser(p.add_subparsers())
+          print('trajectory viewer: OK')
+          "
