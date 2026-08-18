@@ -292,6 +292,7 @@ from hermes_cli.subcommands.gui import build_gui_parser
 from hermes_cli.subcommands.logs import build_logs_parser
 from hermes_cli.subcommands.prompt_size import build_prompt_size_parser
 from hermes_cli.subcommands.memory import build_memory_parser
+from hermes_cli.subcommands.trajectory import build_trajectory_parser
 from hermes_cli.subcommands.acp import build_acp_parser
 from hermes_cli.subcommands.tools import build_tools_parser
 from hermes_cli.subcommands.insights import build_insights_parser
@@ -12193,6 +12194,11 @@ def main():
     # memory command  (parser built in hermes_cli/subcommands/memory.py)
     # =========================================================================
     build_memory_parser(subparsers, cmd_memory=cmd_memory)
+
+    # =========================================================================
+    # trajectory command  (parser built in hermes_cli/subcommands/trajectory.py)
+    # =========================================================================
+    build_trajectory_parser(subparsers)
 
     # =========================================================================
     # tools command  (parser built in hermes_cli/subcommands/tools.py)
