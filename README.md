@@ -1,6 +1,3 @@
-<img width="1376" height="768" alt="Gemini_Generated_Image_mnd3ynmnd3ynmnd3" src="https://github.com/user-attachments/assets/6bd185c3-e771-4c2b-9a36-7b877946c523" />
-
-
 # Anthos Agent
 
 **The self-improving AI agent built by [Brian Tushae Thomas](https://github.com/TushaeBXN).** Built on top of the open-source Anthos Agent framework (MIT licensed, by Anthos Intelligence), Anthos Agent features a built-in learning loop — it creates skills from experience, improves them during use, nudges itself to persist knowledge, searches its own past conversations, and builds a deepening model of who you are across sessions.
