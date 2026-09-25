@@ -15,7 +15,7 @@
 
 [Unit]
 Description=Anthos Kanban dispatcher (DEPRECATED standalone daemon — prefer gateway-embedded dispatch)
-Documentation=https://anthos-agent.anthosai.com/docs/user-guide/features/kanban
+Documentation=https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/kanban.md
 After=network.target
 
 [Service]

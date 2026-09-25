@@ -69,9 +69,9 @@ anthos skills uninstall <skill-name>
 
 | Skill | Description |
 |-------|-------------|
+| [**anthos-s6-container-supervision**](/docs/user-guide/skills/optional/devops/devops-anthos-s6-container-supervision) | Modify, debug, or extend the s6-overlay supervision tree inside the Anthos Agent Docker image — adding new services, debugging profile gateways, understanding the Architecture B main-program pattern. |
 | [**inference-sh-cli**](/docs/user-guide/skills/optional/devops/devops-cli) | Run 150+ AI apps via inference.sh CLI (infsh) — image generation, video creation, LLMs, search, 3D, social automation. Uses the terminal tool. Triggers: inference.sh, infsh, ai apps, flux, veo, image generation, video generation, seedrea... |
 | [**docker-management**](/docs/user-guide/skills/optional/devops/devops-docker-management) | Manage Docker containers, images, volumes, networks, and Compose stacks — lifecycle ops, debugging, cleanup, and Dockerfile optimization. |
-| [**anthos-s6-container-supervision**](/docs/user-guide/skills/optional/devops/devops-anthos-s6-container-supervision) | Modify, debug, or extend the s6-overlay supervision tree inside the Anthos Agent Docker image — adding new services, debugging profile gateways, understanding the Architecture B main-program pattern. |
 | [**pinggy-tunnel**](/docs/user-guide/skills/optional/devops/devops-pinggy-tunnel) | Zero-install localhost tunnels over SSH via Pinggy. |
 | [**watchers**](/docs/user-guide/skills/optional/devops/devops-watchers) | Poll RSS, JSON APIs, and GitHub with watermark dedup. |
 

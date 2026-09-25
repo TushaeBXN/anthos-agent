@@ -2,7 +2,7 @@ class AnthosAgent < Formula
   include Language::Python::Virtualenv
 
   desc "Self-improving AI agent that creates skills from experience"
-  homepage "https://anthos-agent.anthosai.com"
+  homepage "https://github.com/TushaeBXN/anthos-agent"
   # Stable source should point at the semver-named sdist asset attached by
   # scripts/release.py, not the CalVer tag tarball.
   url "https://github.com/TushaeBXN/anthos-agent/releases/download/v2026.3.30/anthos_agent-0.6.0.tar.gz"

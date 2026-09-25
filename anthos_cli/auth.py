@@ -116,12 +116,12 @@ QWEN_ACCESS_TOKEN_REFRESH_SKEW_SECONDS = 120
 DEFAULT_SPOTIFY_ACCOUNTS_BASE_URL = "https://accounts.spotify.com"
 DEFAULT_SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1"
 DEFAULT_SPOTIFY_REDIRECT_URI = "http://127.0.0.1:43827/spotify/callback"
-SPOTIFY_DOCS_URL = "https://anthos-agent.anthosai.com/docs/user-guide/features/spotify"
+SPOTIFY_DOCS_URL = "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/spotify.md"
 SPOTIFY_DASHBOARD_URL = "https://developer.spotify.com/dashboard"
 SPOTIFY_ACCESS_TOKEN_REFRESH_SKEW_SECONDS = 120
 
-XAI_OAUTH_DOCS_URL = "https://anthos-agent.anthosai.com/docs/guides/xai-grok-oauth"
-OAUTH_OVER_SSH_DOCS_URL = "https://anthos-agent.anthosai.com/docs/guides/oauth-over-ssh"
+XAI_OAUTH_DOCS_URL = "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/guides/xai-grok-oauth.md"
+OAUTH_OVER_SSH_DOCS_URL = "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/guides/oauth-over-ssh.md"
 DEFAULT_SPOTIFY_SCOPE = " ".join((
     "user-modify-playback-state",
     "user-read-playback-state",

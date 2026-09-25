@@ -174,13 +174,12 @@ class TestFetchFailure:
 
 class TestFallbackChain:
     """``_fetch_manifest_with_fallback`` walks ``DEFAULT_CATALOG_FALLBACK_URLS``
-    when the primary URL fails. Regression: the Docusaurus site behind Vercel
-    occasionally returns HTTP 403 + x-vercel-mitigated: challenge for urllib;
-    without a fallback URL the user's disk cache freezes and new model
-    releases (opus 4.8, etc.) never reach the picker.
+    when the primary URL fails. Regression: a configured catalog URL (e.g. a
+    docs site that is down or bot-gated) must not freeze the user's disk cache
+    so new model releases never reach the picker.
     """
 
-    PRIMARY = "https://anthos-agent.anthosai.com/docs/api/model-catalog.json"
+    PRIMARY = "https://catalog.example.com/api/model-catalog.json"
     FALLBACK = (
         "https://raw.githubusercontent.com/TushaeBXN/anthos-agent"
         "/main/website/static/api/model-catalog.json"

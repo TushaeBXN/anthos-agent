@@ -1383,6 +1383,8 @@ export interface MessagingPlatform {
 export interface MessagingPlatformsResponse {
   env_path: string;
   gateway_start_command: string;
+  /** True when a Telegram managed-bot onboarding service is configured. */
+  telegram_managed_onboarding?: boolean;
   platforms: MessagingPlatform[];
 }
 

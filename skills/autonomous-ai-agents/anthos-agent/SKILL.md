@@ -29,7 +29,7 @@ People use Anthos for software development, research, system administration, dat
 
 **This skill helps you work with Anthos Agent effectively** — setting it up, configuring features, spawning additional agent instances, troubleshooting issues, finding the right commands and settings, and understanding how the system works when you need to extend or contribute to it.
 
-**Docs:** https://anthos-agent.anthosai.com/docs/
+**Docs:** https://github.com/TushaeBXN/anthos-agent/tree/main/website/docs
 
 ## Scope & Verification
 
@@ -38,14 +38,14 @@ This skill is a concise operating guide, not the complete source of truth for ev
 Good verification targets:
 
 - CLI commands: `anthos --help`, `anthos <command> --help`, and `anthos_cli/main.py`
-- User documentation: https://anthos-agent.anthosai.com/docs/
+- User documentation: https://github.com/TushaeBXN/anthos-agent/tree/main/website/docs
 - Source tree: https://github.com/TushaeBXN/anthos-agent
 
 ## Quick Start
 
 ```bash
 # Install
-curl -fsSL https://anthos-agent.anthosai.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TushaeBXN/anthos-agent/main/scripts/install.sh | bash
 
 # Interactive chat (default)
 anthos
@@ -167,7 +167,7 @@ anthos gateway setup        Configure platforms
 
 Supported platforms: Telegram, Discord, Slack, WhatsApp, Signal, Email, SMS, Matrix, Mattermost, Home Assistant, DingTalk, Feishu, WeCom, BlueBubbles (iMessage), Weixin (WeChat), API Server, Webhooks. Open WebUI connects via the API Server adapter.
 
-Platform docs: https://anthos-agent.anthosai.com/docs/user-guide/messaging/
+Platform docs: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/messaging/index.md
 
 ### Sessions
 
@@ -249,7 +249,7 @@ anthos uninstall            Uninstall Anthos
 
 Type these during an interactive chat session. New commands land fairly
 often; if something below looks stale, run `/help` in-session for the
-authoritative list or see the [live slash commands reference](https://anthos-agent.anthosai.com/docs/reference/slash-commands).
+authoritative list or see the [live slash commands reference](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/slash-commands.md).
 The registry of record is `anthos_cli/commands.py` — every consumer
 (autocomplete, Telegram menu, Slack mapping, `/help`) derives from it.
 
@@ -381,7 +381,7 @@ Edit with `anthos config edit` or `anthos config set section.key value`.
 | `delegation` | `model`, `provider`, `base_url`, `api_key`, `max_iterations` (50), `reasoning_effort` |
 | `checkpoints` | `enabled`, `max_snapshots` (50) |
 
-Full config reference: https://anthos-agent.anthosai.com/docs/user-guide/configuration
+Full config reference: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/configuration.md
 
 ### Providers
 
@@ -411,7 +411,7 @@ Full config reference: https://anthos-agent.anthosai.com/docs/user-guide/configu
 | Custom endpoint | Config | `model.base_url` + `model.api_key` in config.yaml |
 | GitHub Copilot ACP | External | `COPILOT_CLI_PATH` or Copilot CLI |
 
-Full provider docs: https://anthos-agent.anthosai.com/docs/integrations/providers
+Full provider docs: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/integrations/providers.md
 
 ### Toolsets
 
@@ -720,7 +720,7 @@ the `cronjob` tool, the `anthos cron` CLI (`list`, `add`, `edit`,
   header/footer instead of being mirrored into the target gateway
   session (keeps role alternation intact).
 
-User docs: https://anthos-agent.anthosai.com/docs/user-guide/features/cron
+User docs: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/cron.md
 
 ### Curator (skill lifecycle)
 
@@ -741,7 +741,7 @@ so nothing is lost.
 
 Config: `curator.*` (`enabled`, `interval_hours`, `min_idle_hours`,
 `stale_after_days`, `archive_after_days`, `backup.*`).
-User docs: https://anthos-agent.anthosai.com/docs/user-guide/features/curator
+User docs: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/curator.md
 
 ### Kanban (multi-agent work queue)
 
@@ -770,7 +770,7 @@ sessions still have zero `kanban_*` schema footprint unless configured.
   `ANTHOS_KANBAN_BOARD` pinned in env); tenant is a soft namespace
   within a board for workspace-path + memory-key isolation.
 
-User docs: https://anthos-agent.anthosai.com/docs/user-guide/features/kanban
+User docs: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/kanban.md
 
 ---
 
@@ -921,18 +921,18 @@ anthos config set auxiliary.vision.model <model_name>
 
 | Looking for... | Location |
 |----------------|----------|
-| Config options | `anthos config edit` or [Configuration docs](https://anthos-agent.anthosai.com/docs/user-guide/configuration) |
-| Available tools | `anthos tools list` or [Tools reference](https://anthos-agent.anthosai.com/docs/reference/tools-reference) |
-| Slash commands | `/help` in session or [Slash commands reference](https://anthos-agent.anthosai.com/docs/reference/slash-commands) |
-| Skills catalog | `anthos skills browse` or [Skills catalog](https://anthos-agent.anthosai.com/docs/reference/skills-catalog) |
-| Provider setup | `anthos model` or [Providers guide](https://anthos-agent.anthosai.com/docs/integrations/providers) |
-| Platform setup | `anthos gateway setup` or [Messaging docs](https://anthos-agent.anthosai.com/docs/user-guide/messaging/) |
-| MCP servers | `anthos mcp list` or [MCP guide](https://anthos-agent.anthosai.com/docs/user-guide/features/mcp) |
-| Profiles | `anthos profile list` or [Profiles docs](https://anthos-agent.anthosai.com/docs/user-guide/profiles) |
-| Cron jobs | `anthos cron list` or [Cron docs](https://anthos-agent.anthosai.com/docs/user-guide/features/cron) |
-| Memory | `anthos memory status` or [Memory docs](https://anthos-agent.anthosai.com/docs/user-guide/features/memory) |
-| Env variables | `anthos config env-path` or [Env vars reference](https://anthos-agent.anthosai.com/docs/reference/environment-variables) |
-| CLI commands | `anthos --help` or [CLI reference](https://anthos-agent.anthosai.com/docs/reference/cli-commands) |
+| Config options | `anthos config edit` or [Configuration docs](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/configuration.md) |
+| Available tools | `anthos tools list` or [Tools reference](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/tools-reference.md) |
+| Slash commands | `/help` in session or [Slash commands reference](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/slash-commands.md) |
+| Skills catalog | `anthos skills browse` or [Skills catalog](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/skills-catalog.md) |
+| Provider setup | `anthos model` or [Providers guide](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/integrations/providers.md) |
+| Platform setup | `anthos gateway setup` or [Messaging docs](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/messaging/index.md) |
+| MCP servers | `anthos mcp list` or [MCP guide](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/mcp.md) |
+| Profiles | `anthos profile list` or [Profiles docs](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/profiles.md) |
+| Cron jobs | `anthos cron list` or [Cron docs](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/cron.md) |
+| Memory | `anthos memory status` or [Memory docs](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/memory.md) |
+| Env variables | `anthos config env-path` or [Env vars reference](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/environment-variables.md) |
+| CLI commands | `anthos --help` or [CLI reference](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/cli-commands.md) |
 | Gateway logs | `~/.anthos/logs/gateway.log` |
 | Session files | `anthos sessions browse` (reads state.db) |
 | Source code | `~/.anthos/anthos-agent/` |
@@ -941,7 +941,7 @@ anthos config set auxiliary.vision.model <model_name>
 
 ## Contributor Quick Reference
 
-For occasional contributors and PR authors. Full developer docs: https://anthos-agent.anthosai.com/docs/developer-guide/
+For occasional contributors and PR authors. Full developer docs: https://github.com/TushaeBXN/anthos-agent/tree/main/website/docs/developer-guide
 
 ### Project Layout
 

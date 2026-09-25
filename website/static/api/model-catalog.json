@@ -3,7 +3,7 @@
   "updated_at": "2026-06-16T18:04:33Z",
   "metadata": {
     "source": "anthos-agent repo",
-    "docs": "https://anthos-agent.anthosai.com/docs/reference/model-catalog"
+    "docs": "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/model-catalog.md"
   },
   "providers": {
     "openrouter": {

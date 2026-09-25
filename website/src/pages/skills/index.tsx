@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import Layout from "@theme/Layout";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import styles from "./styles.module.css";
 
 interface Skill {
@@ -469,12 +470,9 @@ function StatCard({ value, label, color }: { value: number; label: string; color
 
 const PAGE_SIZE = 60;
 
-// Routes Docusaurus serves the static API JSON from. `baseUrl` is `/docs/`,
-// `static/api/` ends up at `/docs/api/`. Hardcoding here is fine because the
-// same `baseUrl` is enforced repo-wide; if it ever changes, this is the only
-// place that needs to follow.
-const SKILLS_URL = "/docs/api/skills.json";
-const META_URL = "/docs/api/skills-meta.json";
+// Static API JSON lives under `static/api/`, served relative to `baseUrl`.
+const SKILLS_PATH = "/api/skills.json";
+const META_PATH = "/api/skills-meta.json";
 
 function buildSearchHaystack(s: Skill): string {
   // Pre-compute the lowercase blob the search filter scans. Done once at
@@ -497,6 +495,8 @@ export default function SkillsDashboard() {
   // Lazy-loaded data. Was bundled into the JS chunk (~22 MB at 50k skills,
   // which made the initial page load unusable on mobile). Now fetched on
   // mount from the same CDN that serves the docs.
+  const skillsUrl = useBaseUrl(SKILLS_PATH);
+  const metaUrl = useBaseUrl(META_PATH);
   const [data, setData] = useState<{ skills: Skill[]; meta: IndexMeta } | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -519,11 +519,11 @@ export default function SkillsDashboard() {
     (async () => {
       try {
         const [sk, mt] = await Promise.all([
-          fetch(SKILLS_URL).then((r) => {
+          fetch(skillsUrl).then((r) => {
             if (!r.ok) throw new Error(`skills.json HTTP ${r.status}`);
             return r.json();
           }),
-          fetch(META_URL).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
+          fetch(metaUrl).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
         ]);
         if (cancelled) return;
         const skillsArr = Array.isArray(sk) ? (sk as Skill[]) : [];
@@ -538,7 +538,7 @@ export default function SkillsDashboard() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [skillsUrl, metaUrl]);
 
   // Debounce the search input — 150ms feels instant while preventing the
   // filter from running on every individual keystroke.

@@ -51,6 +51,23 @@ def isolated_home(monkeypatch):
         if k.endswith("_API_KEY") or k.endswith("_TOKEN"):
             monkeypatch.delenv(k, raising=False)
 
+    # Pin vision capability for the model families these tests rely on so
+    # they don't depend on a live models.dev fetch (offline, the lookup is
+    # "unknown", which the auto chain deliberately treats as vision-capable).
+    import agent.models_dev as models_dev
+
+    real_caps = models_dev.get_model_capabilities
+
+    def fake_caps(provider, model):
+        name = (model or "").lower()
+        if name.startswith("deepseek"):
+            return models_dev.ModelCapabilities(supports_vision=False)
+        if name.startswith("claude"):
+            return models_dev.ModelCapabilities(supports_vision=True)
+        return real_caps(provider, model)
+
+    monkeypatch.setattr(models_dev, "get_model_capabilities", fake_caps)
+
     yield anthos_home
     shutil.rmtree(test_home, ignore_errors=True)
 

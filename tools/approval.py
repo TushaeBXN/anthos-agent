@@ -613,9 +613,14 @@ def _rewrite_resolved_user_home(command: str) -> str:
             continue
         seen.add(path)
         # Require an absolute path below root so a bad HOME cannot rewrite the
-        # whole filesystem namespace.
+        # whole filesystem namespace (e.g. HOME=/usr would turn /usr/bin into
+        # ~/bin and dodge the system-path rules). /root is the one depth-1
+        # home that is legitimate — root in containers — and must be folded
+        # too, or /root/.bashrc and /root/.ssh/* slip past detection.
         normalized = path.rstrip("/")
-        if not normalized.startswith("/") or normalized.count("/") < 2:
+        if not normalized.startswith("/"):
+            continue
+        if normalized.count("/") < 2 and normalized != "/root":
             continue
         command = command.replace(normalized + "/", "~/")
     return command

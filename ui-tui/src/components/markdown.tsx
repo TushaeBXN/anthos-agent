@@ -213,7 +213,7 @@ const TABLE_PADDING_LEFT = 2 // paddingLeft={2} on the outer <Box>
 
 const renderTable = (k: number, rows: string[][], t: Theme, cols?: number) => {
   // Guard: empty table
-  if (rows.length === 0 || rows[0]!.length === 0) return null
+  if (rows.length === 0 || rows[0]!.length === 0) {return null}
 
   const cellDisplayWidth = (raw: string) => stringWidth(stripInlineMarkup(raw))
 
@@ -221,7 +221,7 @@ const renderTable = (k: number, rows: string[][], t: Theme, cols?: number) => {
   const minCellWidth = (raw: string) => {
     const text = stripInlineMarkup(raw)
     const words = text.split(/\s+/).filter(w => w.length > 0)
-    if (words.length === 0) return MIN_COL_WIDTH
+    if (words.length === 0) {return MIN_COL_WIDTH}
     return Math.max(...words.map(w => stringWidth(w)), MIN_COL_WIDTH)
   }
 
@@ -229,7 +229,7 @@ const renderTable = (k: number, rows: string[][], t: Theme, cols?: number) => {
 
   // Normalize ragged rows: ensure every row has exactly numCols cells
   const normalizedRows = rows.map(row => {
-    if (row.length >= numCols) return row.slice(0, numCols)
+    if (row.length >= numCols) {return row.slice(0, numCols)}
     return [...row, ...Array<string>(numCols - row.length).fill('')]
   })
 
@@ -278,7 +278,7 @@ const renderTable = (k: number, rows: string[][], t: Theme, cols?: number) => {
       const fracs = rawAlloc.map((v, i) => ({ i, frac: v - Math.floor(v) }))
         .sort((a, b) => b.frac - a.frac)
       for (const { i } of fracs) {
-        if (remainder <= 0) break
+        if (remainder <= 0) {break}
         columnWidths[i]!++
         remainder--
       }
@@ -295,7 +295,7 @@ const renderTable = (k: number, rows: string[][], t: Theme, cols?: number) => {
     const fracs = rawAlloc.map((v, i) => ({ i, frac: v - Math.floor(v) }))
       .sort((a, b) => b.frac - a.frac)
     for (const { i } of fracs) {
-      if (remainder <= 0) break
+      if (remainder <= 0) {break}
       columnWidths[i]!++
       remainder--
     }
@@ -315,8 +315,8 @@ const renderTable = (k: number, rows: string[][], t: Theme, cols?: number) => {
   // Operates on stripped text for correct width measurement.
   const wrapCell = (raw: string, width: number, hard: boolean): string[] => {
     const text = stripInlineMarkup(raw)
-    if (width <= 0) return [text]
-    if (stringWidth(text) <= width) return [text]
+    if (width <= 0) {return [text]}
+    if (stringWidth(text) <= width) {return [text]}
 
     const words = text.split(/\s+/).filter(w => w.length > 0)
     const lines: string[] = []
@@ -350,7 +350,7 @@ const renderTable = (k: number, rows: string[][], t: Theme, cols?: number) => {
         currentWidth = w
       }
     }
-    if (current) lines.push(current)
+    if (current) {lines.push(current)}
     return lines.length > 0 ? lines : ['']
   }
 
@@ -407,7 +407,7 @@ const renderTable = (k: number, rows: string[][], t: Theme, cols?: number) => {
         const cellText = li < cl.length ? cl[li]! : ''
         const pad = ' '.repeat(Math.max(0, columnWidths[ci]! - stringWidth(cellText)))
         line += cellText + pad
-        if (ci < numCols - 1) line += '  '
+        if (ci < numCols - 1) {line += '  '}
       }
       result.push(line)
     }
@@ -421,7 +421,7 @@ const renderTable = (k: number, rows: string[][], t: Theme, cols?: number) => {
     const kind = ri === 0 ? 'header' as const : 'body' as const
     const rowLines = buildRowLines(row)
     rowLines.forEach(text => allEntries.push({ text, kind }))
-    if (ri > 0) tallestBodyRow = Math.max(tallestBodyRow, rowLines.length)
+    if (ri > 0) {tallestBodyRow = Math.max(tallestBodyRow, rowLines.length)}
     if (ri === 0 && normalizedRows.length > 1) {
       allEntries.push({ text: sep, kind: 'separator' })
     }

@@ -375,6 +375,19 @@ class TestTeePattern:
         assert dangerous is True
         assert key is not None
 
+    def test_absolute_root_home_paths_when_running_as_root(self, monkeypatch):
+        # /root is only one level deep; the absolute-home fold must still
+        # cover it or root (e.g. in containers) bypasses the rc/SSH rules.
+        monkeypatch.setenv("HOME", "/root")
+        assert detect_dangerous_command("echo x | tee /root/.bashrc")[0] is True
+        assert detect_dangerous_command("echo k >> /root/.ssh/authorized_keys")[0] is True
+
+    def test_depth_one_non_root_home_is_not_folded(self, monkeypatch):
+        # A bogus HOME=/usr must not turn /usr/bin into ~/bin and dodge the
+        # system-directory rules.
+        monkeypatch.setenv("HOME", "/usr")
+        assert detect_dangerous_command("rm -rf /usr/bin")[0] is True
+
     def test_tee_custom_anthos_home_env(self):
         dangerous, key, desc = detect_dangerous_command("echo x | tee $ANTHOS_HOME/.env")
         assert dangerous is True

@@ -43,7 +43,7 @@ description: "如何为 Anthos Agent 做贡献 — 开发环境配置、代码�
 对大多数贡献者来说，最好的开发启动方式和用户安装方式相同：运行标准安装器，然后在它克隆出的仓库里开发。安装器会创建 Anthos venv、配置 `anthos` 命令、为 `anthos update` 写入安装方式标记，并把完整 git 项目克隆到 `$ANTHOS_HOME/anthos-agent`（通常是 `~/.anthos/anthos-agent`）。这样你的开发环境会和 CLI、updater、lazy dependency installer、gateway、docs 默认假设的布局一致。
 
 ```bash
-curl -fsSL https://anthos-agent.anthosai.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TushaeBXN/anthos-agent/main/scripts/install.sh | bash
 cd "${ANTHOS_HOME:-$HOME/.anthos}/anthos-agent"
 
 # 在标准安装基础上添加开发/测试 extras。

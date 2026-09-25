@@ -4419,7 +4419,7 @@ _PLATFORM_OVERRIDES: dict[str, dict[str, Any]] = {
     "email": {
         "name": "Email",
         "description": "Talk to Anthos through an IMAP/SMTP mailbox.",
-        "docs_url": "https://anthos-agent.anthosai.com/docs/user-guide/messaging/",
+        "docs_url": "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/messaging/index.md",
         "env_vars": (
             "EMAIL_ADDRESS",
             "EMAIL_PASSWORD",
@@ -4486,7 +4486,7 @@ _PLATFORM_OVERRIDES: dict[str, dict[str, Any]] = {
     "weixin": {
         "name": "Weixin / WeChat (Personal)",
         "description": "Connect a personal WeChat account through Tencent's iLink Bot API.",
-        "docs_url": "https://anthos-agent.anthosai.com/docs/user-guide/messaging/weixin/",
+        "docs_url": "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/messaging/weixin.md",
         "env_vars": ("WEIXIN_ACCOUNT_ID", "WEIXIN_TOKEN", "WEIXIN_BASE_URL"),
         "required_env": ("WEIXIN_ACCOUNT_ID", "WEIXIN_TOKEN"),
     },
@@ -4517,7 +4517,7 @@ _PLATFORM_OVERRIDES: dict[str, dict[str, Any]] = {
     "api_server": {
         "name": "API server",
         "description": "Expose Anthos as an OpenAI-compatible HTTP API for tools like Open WebUI.",
-        "docs_url": "https://anthos-agent.anthosai.com/docs/user-guide/messaging/",
+        "docs_url": "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/messaging/index.md",
         "env_vars": (
             "API_SERVER_ENABLED",
             "API_SERVER_KEY",
@@ -4530,7 +4530,7 @@ _PLATFORM_OVERRIDES: dict[str, dict[str, Any]] = {
     "webhook": {
         "name": "Webhooks",
         "description": "Receive events from GitHub, GitLab, and other webhook sources.",
-        "docs_url": "https://anthos-agent.anthosai.com/docs/user-guide/messaging/webhooks/",
+        "docs_url": "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/messaging/webhooks.md",
         "env_vars": ("WEBHOOK_ENABLED", "WEBHOOK_PORT", "WEBHOOK_SECRET"),
         "required_env": (),
     },
@@ -5019,7 +5019,9 @@ def _write_platform_enabled(platform_id: str, enabled: bool) -> None:
     save_config(config)
 
 
-_TELEGRAM_ONBOARDING_DEFAULT_URL = "https://setup.anthos-agent.anthosai.com"
+# Anthos does not host a Telegram onboarding service; managed setup is only
+# available when TELEGRAM_ONBOARDING_URL points at one.
+_TELEGRAM_ONBOARDING_DEFAULT_URL = ""
 _TELEGRAM_ONBOARDING_USER_AGENT = f"AnthosDashboard/{__version__}"
 _TELEGRAM_USER_ID_RE = re.compile(r"^\d+$")
 
@@ -5106,7 +5108,16 @@ def _telegram_onboarding_request_sync(
     if bearer_token:
         headers["Authorization"] = f"Bearer {bearer_token}"
 
-    url = f"{_telegram_onboarding_base_url()}{path}"
+    base_url = _telegram_onboarding_base_url()
+    if not base_url:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Automatic Telegram setup is not configured. Create a bot with "
+                "@BotFather and paste its token instead."
+            ),
+        )
+    url = f"{base_url}{path}"
     try:
         with httpx.Client(timeout=httpx.Timeout(10.0)) as client:
             response = client.request(
@@ -5400,6 +5411,7 @@ async def get_messaging_platforms(profile: Optional[str] = None):
         return {
             "env_path": str(get_env_path()),
             "gateway_start_command": _gateway_display_command(profile, "start"),
+            "telegram_managed_onboarding": bool(_telegram_onboarding_base_url()),
             "platforms": [
                 _messaging_platform_payload(
                     entry, env_on_disk, runtime, scoped=scoped_dir is not None
@@ -5716,7 +5728,7 @@ _OAUTH_PROVIDER_CATALOG: tuple[Dict[str, Any], ...] = (
         # lands back on the loopback listener — no code to copy/paste.
         "flow": "loopback",
         "cli_command": "anthos auth add xai-oauth",
-        "docs_url": "https://anthos-agent.anthosai.com/docs/guides/xai-grok-oauth",
+        "docs_url": "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/guides/xai-grok-oauth.md",
         "status_fn": None,  # dispatched via auth.get_xai_oauth_auth_status
     },
     {

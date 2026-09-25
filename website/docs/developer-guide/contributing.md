@@ -49,7 +49,7 @@ development environment on the same layout the CLI, updater, lazy dependency
 installer, gateway, and docs assume.
 
 ```bash
-curl -fsSL https://anthos-agent.anthosai.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TushaeBXN/anthos-agent/main/scripts/install.sh | bash
 cd "${ANTHOS_HOME:-$HOME/.anthos}/anthos-agent"
 
 # Add dev/test extras on top of the standard install.

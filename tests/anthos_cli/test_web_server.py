@@ -1638,7 +1638,7 @@ class TestWebServerEndpoints:
         assert "personal WeChat" in weixin["description"]
         assert "Official Account" not in f"{weixin['name']} {weixin['description']}"
         assert weixin["docs_url"] == (
-            "https://anthos-agent.anthosai.com/docs/user-guide/messaging/weixin/"
+            "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/messaging/weixin.md"
         )
 
         fields = {field["key"]: field for field in weixin["env_vars"]}

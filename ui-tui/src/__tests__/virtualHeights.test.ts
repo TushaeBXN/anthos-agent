@@ -18,10 +18,12 @@ describe('virtual height estimates', () => {
   })
 
   it('uses compound user prompt width when estimating user message wrapping', () => {
-    const msg: Msg = { role: 'user', text: 'x'.repeat(21) }
+    // Wide enough that transcriptBodyWidth's 20-column floor doesn't mask
+    // the prompt-width difference: '❯' leaves 34 body columns, 'Ψ >' 32.
+    const msg: Msg = { role: 'user', text: 'x'.repeat(33) }
 
-    expect(estimatedMsgHeight(msg, 26, { compact: false, details: false, userPrompt: '❯' })).toBe(3)
-    expect(estimatedMsgHeight(msg, 26, { compact: false, details: false, userPrompt: 'Ψ >' })).toBe(4)
+    expect(estimatedMsgHeight(msg, 40, { compact: false, details: false, userPrompt: '❯' })).toBe(3)
+    expect(estimatedMsgHeight(msg, 40, { compact: false, details: false, userPrompt: 'Ψ >' })).toBe(4)
   })
 
   it('adds one row for a group-boundary lead gap', () => {

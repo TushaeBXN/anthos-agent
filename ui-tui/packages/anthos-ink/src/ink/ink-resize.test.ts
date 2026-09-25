@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events'
+
 import React from 'react'
 import { describe, expect, it } from 'vitest'
 

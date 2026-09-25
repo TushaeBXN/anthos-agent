@@ -2,7 +2,7 @@
 name = "anthos-bootstrap"
 version = "0.0.1"
 description = "Anthos Setup — signed installer that drives scripts/install.ps1"
-authors = ["Anthos Intelligence <info@anthosai.com>"]
+authors = ["Anthos Intelligence <86262589+TushaeBXN@users.noreply.github.com>"]
 edition = "2021"
 rust-version = "1.77"
 

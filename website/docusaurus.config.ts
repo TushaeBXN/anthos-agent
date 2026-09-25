@@ -7,10 +7,11 @@ const config: Config = {
   tagline: 'The self-improving AI agent',
   favicon: 'img/favicon.ico',
 
-  url: 'https://anthos-agent.anthosai.com',
-  baseUrl: '/docs/',
+  // GitHub Pages project site; deploy-site.yml stages the build under /docs.
+  url: 'https://tushaebxn.github.io',
+  baseUrl: '/anthos-agent/docs/',
 
-  organizationName: 'NousResearch',
+  organizationName: 'TushaeBXN',
   projectName: 'anthos-agent',
 
   onBrokenLinks: 'warn',
@@ -131,7 +132,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          href: 'https://anthos-agent.anthosai.com/',
+          href: 'https://github.com/TushaeBXN/anthos-agent',
           label: 'Download',
           position: 'left',
         },
@@ -140,7 +141,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://anthos-agent.anthosai.com',
+          href: 'https://github.com/TushaeBXN/anthos-agent',
           label: 'Home',
           position: 'right',
         },
@@ -179,7 +180,7 @@ const config: Config = {
         {
           title: 'More',
           items: [
-            { label: 'Desktop Download', href: 'https://anthos-agent.anthosai.com/' },
+            { label: 'Desktop Download', href: 'https://github.com/TushaeBXN/anthos-agent' },
             { label: 'GitHub', href: 'https://github.com/TushaeBXN/anthos-agent' },
             { label: 'Nous Research', href: 'https://nousresearch.com' },
           ],

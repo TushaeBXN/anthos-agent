@@ -46,7 +46,7 @@ python -m pip install -e '.[termux]' -c constraints-termux.txt
 Anthos 现已内置 Termux 感知的安装路径：
 
 ```bash
-curl -fsSL https://anthos-agent.anthosai.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TushaeBXN/anthos-agent/main/scripts/install.sh | bash
 ```
 
 在 Termux 上，安装程序会自动：

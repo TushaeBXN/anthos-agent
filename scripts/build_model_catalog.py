@@ -17,7 +17,7 @@ Usage::
 Output: ``website/static/api/model-catalog.json``
 
 Live URL (after ``deploy-site.yml`` runs on merge to main):
-``https://anthos-agent.anthosai.com/docs/api/model-catalog.json``
+``https://raw.githubusercontent.com/TushaeBXN/anthos-agent/main/website/static/api/model-catalog.json``
 """
 
 from __future__ import annotations
@@ -45,7 +45,7 @@ def build_catalog() -> dict:
         "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "metadata": {
             "source": "anthos-agent repo",
-            "docs": "https://anthos-agent.anthosai.com/docs/reference/model-catalog",
+            "docs": "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/model-catalog.md",
         },
         "providers": {
             "openrouter": {

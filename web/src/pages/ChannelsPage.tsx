@@ -108,6 +108,8 @@ export default function ChannelsPage() {
   const [gatewayStartCommand, setGatewayStartCommand] = useState(
     "anthos gateway start",
   );
+  const [telegramManagedOnboarding, setTelegramManagedOnboarding] =
+    useState(false);
   const [loading, setLoading] = useState(true);
   const { toast, showToast } = useToast();
   const { setEnd } = usePageHeader();
@@ -138,6 +140,7 @@ export default function ChannelsPage() {
         setPlatforms(res.platforms);
         setEnvPath(res.env_path || "~/.anthos/.env");
         setGatewayStartCommand(res.gateway_start_command || "anthos gateway start");
+        setTelegramManagedOnboarding(Boolean(res.telegram_managed_onboarding));
       })
       .catch((e) => showToast(`Error: ${e}`, "error"));
   }, [showToast]);
@@ -524,7 +527,7 @@ export default function ChannelsPage() {
                     </Button>
                   </div>
                 </div>
-                {platform.id === "telegram" && (
+                {platform.id === "telegram" && telegramManagedOnboarding && (
                   <TelegramOnboardingPanel
                     onChanged={load}
                     onRestartNeeded={() => setRestartNeeded(true)}

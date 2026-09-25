@@ -57,3 +57,8 @@ jobs:
         --lockfile=package-lock.json
         --lockfile=website/package-lock.json
       fail-on-vuln: false
+      # Code scanning isn't enabled on this private repo (needs GitHub Advanced
+      # Security), so uploading SARIF fails the job. Findings still print in the
+      # job log and are kept as the "OSV Scanner SARIF file" artifact. Remove
+      # this line once code scanning is enabled.
+      upload-sarif: false

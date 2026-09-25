@@ -46,7 +46,7 @@ That does not stop Anthos from working well as a phone-native CLI agent — it j
 Anthos now ships a Termux-aware installer path:
 
 ```bash
-curl -fsSL https://anthos-agent.anthosai.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TushaeBXN/anthos-agent/main/scripts/install.sh | bash
 ```
 
 On Termux, the installer automatically:

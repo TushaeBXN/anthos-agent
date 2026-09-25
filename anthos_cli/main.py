@@ -5789,7 +5789,7 @@ def _print_curator_first_run_notice() -> None:
     print("  Preview now:  anthos curator run --dry-run")
     print("  Pause it:     anthos curator pause")
     print(
-        "  Docs:         https://anthos-agent.anthosai.com/docs/user-guide/features/curator"
+        "  Docs:         https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/curator.md"
     )
 
 
@@ -8783,7 +8783,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
                 return
             print("✗ Not a git repository. Please reinstall:")
             print(
-                "  curl -fsSL https://anthos-agent.anthosai.com/install.sh | bash"
+                "  curl -fsSL https://raw.githubusercontent.com/TushaeBXN/anthos-agent/main/scripts/install.sh | bash"
             )
             sys.exit(1)
 
@@ -11834,7 +11834,7 @@ def main():
             "Manage the fallback provider chain.  Fallback providers are tried "
             "in order when the primary model fails with rate-limit, overload, or "
             "connection errors.  See: "
-            "https://anthos-agent.anthosai.com/docs/user-guide/features/fallback-providers"
+            "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/fallback-providers.md"
         ),
     )
     fallback_subparsers = fallback_parser.add_subparsers(dest="fallback_command")
@@ -11868,7 +11868,7 @@ def main():
             "Pull API keys from an external secret manager at process startup "
             "instead of storing them in ~/.anthos/.env.  Currently supports "
             "Bitwarden Secrets Manager.  See: "
-            "https://anthos-agent.anthosai.com/docs/user-guide/secrets/bitwarden"
+            "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/secrets/bitwarden.md"
         ),
     )
     secrets_subparsers = secrets_parser.add_subparsers(dest="secrets_command")

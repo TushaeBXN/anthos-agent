@@ -105,6 +105,12 @@ export function useGatewayBoot({
     // tick — a stale OAuth ticket fails every attempt and would otherwise stack
     // identical error toasts (and their haptics). Reset on the next clean open.
     let reauthNotified = false
+    // After this many consecutive failed reconnects (~45s of backoff) raise a
+    // recoverable boot error so the failure overlay (Retry / Use local gateway /
+    // Sign in) replaces the endless CONNECTING screen. Once per episode; the
+    // next clean open clears it via completeDesktopBoot().
+    const RECONNECT_ESCALATE_AFTER = 6
+    let reconnectEscalated = false
 
     // Wrap the live getter in a call so TS control-flow analysis doesn't narrow
     // `connectionState` to a constant across the early-return guards (the state
@@ -172,6 +178,11 @@ export function useGatewayBoot({
 
         if (!cancelled && !gatewayOpen()) {
           scheduleReconnect()
+
+          if (reconnectAttempt >= RECONNECT_ESCALATE_AFTER && !reconnectEscalated) {
+            reconnectEscalated = true
+            failDesktopBoot(translateNow('boot.errors.gatewayUnreachable'))
+          }
         }
       }
     }
@@ -230,6 +241,7 @@ export function useGatewayBoot({
       if (st === 'open') {
         reconnectAttempt = 0
         reauthNotified = false
+        reconnectEscalated = false
         clearReconnectTimer()
 
         // A revalidate-driven reconnect can rebuild the backend in place when the

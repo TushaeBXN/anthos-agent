@@ -62,14 +62,12 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 DEFAULT_CATALOG_URL = (
-    "https://anthos-agent.anthosai.com/docs/api/model-catalog.json"
+    "https://raw.githubusercontent.com/TushaeBXN/anthos-agent/main/website/static/api/model-catalog.json"
 )
-# Fallback fetch chain. The Docusaurus site is served through Vercel, which
-# occasionally returns HTTP 403 + x-vercel-mitigated: challenge for non-
-# browser clients (urllib, curl). When that happens the disk cache goes
-# stale and new model releases never reach the picker. The raw GitHub URL
-# is the same manifest published from the same repo and is not bot-gated,
-# so we fall through to it whenever the primary URL fails.
+# Fallback fetch chain. When ``model_catalog.url`` points somewhere other than
+# the default (a self-hosted mirror or docs site that may be down or
+# bot-gated), fall through to the canonical raw GitHub manifest so the disk
+# cache doesn't go stale. URLs identical to the primary are skipped.
 DEFAULT_CATALOG_FALLBACK_URLS: tuple[str, ...] = (
     "https://raw.githubusercontent.com/TushaeBXN/anthos-agent/main/website/static/api/model-catalog.json",
 )

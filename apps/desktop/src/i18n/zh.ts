@@ -58,6 +58,7 @@ export const zh: Translations = {
       backendStopped: '后端已停止',
       desktopBootFailed: '桌面启动失败',
       gatewaySignInRequired: '需要登录网关',
+      gatewayUnreachable: '与 Anthos 网关的连接已断开，正在后台重试。',
       ipcBridgeUnavailable: '桌面 IPC 桥不可用。'
     },
     failure: {

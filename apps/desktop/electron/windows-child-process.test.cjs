@@ -11,10 +11,14 @@ function readElectronFile(name) {
   return fs.readFileSync(path.join(ELECTRON_DIR, name), 'utf8').replace(/\r\n/g, '\n')
 }
 
+// Whitespace-insensitive so a call site reflowed across lines (e.g.
+// `spawn(\n  backend.command,`) still matches its single-line needle.
 function requireHiddenChildOptions(source, needle) {
-  const index = source.indexOf(needle)
+  const compactSource = source.replace(/\s+/g, '')
+  const compactNeedle = needle.replace(/\s+/g, '')
+  const index = compactSource.indexOf(compactNeedle)
   assert.notEqual(index, -1, `missing call site: ${needle}`)
-  const snippet = source.slice(index, index + 700)
+  const snippet = compactSource.slice(index, index + 700)
   assert.match(
     snippet,
     /hiddenWindowsChildOptions\(/,

@@ -68,7 +68,9 @@ describe('cursor-drift regression — composer cursorLayout matches Ink renderin
         ).toEqual(expected)
       }
     }
-  })
+    // Brute-force over every prefix at 7 widths; takes several seconds on
+    // slower CI runners, well past vitest's 5s default.
+  }, 60_000)
 
   it('keeps cursor on the same row when text exactly fills the terminal width', () => {
     // wrap-ansi does NOT push exact-fill text onto a phantom next line.

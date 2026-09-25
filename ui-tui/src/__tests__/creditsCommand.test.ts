@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { creditsCommands } from '../app/slash/commands/credits.js'
 import { getOverlayState, resetOverlayState } from '../app/overlayStore.js'
+import { creditsCommands } from '../app/slash/commands/credits.js'
 import type { CreditsViewResponse } from '../gatewayTypes.js'
 
 // The command opens the top-up URL through this helper on confirm. Mock it so

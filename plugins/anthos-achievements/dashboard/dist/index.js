@@ -257,7 +257,7 @@
     ctx.fillStyle = "#8b95a8";
     ctx.font = "600 20px ui-monospace, 'SF Mono', Menlo, monospace";
     ctx.textBaseline = "bottom";
-    ctx.fillText("ANTHOS AGENT  ·  anthos-agent.anthosai.com", 70, H - 40);
+    ctx.fillText("ANTHOS AGENT  ·  github.com/TushaeBXN/anthos-agent", 70, H - 40);
 
     // "UNLOCKED" stamp upper-right
     ctx.textBaseline = "top";
@@ -339,7 +339,7 @@
         tier_part: tierPart,
         name: achievement.name,
       });
-      return tmpl + "\n\n@NousResearch · https://anthos-agent.anthosai.com";
+      return tmpl + "\n\n@NousResearch · https://github.com/TushaeBXN/anthos-agent";
     }
 
     function shareOnX() {

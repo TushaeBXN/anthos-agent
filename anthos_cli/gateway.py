@@ -4671,20 +4671,21 @@ def _setup_standard_platform(platform: dict):
     auto_token_saved = False
     auto_owner_user_id = None
     if platform.get("key") == "telegram":
-        print()
-        print_info("  Telegram can be configured automatically with a managed bot:")
-        print_info("  [1] Automatic (scan QR → confirm in Telegram → done)")
-        print_info("  [2] Manual BotFather token")
-        choice = prompt("  Choice [1/2]", default="1")
-        if choice.strip() == "1":
-            try:
-                from anthos_cli.telegram_managed_bot import (
-                    auto_setup_telegram_bot_result,
-                    is_valid_telegram_bot_token,
-                )
-            except ImportError:
-                print_warning("  Automatic setup is unavailable in this install.")
-            else:
+        try:
+            from anthos_cli.telegram_managed_bot import (
+                auto_setup_telegram_bot_result,
+                is_valid_telegram_bot_token,
+                managed_onboarding_available,
+            )
+        except ImportError:
+            managed_onboarding_available = None
+        if managed_onboarding_available is not None and managed_onboarding_available():
+            print()
+            print_info("  Telegram can be configured automatically with a managed bot:")
+            print_info("  [1] Automatic (scan QR → confirm in Telegram → done)")
+            print_info("  [2] Manual BotFather token")
+            choice = prompt("  Choice [1/2]", default="1")
+            if choice.strip() == "1":
                 result = auto_setup_telegram_bot_result()
                 if result and is_valid_telegram_bot_token(result.token):
                     save_env_value(token_var, result.token)

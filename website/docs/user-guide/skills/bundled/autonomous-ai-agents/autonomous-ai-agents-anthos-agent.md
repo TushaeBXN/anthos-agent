@@ -16,7 +16,7 @@ Configure, extend, or contribute to Anthos Agent.
 |---|---|
 | Source | Bundled (installed by default) |
 | Path | `skills/autonomous-ai-agents/anthos-agent` |
-| Version | `2.1.0` |
+| Version | `2.2.0` |
 | Author | Anthos Agent + Teknium |
 | License | MIT |
 | Platforms | linux, macos, windows |
@@ -46,13 +46,23 @@ People use Anthos for software development, research, system administration, dat
 
 **This skill helps you work with Anthos Agent effectively** — setting it up, configuring features, spawning additional agent instances, troubleshooting issues, finding the right commands and settings, and understanding how the system works when you need to extend or contribute to it.
 
-**Docs:** https://anthos-agent.anthosai.com/docs/
+**Docs:** https://github.com/TushaeBXN/anthos-agent/tree/main/website/docs
+
+## Scope & Verification
+
+This skill is a concise operating guide, not the complete source of truth for every Anthos feature. If a Anthos feature, command, or setting is not mentioned here, do not treat that absence as evidence that it does not exist. Check the live repository and official docs before giving a negative answer.
+
+Good verification targets:
+
+- CLI commands: `anthos --help`, `anthos <command> --help`, and `anthos_cli/main.py`
+- User documentation: https://github.com/TushaeBXN/anthos-agent/tree/main/website/docs
+- Source tree: https://github.com/TushaeBXN/anthos-agent
 
 ## Quick Start
 
 ```bash
 # Install
-curl -fsSL https://anthos-agent.anthosai.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/TushaeBXN/anthos-agent/main/scripts/install.sh | bash
 
 # Interactive chat (default)
 anthos
@@ -174,7 +184,7 @@ anthos gateway setup        Configure platforms
 
 Supported platforms: Telegram, Discord, Slack, WhatsApp, Signal, Email, SMS, Matrix, Mattermost, Home Assistant, DingTalk, Feishu, WeCom, BlueBubbles (iMessage), Weixin (WeChat), API Server, Webhooks. Open WebUI connects via the API Server adapter.
 
-Platform docs: https://anthos-agent.anthosai.com/docs/user-guide/messaging/
+Platform docs: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/messaging/index.md
 
 ### Sessions
 
@@ -256,7 +266,7 @@ anthos uninstall            Uninstall Anthos
 
 Type these during an interactive chat session. New commands land fairly
 often; if something below looks stale, run `/help` in-session for the
-authoritative list or see the [live slash commands reference](https://anthos-agent.anthosai.com/docs/reference/slash-commands).
+authoritative list or see the [live slash commands reference](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/slash-commands.md).
 The registry of record is `anthos_cli/commands.py` — every consumer
 (autocomplete, Telegram menu, Slack mapping, `/help`) derives from it.
 
@@ -376,7 +386,7 @@ Edit with `anthos config edit` or `anthos config set section.key value`.
 
 | Section | Key options |
 |---------|-------------|
-| `model` | `default`, `provider`, `base_url`, `api_key`, `context_length` (explicit override; clear to `""` for auto-detect from server `/v1/models`) |
+| `model` | `default`, `provider`, `base_url`, `api_key`, `context_length` |
 | `agent` | `max_turns` (90), `tool_use_enforcement` |
 | `terminal` | `backend` (local/docker/ssh/modal), `cwd`, `timeout` (180) |
 | `compression` | `enabled`, `threshold` (0.50), `target_ratio` (0.20) |
@@ -388,7 +398,7 @@ Edit with `anthos config edit` or `anthos config set section.key value`.
 | `delegation` | `model`, `provider`, `base_url`, `api_key`, `max_iterations` (50), `reasoning_effort` |
 | `checkpoints` | `enabled`, `max_snapshots` (50) |
 
-Full config reference: https://anthos-agent.anthosai.com/docs/user-guide/configuration
+Full config reference: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/configuration.md
 
 ### Providers
 
@@ -418,7 +428,7 @@ Full config reference: https://anthos-agent.anthosai.com/docs/user-guide/configu
 | Custom endpoint | Config | `model.base_url` + `model.api_key` in config.yaml |
 | GitHub Copilot ACP | External | `COPILOT_CLI_PATH` or Copilot CLI |
 
-Full provider docs: https://anthos-agent.anthosai.com/docs/integrations/providers
+Full provider docs: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/integrations/providers.md
 
 ### Toolsets
 
@@ -462,6 +472,55 @@ Full enumeration lives in `toolsets.py` as the `TOOLSETS` dict; `_ANTHOS_CORE_TO
 Tool changes take effect on `/reset` (new session). They do NOT apply mid-conversation to preserve prompt caching.
 
 ---
+
+## Project Context Files
+
+Anthos injects project-level instructions into the system prompt by reading context files from the working directory. The discovery order is **first match wins** — only one project context source is loaded per session.
+
+| File (in priority order) | Discovery | Use when |
+|---|---|---|
+| `.anthos.md` / `ANTHOS.md` | Walks parents up to the git root, stops at git root | You want hierarchical project rules (root + per-package overrides) |
+| `AGENTS.md` / `agents.md` | **Cwd only** — subdirectory and parent copies are ignored | You want portable agent instructions that work the same in Anthos, Claude Code, Codex, etc. |
+| `CLAUDE.md` / `claude.md` | Cwd only | Same as AGENTS.md, Claude-flavored |
+| `.cursorrules` / `.cursor/rules/*.mdc` | Cwd only | Migrating from Cursor |
+
+`SOUL.md` (in `$ANTHOS_HOME`) is independent and always loaded when present — it sets the agent's identity, not project rules.
+
+### Pick the right one
+
+- **Use `.anthos.md`** when you want Anthos-specific behavior that lives above the cwd (root + subtree), or when you want rules to inherit from a parent directory. The parent walk stops at the git root, so a home-level `.anthos.md` won't leak into every project (a git repo's root is the boundary).
+- **Use `AGENTS.md`** when the same project will also be worked on by other agents (Codex, Claude Code, OpenCode). Those tools all have their own conventions for `AGENTS.md`, and the "cwd only" contract keeps the file portable.
+- **Don't put project rules in `~/.anthos/AGENTS.md`** (or any other home-level location). When Anthos runs with that directory as cwd, the file loads — but only for that one directory. For cross-project context, use `SOUL.md` (in `$ANTHOS_HOME`, identity-only) or install a skill via `anthos skills install`.
+
+### Size and truncation
+
+Each context file is capped at 20,000 characters. Files longer than that get **head + tail** truncated (the middle is dropped, with a `[...truncated...]` marker). For large project rules, prefer splitting into multiple skills over cramming one file.
+
+### Security
+
+All context files pass through the threat-pattern scanner before reaching the system prompt. Patterns matching prompt injection or promptware are replaced with a `[BLOCKED: ...]` placeholder. This means an `AGENTS.md` containing obvious injection attempts won't reach the model — the scanner blocks the content, not the file, so the rest of the file still loads.
+
+### Disable for one session
+
+`anthos --ignore-rules` skips auto-injection of all project context files (`.anthos.md`, `AGENTS.md`, `CLAUDE.md`, `.cursorrules`) **and** `SOUL.md` identity, plus user config, plugins, and MCP servers. Use it to isolate whether a problem is your setup or Anthos itself.
+
+### Example: a small `.anthos.md`
+
+```markdown
+# My Project
+
+Anthos: when working in this repo, follow these rules.
+
+## Build
+- Always run `make test` before declaring a change done.
+- Use `uv run` for Python, not `pip install`.
+
+## Style
+- Prefer `pathlib.Path` over `os.path`.
+- No `print()` in production code — use the `logger`.
+```
+
+That file at `/home/me/projects/myrepo/.anthos.md` is auto-loaded when Anthos runs in any subdirectory of `/home/me/projects/myrepo`, but not when it runs in `/home/me/other-project`.
 
 ## Security & Privacy Toggles
 
@@ -678,7 +737,7 @@ the `cronjob` tool, the `anthos cron` CLI (`list`, `add`, `edit`,
   header/footer instead of being mirrored into the target gateway
   session (keeps role alternation intact).
 
-User docs: https://anthos-agent.anthosai.com/docs/user-guide/features/cron
+User docs: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/cron.md
 
 ### Curator (skill lifecycle)
 
@@ -699,7 +758,7 @@ so nothing is lost.
 
 Config: `curator.*` (`enabled`, `interval_hours`, `min_idle_hours`,
 `stale_after_days`, `archive_after_days`, `backup.*`).
-User docs: https://anthos-agent.anthosai.com/docs/user-guide/features/curator
+User docs: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/curator.md
 
 ### Kanban (multi-agent work queue)
 
@@ -728,7 +787,7 @@ sessions still have zero `kanban_*` schema footprint unless configured.
   `ANTHOS_KANBAN_BOARD` pinned in env); tenant is a soft namespace
   within a board for workspace-path + memory-key isolation.
 
-User docs: https://anthos-agent.anthosai.com/docs/user-guide/features/kanban
+User docs: https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/kanban.md
 
 ---
 
@@ -874,39 +933,23 @@ anthos config set auxiliary.vision.model <model_name>
 ```
 
 ---
-### Context window shows wrong size
-
-If Anthos reports a smaller context window than your local model supports
-(e.g., 128k when llama-server has `-c 262144`):
-
-**Check if `model.context_length` is explicitly set.** Anthos uses a
-multi-source resolution chain (highest priority first):
-
-1. `model.context_length` in config.yaml — **blocks auto-detection if set**
-2. Custom provider per-model setting
-3. Persistent cache (survives restarts)
-4. `/v1/models` endpoint from your server — auto-detected when nothing
-   above overrides it
-
-**Fix:** Clear the override so auto-detection falls through:
-
 
 ## Where to Find Things
 
 | Looking for... | Location |
 |----------------|----------|
-| Config options | `anthos config edit` or [Configuration docs](https://anthos-agent.anthosai.com/docs/user-guide/configuration) |
-| Available tools | `anthos tools list` or [Tools reference](https://anthos-agent.anthosai.com/docs/reference/tools-reference) |
-| Slash commands | `/help` in session or [Slash commands reference](https://anthos-agent.anthosai.com/docs/reference/slash-commands) |
-| Skills catalog | `anthos skills browse` or [Skills catalog](https://anthos-agent.anthosai.com/docs/reference/skills-catalog) |
-| Provider setup | `anthos model` or [Providers guide](https://anthos-agent.anthosai.com/docs/integrations/providers) |
-| Platform setup | `anthos gateway setup` or [Messaging docs](https://anthos-agent.anthosai.com/docs/user-guide/messaging/) |
-| MCP servers | `anthos mcp list` or [MCP guide](https://anthos-agent.anthosai.com/docs/user-guide/features/mcp) |
-| Profiles | `anthos profile list` or [Profiles docs](https://anthos-agent.anthosai.com/docs/user-guide/profiles) |
-| Cron jobs | `anthos cron list` or [Cron docs](https://anthos-agent.anthosai.com/docs/user-guide/features/cron) |
-| Memory | `anthos memory status` or [Memory docs](https://anthos-agent.anthosai.com/docs/user-guide/features/memory) |
-| Env variables | `anthos config env-path` or [Env vars reference](https://anthos-agent.anthosai.com/docs/reference/environment-variables) |
-| CLI commands | `anthos --help` or [CLI reference](https://anthos-agent.anthosai.com/docs/reference/cli-commands) |
+| Config options | `anthos config edit` or [Configuration docs](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/configuration.md) |
+| Available tools | `anthos tools list` or [Tools reference](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/tools-reference.md) |
+| Slash commands | `/help` in session or [Slash commands reference](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/slash-commands.md) |
+| Skills catalog | `anthos skills browse` or [Skills catalog](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/skills-catalog.md) |
+| Provider setup | `anthos model` or [Providers guide](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/integrations/providers.md) |
+| Platform setup | `anthos gateway setup` or [Messaging docs](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/messaging/index.md) |
+| MCP servers | `anthos mcp list` or [MCP guide](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/mcp.md) |
+| Profiles | `anthos profile list` or [Profiles docs](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/profiles.md) |
+| Cron jobs | `anthos cron list` or [Cron docs](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/cron.md) |
+| Memory | `anthos memory status` or [Memory docs](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/memory.md) |
+| Env variables | `anthos config env-path` or [Env vars reference](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/environment-variables.md) |
+| CLI commands | `anthos --help` or [CLI reference](https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/reference/cli-commands.md) |
 | Gateway logs | `~/.anthos/logs/gateway.log` |
 | Session files | `anthos sessions browse` (reads state.db) |
 | Source code | `~/.anthos/anthos-agent/` |
@@ -915,7 +958,7 @@ multi-source resolution chain (highest priority first):
 
 ## Contributor Quick Reference
 
-For occasional contributors and PR authors. Full developer docs: https://anthos-agent.anthosai.com/docs/developer-guide/
+For occasional contributors and PR authors. Full developer docs: https://github.com/TushaeBXN/anthos-agent/tree/main/website/docs/developer-guide
 
 ### Project Layout
 

@@ -18,9 +18,10 @@ from typing import Optional
 
 import httpx
 
-# Default pairing API base URL (Nous-hosted Cloudflare Worker).
-# Override for PoC/staging with TELEGRAM_ONBOARDING_URL.
-DEFAULT_API_URL = "https://setup.anthos-agent.anthosai.com"
+# Pairing API base URL. Anthos does not host an onboarding service, so the
+# managed flow is off unless TELEGRAM_ONBOARDING_URL points at one; setup
+# then offers only the manual BotFather flow.
+DEFAULT_API_URL = ""
 TELEGRAM_ONBOARDING_URL_ENV = "TELEGRAM_ONBOARDING_URL"
 
 # The Nous-hosted manager bot username (without @). The backend returns the
@@ -57,10 +58,15 @@ class TelegramBotSetupResult:
 
 
 def _api_url(api_url: str | None = None) -> str:
-    """Resolve the onboarding API URL, honoring the PoC env override."""
+    """Resolve the onboarding API URL, honoring the env override."""
     return (
         api_url or os.environ.get(TELEGRAM_ONBOARDING_URL_ENV) or DEFAULT_API_URL
-    ).rstrip("/")
+    ).strip().rstrip("/")
+
+
+def managed_onboarding_available(api_url: str | None = None) -> bool:
+    """Return True when an onboarding service URL is configured."""
+    return bool(_api_url(api_url))
 
 
 def is_valid_telegram_bot_token(token: object) -> bool:
@@ -285,6 +291,11 @@ def auto_setup_telegram_bot_result(
     """Run the full automatic Telegram bot creation flow."""
     _ = manager_bot, profile_name
     resolved_api_url = _api_url(api_url)
+    if not resolved_api_url:
+        print()
+        print("  Automatic Telegram setup is not configured "
+              f"(set {TELEGRAM_ONBOARDING_URL_ENV} to enable it).")
+        return None
     print()
     print(f"  Contacting Anthos Telegram onboarding service: {resolved_api_url}")
     sys.stdout.flush()

@@ -28,7 +28,7 @@ from anthos_cli.config import load_config
 
 DEFAULT_PORTAL_URL = "https://portal.nousresearch.com"
 SUBSCRIPTION_URL = "https://portal.nousresearch.com/manage-subscription"
-DOCS_URL = "https://anthos-agent.anthosai.com/docs/user-guide/features/tool-gateway"
+DOCS_URL = "https://github.com/TushaeBXN/anthos-agent/blob/main/website/docs/user-guide/features/tool-gateway.md"
 
 
 def _cmd_status(args) -> int:

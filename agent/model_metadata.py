@@ -454,7 +454,18 @@ try:
     from providers import list_providers as _list_providers
     for _pp in _list_providers():
         _host = _pp.get_hostname()
-        if _host and _host not in _URL_TO_PROVIDER:
+        if not _host:
+            continue
+        # A loopback/private host (e.g. a provider plugin defaulting to
+        # localhost) doesn't identify a provider, and matching is by
+        # substring, so registering it would claim every local endpoint.
+        try:
+            _host_is_local = ipaddress.ip_address(_host).is_private
+        except ValueError:
+            _host_is_local = _host in _LOCAL_HOSTS or any(
+                _host.endswith(s) for s in _CONTAINER_LOCAL_SUFFIXES
+            )
+        if not _host_is_local and _host not in _URL_TO_PROVIDER:
             _URL_TO_PROVIDER[_host] = _pp.name
 except Exception:
     pass
