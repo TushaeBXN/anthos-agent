@@ -8,8 +8,8 @@ name: Skills Index Freshness Check
 # Triggered every 4 hours so we catch a stuck cron within one tick.
 
 on:
-  schedule:
-    - cron: '0 */4 * * *'
+  # Scheduled runs disabled: this private fork has no deployed docs site to
+  # refresh or probe, and each run spends Actions minutes. Run manually.
   workflow_dispatch:
 
 permissions:

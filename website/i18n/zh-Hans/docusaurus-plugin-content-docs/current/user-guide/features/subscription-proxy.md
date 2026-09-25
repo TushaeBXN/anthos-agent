@@ -51,7 +51,7 @@ Starting Anthos proxy for Nous Portal
 ```
 Base URL:   http://127.0.0.1:8645/v1
 API key:    任意值（例如 "sk-unused"）
-Model:      Anthos-4-70B    # 或 Anthos-4.3-36B、Anthos-4-405B
+Model:      Hermes-4-70B    # 或 Hermes-4.3-36B、Hermes-4-405B
 ```
 
 代理会忽略来自你应用的 `Authorization` 请求头，并将你真实的 Portal 凭据附加到上游请求中。当 bearer 令牌临近过期时，刷新会自动进行。
@@ -101,7 +101,7 @@ Anthos proxy upstream adapters
 {
   "vlm": {
     "provider": "openai",
-    "model": "Anthos-4-70B",
+    "model": "Hermes-4-70B",
     "api_base": "http://127.0.0.1:8645/v1",
     "api_key": "unused-proxy-attaches-real-creds"
   }
@@ -118,7 +118,7 @@ anthos proxy start
 openviking-server
 ```
 
-OpenViking 的 VLM 调用现在将通过你的 Portal 订阅进行。Embedding 模型侧仍需要自己的提供商——Portal 确实提供 `/v1/embeddings`，但模型选择取决于你的套餐所支持的内容；请查看 `portal.anthosai.com/models`。
+OpenViking 的 VLM 调用现在将通过你的 Portal 订阅进行。Embedding 模型侧仍需要自己的提供商——Portal 确实提供 `/v1/embeddings`，但模型选择取决于你的套餐所支持的内容；请查看 `portal.nousresearch.com/models`。
 
 ## 配置 Karakeep（或任何书签/摘要应用）
 
@@ -128,7 +128,7 @@ OpenViking 的 VLM 调用现在将通过你的 Portal 订阅进行。Embedding �
 # Karakeep .env
 OPENAI_API_BASE_URL=http://127.0.0.1:8645/v1
 OPENAI_API_KEY=any-non-empty-string
-INFERENCE_TEXT_MODEL=Anthos-4-70B
+INFERENCE_TEXT_MODEL=Hermes-4-70B
 ```
 
 同样的方式适用于 Open WebUI、LobeChat、NextChat 或任何其他 OpenAI 兼容客户端。
@@ -145,7 +145,7 @@ anthos proxy start --host 0.0.0.0 --port 8645
 
 ## 速率限制
 
-你的 Portal 套餐的 RPM/TPM 限制适用于整个代理。代理不进行扇出或连接池——它是单个 bearer，使用你的完整订阅配额。请在 [portal.anthosai.com](https://portal.anthosai.com) 监控使用情况。
+你的 Portal 套餐的 RPM/TPM 限制适用于整个代理。代理不进行扇出或连接池——它是单个 bearer，使用你的完整订阅配额。请在 [portal.nousresearch.com](https://portal.nousresearch.com) 监控使用情况。
 
 ## 架构
 

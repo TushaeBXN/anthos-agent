@@ -1185,7 +1185,7 @@ For sharing plugins publicly, add an entry point to your Python package:
 
 ```toml
 # pyproject.toml
-[project.entry-points."hermes_agent.plugins"]
+[project.entry-points."anthos_agent.plugins"]
 my-plugin = "my_plugin_package"
 ```
 

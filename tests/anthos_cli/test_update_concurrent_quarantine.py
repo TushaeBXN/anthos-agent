@@ -92,13 +92,13 @@ def test_detect_concurrent_matches_case_insensitively(_winp, tmp_path):
     shim.write_bytes(b"")
 
     # Simulate the desktop spawning anthos.EXE (uppercase ext) from same path
-    upper = str(shim).replace("anthos.exe", "HERMES.EXE")
-    procs = [_make_proc(9999, upper, "HERMES.EXE")]
+    upper = str(shim).replace("anthos.exe", "ANTHOS.EXE")
+    procs = [_make_proc(9999, upper, "ANTHOS.EXE")]
     fake_psutil = types.SimpleNamespace(process_iter=lambda attrs: iter(procs))
     with patch.dict(sys.modules, {"psutil": fake_psutil}):
         result = cli_main._detect_concurrent_anthos_instances(scripts_dir)
 
-    assert result == [(9999, "HERMES.EXE")]
+    assert result == [(9999, "ANTHOS.EXE")]
 
 
 @patch.object(cli_main, "_is_windows", return_value=True)
@@ -203,7 +203,7 @@ def test_detect_concurrent_excludes_parent_chain(_winp, tmp_path):
 
 
 @patch.object(cli_main, "_is_windows", return_value=True)
-def test_detect_concurrent_still_finds_unrelated_other_hermes(_winp, tmp_path):
+def test_detect_concurrent_still_finds_unrelated_other_anthos(_winp, tmp_path):
     """A sibling anthos.exe outside our ancestor chain must still be reported."""
     scripts_dir = tmp_path
     shim = scripts_dir / "anthos.exe"

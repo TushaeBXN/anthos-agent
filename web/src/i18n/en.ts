@@ -127,8 +127,8 @@ export const en: Translations = {
     starting: "Starting",
     startedInBackground: "Started in background — check logs for progress",
     stopped: "Stopped",
-    updateHermes: "Update Anthos",
-    updatingHermes: "Updating Anthos…",
+    updateAnthos: "Update Anthos",
+    updatingAnthos: "Updating Anthos…",
     waitingForOutput: "Waiting for output…",
   },
 

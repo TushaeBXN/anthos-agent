@@ -38,7 +38,7 @@ iex (irm https://anthos-agent.anthosai.com/install.ps1)
 | `-Tag`        | 未设置                               | 将安装固定到指定 git tag（如 `v0.14.0`）        |
 | `-NoVenv`     | 关闭                                 | 跳过 venv 创建（高级用法——由你自行管理 Python） |
 | `-SkipSetup`  | 关闭                                 | 跳过安装后的 `anthos setup` 向导                |
-| `-HermesHome` | `%LOCALAPPDATA%\anthos`              | 覆盖数据目录                                    |
+| `-AnthosHome` | `%LOCALAPPDATA%\anthos`              | 覆盖数据目录                                    |
 | `-InstallDir` | `%LOCALAPPDATA%\anthos\anthos-agent` | 覆盖代码存放位置                                |
 
 安装程序会自动重试不稳定的 git 拉取，并剥离下载的 `install.ps1` 内容中的 BOM，因此 HTTP 传输中携带的 UTF-8 BOM 不再会破坏 `[scriptblock]::Create((irm ...))` 形式。
@@ -176,7 +176,7 @@ anthos gateway install
 
 底层发生的事情：
 
-1. `schtasks /Create /SC ONLOGON /RL LIMITED /TN HermesGateway` — 注册一个在你登录时以标准（非提升）权限运行的任务。无 UAC 提示。
+1. `schtasks /Create /SC ONLOGON /RL LIMITED /TN AnthosGateway` — 注册一个在你登录时以标准（非提升）权限运行的任务。无 UAC 提示。
 2. 如果 schtasks 被组策略阻止，则回退到在 `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup` 中写入 `start /min cmd.exe /d /c <wrapper>` 快捷方式。效果相同，稍显粗糙。
 3. 通过 **`pythonw.exe`** 以分离方式生成 gateway——而非 `python.exe`。`pythonw.exe` 没有附加控制台，可免疫来自同一进程组中兄弟进程的 `CTRL_C_EVENT` 广播（这是一个真实问题，曾导致在同一进程组中 Ctrl+C 任何进程时 gateway 被杀死）。
 
@@ -296,7 +296,7 @@ Remove-Item -Recurse -Force "$env:LOCALAPPDATA\anthos"
 你下载的 `install.ps1` 携带了 UTF-8 BOM。`irm | iex` 形式会自动剥离 BOM；`[scriptblock]::Create((irm ...))` 不会。请改用简单的 `irm | iex` 形式，或手动下载脚本并通过 `[IO.File]::WriteAllText($path, $text, (New-Object Text.UTF8Encoding $false))` 保存为不带 BOM 的纯 UTF-8。
 
 **重启后 gateway 无法持续运行。**
-运行 `anthos gateway status`——它会合并 schtasks 条目、Startup 文件夹快捷方式（如有）和运行中的 PID。如果 schtasks 已注册但未运行，组策略可能阻止了 `ONLOGON` 触发器。运行 `schtasks /Query /TN HermesGateway /V /FO LIST` 查看任务失败原因，或通过卸载后使用 `ANTHOS_GATEWAY_FORCE_STARTUP=1` 重新安装来回退到 Startup 文件夹路径。
+运行 `anthos gateway status`——它会合并 schtasks 条目、Startup 文件夹快捷方式（如有）和运行中的 PID。如果 schtasks 已注册但未运行，组策略可能阻止了 `ONLOGON` 触发器。运行 `schtasks /Query /TN AnthosGateway /V /FO LIST` 查看任务失败原因，或通过卸载后使用 `ANTHOS_GATEWAY_FORCE_STARTUP=1` 重新安装来回退到 Startup 文件夹路径。
 
 **设置 `$env:EDITOR` 后 `/edit` 仍然无响应。**
 你只在当前进程中设置了它；请关闭并重新打开 shell，或在系统属性 → 环境变量中以用户作用域设置。在新 PowerShell 窗口中用 `echo $env:EDITOR` 验证。

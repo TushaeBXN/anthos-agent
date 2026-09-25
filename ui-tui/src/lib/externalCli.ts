@@ -5,7 +5,7 @@ export interface LaunchResult {
   error?: string
 }
 
-const resolveAnthosBin = () => process.env.HERMES_BIN?.trim() || 'anthos'
+const resolveAnthosBin = () => process.env.ANTHOS_BIN?.trim() || 'anthos'
 
 export const launchAnthosCommand = (args: string[]): Promise<LaunchResult> =>
   new Promise(resolve => {

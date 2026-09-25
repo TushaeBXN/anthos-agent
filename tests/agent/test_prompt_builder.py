@@ -765,7 +765,7 @@ class TestBuildContextFilesPrompt:
         assert "Top level" in result
         assert "Src-specific" not in result
 
-    # --- .anthos.md / HERMES.md discovery ---
+    # --- .anthos.md / ANTHOS.md discovery ---
 
     def test_loads_anthos_md(self, tmp_path):
         (tmp_path / ".anthos.md").write_text("Use pytest for testing.")
@@ -774,13 +774,13 @@ class TestBuildContextFilesPrompt:
         assert "Project Context" in result
 
     def test_loads_anthos_md_uppercase(self, tmp_path):
-        (tmp_path / "HERMES.md").write_text("Always use type hints.")
+        (tmp_path / "ANTHOS.md").write_text("Always use type hints.")
         result = build_context_files_prompt(cwd=str(tmp_path))
         assert "type hints" in result
 
     def test_anthos_md_lowercase_takes_priority(self, tmp_path):
         (tmp_path / ".anthos.md").write_text("From dotfile.")
-        (tmp_path / "HERMES.md").write_text("From uppercase.")
+        (tmp_path / "ANTHOS.md").write_text("From uppercase.")
         result = build_context_files_prompt(cwd=str(tmp_path))
         assert "From dotfile" in result
         assert "From uppercase" not in result
@@ -902,12 +902,12 @@ class TestFindAnthosMd:
         assert _find_anthos_md(tmp_path) == tmp_path / ".anthos.md"
 
     def test_finds_uppercase(self, tmp_path):
-        (tmp_path / "HERMES.md").write_text("rules")
-        assert _find_anthos_md(tmp_path) == tmp_path / "HERMES.md"
+        (tmp_path / "ANTHOS.md").write_text("rules")
+        assert _find_anthos_md(tmp_path) == tmp_path / "ANTHOS.md"
 
     def test_prefers_lowercase(self, tmp_path):
         (tmp_path / ".anthos.md").write_text("lower")
-        (tmp_path / "HERMES.md").write_text("upper")
+        (tmp_path / "ANTHOS.md").write_text("upper")
         assert _find_anthos_md(tmp_path) == tmp_path / ".anthos.md"
 
     def test_walks_to_git_root(self, tmp_path):

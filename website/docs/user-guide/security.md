@@ -616,7 +616,7 @@ terminal:
 # ~/.anthos/.env
 TERMINAL_SSH_HOST=agent-worker.local
 TERMINAL_SSH_USER=anthos
-TERMINAL_SSH_KEY=~/.ssh/hermes_agent_key
+TERMINAL_SSH_KEY=~/.ssh/anthos_agent_key
 ```
 
 The SSH connection details live in `.env` (not `config.yaml`) so they aren't checked in or shared along with profile exports. This keeps the gateway's messaging connections separate from the agent's command execution.

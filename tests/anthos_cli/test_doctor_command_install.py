@@ -122,7 +122,7 @@ class TestDoctorCommandInstallation:
         cmd_link_dir = tmp_path / ".local" / "bin"
         cmd_link_dir.mkdir(parents=True)
         cmd_link = cmd_link_dir / "anthos"
-        wrong_target = tmp_path / "wrong_hermes"
+        wrong_target = tmp_path / "wrong_anthos"
         wrong_target.write_text("#!/usr/bin/env python\n")
         cmd_link.symlink_to(wrong_target)
 
@@ -140,7 +140,7 @@ class TestDoctorCommandInstallation:
         cmd_link_dir = tmp_path / ".local" / "bin"
         cmd_link_dir.mkdir(parents=True)
         cmd_link = cmd_link_dir / "anthos"
-        wrong_target = tmp_path / "wrong_hermes"
+        wrong_target = tmp_path / "wrong_anthos"
         wrong_target.write_text("#!/usr/bin/env python\n")
         cmd_link.symlink_to(wrong_target)
 

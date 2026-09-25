@@ -9,7 +9,7 @@ description: "跨所有平台的文字转语音与语音消息转录"
 Anthos Agent 支持跨所有消息平台的文字转语音（TTS）输出和语音消息转录（STT）。
 
 :::tip Nous 订阅用户
-如果你拥有付费的 [Nous Portal](https://portal.anthosai.com) 订阅，OpenAI TTS 可通过 **[Tool Gateway](tool-gateway.md)** 使用，无需单独的 OpenAI API 密钥。新安装可运行 `anthos setup --portal` 登录并一次性开启所有 gateway 工具；已有安装可通过 `anthos model` 或 `anthos tools` 选择 **Nous Subscription** 仅启用 TTS。
+如果你拥有付费的 [Nous Portal](https://portal.nousresearch.com) 订阅，OpenAI TTS 可通过 **[Tool Gateway](tool-gateway.md)** 使用，无需单独的 OpenAI API 密钥。新安装可运行 `anthos setup --portal` 登录并一次性开启所有 gateway 工具；已有安装可通过 `anthos model` 或 `anthos tools` 选择 **Nous Subscription** 仅启用 TTS。
 :::
 
 ## 文字转语音（TTS）

@@ -1,4 +1,4 @@
-// FPS counter overlay (HERMES_TUI_FPS=1). Zero-cost when disabled.
+// FPS counter overlay (ANTHOS_TUI_FPS=1). Zero-cost when disabled.
 
 import { Text } from '@anthos/ink'
 import { useStore } from '@nanostores/react'

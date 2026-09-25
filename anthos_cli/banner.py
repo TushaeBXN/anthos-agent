@@ -121,8 +121,8 @@ _UPDATE_CHECK_CACHE_SECONDS = 6 * 3600
 # (e.g. nix-built anthos — no local git history to count against).
 UPDATE_AVAILABLE_NO_COUNT = -1
 
-_UPSTREAM_REPO_URL = "https://github.com/NousResearch/anthos-agent.git"
-_OFFICIAL_REPO_CANONICAL = "github.com/nousresearch/anthos-agent"
+_UPSTREAM_REPO_URL = "https://github.com/TushaeBXN/anthos-agent.git"
+_OFFICIAL_REPO_CANONICAL = "github.com/tushaebxn/anthos-agent"
 
 
 def _canonical_github_remote(url: str | None) -> str:
@@ -427,7 +427,7 @@ def get_git_banner_state(repo_dir: Optional[Path] = None) -> Optional[dict]:
     return {"upstream": upstream, "local": local, "ahead": max(ahead, 0)}
 
 
-_RELEASE_URL_BASE = "https://github.com/NousResearch/anthos-agent/releases/tag"
+_RELEASE_URL_BASE = "https://github.com/TushaeBXN/anthos-agent/releases/tag"
 _latest_release_cache: Optional[tuple] = None  # (tag, url) once resolved
 
 
@@ -436,7 +436,7 @@ def get_latest_release_tag(repo_dir: Optional[Path] = None) -> Optional[tuple]:
 
     Local-only — runs ``git describe --tags --abbrev=0`` against the
     Anthos checkout. Cached per-process. Release URL always points at the
-    canonical NousResearch/anthos-agent repo (forks don't get a link).
+    canonical TushaeBXN/anthos-agent repo (forks don't get a link).
     """
     global _latest_release_cache
     if _latest_release_cache is not None:

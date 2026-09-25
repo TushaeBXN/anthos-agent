@@ -120,14 +120,14 @@ try {
   }
 }
 
-const USER_DATA_OVERRIDE = process.env.HERMES_DESKTOP_USER_DATA_DIR
+const USER_DATA_OVERRIDE = process.env.ANTHOS_DESKTOP_USER_DATA_DIR
 if (USER_DATA_OVERRIDE) {
   const resolvedUserData = path.resolve(USER_DATA_OVERRIDE)
   fs.mkdirSync(resolvedUserData, { recursive: true })
   app.setPath('userData', resolvedUserData)
 }
 
-const DEV_SERVER = process.env.HERMES_DESKTOP_DEV_SERVER
+const DEV_SERVER = process.env.ANTHOS_DESKTOP_DEV_SERVER
 const IS_PACKAGED = app.isPackaged
 const IS_MAC = process.platform === 'darwin'
 const IS_WINDOWS = process.platform === 'win32'
@@ -148,7 +148,7 @@ function hiddenWindowsChildOptions(options = {}) {
 // GPU and never see it. Fall back to software rendering when a remote display
 // is detected; it's rock-steady over the wire and the CPU cost is negligible
 // next to the connection's latency. Must run before app `ready` — these
-// switches only apply pre-launch. Override with HERMES_DESKTOP_DISABLE_GPU
+// switches only apply pre-launch. Override with ANTHOS_DESKTOP_DISABLE_GPU
 // (1/true → always disable, 0/false → keep GPU on).
 const REMOTE_DISPLAY_REASON = detectRemoteDisplay()
 if (REMOTE_DISPLAY_REASON) {
@@ -241,8 +241,8 @@ if (INSTALL_STAMP) {
   )
 }
 
-// HERMES_HOME — the user-facing root for everything Anthos-related. Mirrors
-// scripts/install.ps1's $AnthosHome and scripts/install.sh's $HERMES_HOME.
+// ANTHOS_HOME — the user-facing root for everything Anthos-related. Mirrors
+// scripts/install.ps1's $AnthosHome and scripts/install.sh's $ANTHOS_HOME.
 //
 // Defaults:
 //   Windows: %LOCALAPPDATA%\anthos (matches install.ps1)
@@ -253,20 +253,20 @@ if (INSTALL_STAMP) {
 // %LOCALAPPDATA%\anthos yet, prefer the legacy path so we don't orphan their
 // existing config / sessions / .env. New installs go to %LOCALAPPDATA%.
 //
-// HERMES_DESKTOP_USER_DATA_DIR (used by test:desktop:fresh) puts the sandbox
-// HERMES_HOME beneath the throwaway userData dir so a fresh-install run never
+// ANTHOS_DESKTOP_USER_DATA_DIR (used by test:desktop:fresh) puts the sandbox
+// ANTHOS_HOME beneath the throwaway userData dir so a fresh-install run never
 // touches the user's real ~/.anthos / %LOCALAPPDATA%\anthos.
 function resolveAnthosHome() {
-  if (process.env.HERMES_HOME) return normalizeAnthosHomeRoot(process.env.HERMES_HOME)
+  if (process.env.ANTHOS_HOME) return normalizeAnthosHomeRoot(process.env.ANTHOS_HOME)
   if (USER_DATA_OVERRIDE) return path.join(path.resolve(USER_DATA_OVERRIDE), 'anthos-home')
   if (IS_WINDOWS) {
     // A GUI app launched from Explorer inherits the environment block captured
-    // at login, so a HERMES_HOME set via `setx` AFTER login is invisible in
+    // at login, so a ANTHOS_HOME set via `setx` AFTER login is invisible in
     // process.env even though the CLI (a fresh shell) sees it. Without this the
     // backend silently falls back to %LOCALAPPDATA%\anthos and reports "No
     // inference provider configured" despite a valid configured home (#45471).
     // Consult the live User-scoped registry value before the default below.
-    const fromRegistry = readWindowsUserEnvVar('HERMES_HOME')
+    const fromRegistry = readWindowsUserEnvVar('ANTHOS_HOME')
     if (fromRegistry) return normalizeAnthosHomeRoot(fromRegistry)
   }
   if (IS_WINDOWS && process.env.LOCALAPPDATA) {
@@ -280,13 +280,13 @@ function resolveAnthosHome() {
   return path.join(app.getPath('home'), '.anthos')
 }
 
-const HERMES_HOME = resolveAnthosHome()
+const ANTHOS_HOME = resolveAnthosHome()
 
 function anthosManagedNodePathEntries() {
   // NOTE: keep this ordering in sync with iter_anthos_node_dirs() in
   // anthos_constants.py — this Node main process cannot import the Python
   // module, so the platform-ordering rule is mirrored here.
-  const root = path.join(HERMES_HOME, 'node')
+  const root = path.join(ANTHOS_HOME, 'node')
   const bin = path.join(root, 'bin')
   const entries = IS_WINDOWS ? [root, bin] : [bin, root]
   return entries.filter(directoryExists)
@@ -298,12 +298,12 @@ function pathWithAnthosManagedNode(...entries) {
     .join(path.delimiter)
 }
 
-// ACTIVE_HERMES_ROOT — the canonical mutable Anthos install. Same path
+// ACTIVE_ANTHOS_ROOT — the canonical mutable Anthos install. Same path
 // install.ps1 / install.sh use, so a desktop-only user and a CLI-only user end
 // up with identical layouts and can share one install.
-const ACTIVE_HERMES_ROOT = path.join(HERMES_HOME, 'anthos-agent')
+const ACTIVE_ANTHOS_ROOT = path.join(ANTHOS_HOME, 'anthos-agent')
 // VENV_ROOT — venv lives inside the repo, exactly like install.ps1 does it.
-const VENV_ROOT = path.join(ACTIVE_HERMES_ROOT, 'venv')
+const VENV_ROOT = path.join(ACTIVE_ANTHOS_ROOT, 'venv')
 // BOOTSTRAP_COMPLETE_MARKER — written by the first-launch bootstrap runner
 // (Phase 1D) after install.ps1 has completed all stages and the user has
 // finished initial configuration. Presence of this marker means the install
@@ -312,17 +312,17 @@ const VENV_ROOT = path.join(ACTIVE_HERMES_ROOT, 'venv')
 // means we re-run the bootstrap; install.ps1's stages are idempotent so a
 // re-run on an already-good install just discovers everything in place.
 //
-// We deliberately put the marker INSIDE ACTIVE_HERMES_ROOT (not alongside)
+// We deliberately put the marker INSIDE ACTIVE_ANTHOS_ROOT (not alongside)
 // so that deleting the checkout to start fresh also deletes the marker --
 // avoids the confusing "marker exists but checkout is gone" state.
-const BOOTSTRAP_COMPLETE_MARKER = path.join(ACTIVE_HERMES_ROOT, '.anthos-bootstrap-complete')
+const BOOTSTRAP_COMPLETE_MARKER = path.join(ACTIVE_ANTHOS_ROOT, '.anthos-bootstrap-complete')
 const BOOTSTRAP_MARKER_SCHEMA_VERSION = 1
 
 const DESKTOP_CONNECTION_CONFIG_PATH = path.join(app.getPath('userData'), 'connection.json')
 const DESKTOP_UPDATE_CONFIG_PATH = path.join(app.getPath('userData'), 'updates.json')
 // active-profile.json records which Anthos profile the desktop launches its
-// local backend as. When set, startHermes() passes `anthos --profile <name>
-// dashboard …`, which deterministically pins HERMES_HOME (see
+// local backend as. When set, startAnthos() passes `anthos --profile <name>
+// dashboard …`, which deterministically pins ANTHOS_HOME (see
 // _apply_profile_override in anthos_cli/main.py) and bypasses the sticky
 // ~/.anthos/active_profile file. Unset (null) preserves the legacy behavior:
 // no --profile flag, so the backend honors active_profile / default.
@@ -334,10 +334,10 @@ const PROFILE_NAME_RE = /^[a-z0-9][a-z0-9_-]{0,63}$/
 // tracks main. User can also override at runtime via
 // anthosDesktop.updates.setBranch().
 const DEFAULT_UPDATE_BRANCH = 'main'
-// desktop.log lives under HERMES_HOME/logs/ so it sits next to agent.log,
+// desktop.log lives under ANTHOS_HOME/logs/ so it sits next to agent.log,
 // errors.log, gateway.log produced by anthos_logging.setup_logging — one log
 // directory per user, regardless of which UI surface produced the line.
-const DESKTOP_LOG_PATH = path.join(HERMES_HOME, 'logs', 'desktop.log')
+const DESKTOP_LOG_PATH = path.join(ANTHOS_HOME, 'logs', 'desktop.log')
 const DESKTOP_LOG_FLUSH_MS = 120
 const DESKTOP_LOG_BUFFER_MAX_CHARS = 64 * 1024
 // Bound desktop.log on disk. It is an append-only forensic log, so a boot loop
@@ -359,9 +359,9 @@ const DESKTOP_LOG_MAX_BYTES = 10 * 1024 * 1024
 const DESKTOP_LOG_BACKUP_COUNT = 3
 const DESKTOP_LOG_DISCARD_BYTES = DESKTOP_LOG_MAX_BYTES * 4
 const desktopLogBackupPath = n => `${DESKTOP_LOG_PATH}.${n}`
-const BOOT_FAKE_MODE = process.env.HERMES_DESKTOP_BOOT_FAKE === '1'
+const BOOT_FAKE_MODE = process.env.ANTHOS_DESKTOP_BOOT_FAKE === '1'
 const BOOT_FAKE_STEP_MS = (() => {
-  const raw = Number.parseInt(String(process.env.HERMES_DESKTOP_BOOT_FAKE_STEP_MS || ''), 10)
+  const raw = Number.parseInt(String(process.env.ANTHOS_DESKTOP_BOOT_FAKE_STEP_MS || ''), 10)
   if (!Number.isFinite(raw) || raw <= 0) return 650
   return Math.max(120, raw)
 })()
@@ -695,7 +695,7 @@ let anthosProcess = null
 let connectionPromise = null
 // Additional per-profile backends, keyed by profile name. The PRIMARY backend
 // (the desktop's launch profile) stays managed by anthosProcess +
-// connectionPromise + startHermes(); this pool only holds EXTRA profile
+// connectionPromise + startAnthos(); this pool only holds EXTRA profile
 // backends spawned lazily when a session belongs to a different profile. A user
 // with no named profiles never populates this map, so their experience is
 // byte-for-byte the single-backend behavior.
@@ -703,8 +703,8 @@ const backendPool = new Map() // profile -> { process, port, token, connectionPr
 // Keep the pool light: cap concurrent profile backends (LRU eviction) and reap
 // idle ones. A user idles at exactly the primary backend; pool backends only
 // exist while a non-primary profile is actively being chatted through.
-const POOL_MAX_BACKENDS = Math.max(1, Number(process.env.HERMES_DESKTOP_POOL_MAX) || 3)
-const POOL_IDLE_MS = Math.max(60_000, Number(process.env.HERMES_DESKTOP_POOL_IDLE_MS) || 10 * 60_000)
+const POOL_MAX_BACKENDS = Math.max(1, Number(process.env.ANTHOS_DESKTOP_POOL_MAX) || 3)
+const POOL_IDLE_MS = Math.max(60_000, Number(process.env.ANTHOS_DESKTOP_POOL_IDLE_MS) || 10 * 60_000)
 // A backend touched within this window has a live renderer socket (the keepalive
 // pings every 60s for every open profile). LRU eviction must spare these — a
 // concurrent multi-profile session keeps several backends "fresh" at once, and
@@ -719,7 +719,7 @@ const RENDERER_RELOAD_WINDOW_MS = 60_000
 const RENDERER_RELOAD_MAX = 3
 let rendererReloadTimes = []
 // Latched bootstrap failure: when the first-launch install fails, we hold
-// onto the error so subsequent startHermes() calls (e.g. the renderer's
+// onto the error so subsequent startAnthos() calls (e.g. the renderer's
 // ensureGatewayOpen retrying after the WS won't open) return the same error
 // instead of re-running install.ps1 in a hot loop. Cleared explicitly by
 // the renderer's "Reload and retry" path or by quitting the app.
@@ -1121,12 +1121,12 @@ function directoryExists(filePath) {
 }
 
 // --- in-app update mutual exclusion (#50238) -------------------------------
-// The Tauri updater writes HERMES_HOME/.anthos-update-in-progress for the whole
+// The Tauri updater writes ANTHOS_HOME/.anthos-update-in-progress for the whole
 // duration of an `--update` run (see update.rs UpdateMarkerGuard). If the user
 // relaunches the desktop mid-update — because the window vanished with no
 // progress and looks crashed — a fresh instance must NOT spawn its own local
 // backend: that backend re-locks the venv shim, the updater's straggler cleanup
-// (`force_kill_other_hermes`, taskkill /IM anthos.exe) kills it, the launch
+// (`force_kill_other_anthos`, taskkill /IM anthos.exe) kills it, the launch
 // fails with the 45s "backend didn't come up" error, and the relaunch/kill
 // cycle loops. Instead the fresh instance parks until the update finishes, then
 // brings the backend up itself (it is the surviving instance — the updater's
@@ -1151,7 +1151,7 @@ const UPDATE_HANDOFF_DWELL_MS = 2500
 // Emits a boot-progress phase so the renderer shows "Update in progress…"
 // rather than a frozen splash. Returns true if it parked at all.
 async function waitForUpdateToFinish() {
-  let marker = readLiveUpdateMarker(HERMES_HOME)
+  let marker = readLiveUpdateMarker(ANTHOS_HOME)
   if (!marker) return false
 
   rememberLog(`[updates] update in progress (pid=${marker.pid}); deferring backend start until it finishes`)
@@ -1163,7 +1163,7 @@ async function waitForUpdateToFinish() {
       12
     )
     await new Promise(r => setTimeout(r, UPDATE_WAIT_POLL_MS))
-    marker = readLiveUpdateMarker(HERMES_HOME)
+    marker = readLiveUpdateMarker(ANTHOS_HOME)
   }
   if (marker) {
     rememberLog('[updates] update still in progress after wait timeout; starting backend anyway')
@@ -1247,7 +1247,7 @@ function isAnthosSourceRoot(root) {
 }
 
 function findPythonForRoot(root) {
-  const override = process.env.HERMES_DESKTOP_PYTHON
+  const override = process.env.ANTHOS_DESKTOP_PYTHON
   if (override && fileExists(override)) return override
 
   const relativePaths = IS_WINDOWS
@@ -1486,16 +1486,16 @@ function writeDesktopUpdateConfig(config) {
 }
 
 // Match the backend's source resolution but bias toward a real git checkout.
-// Dev → SOURCE_REPO_ROOT. Packaged/CLI install → ACTIVE_HERMES_ROOT.
-// HERMES_DESKTOP_HERMES_ROOT always wins so devs can pin a worktree.
+// Dev → SOURCE_REPO_ROOT. Packaged/CLI install → ACTIVE_ANTHOS_ROOT.
+// ANTHOS_DESKTOP_ANTHOS_ROOT always wins so devs can pin a worktree.
 function resolveUpdateRoot() {
   const candidates = [
-    process.env.HERMES_DESKTOP_HERMES_ROOT && path.resolve(process.env.HERMES_DESKTOP_HERMES_ROOT),
+    process.env.ANTHOS_DESKTOP_ANTHOS_ROOT && path.resolve(process.env.ANTHOS_DESKTOP_ANTHOS_ROOT),
     !IS_PACKAGED && isAnthosSourceRoot(SOURCE_REPO_ROOT) ? SOURCE_REPO_ROOT : null,
-    isAnthosSourceRoot(ACTIVE_HERMES_ROOT) ? ACTIVE_HERMES_ROOT : null
+    isAnthosSourceRoot(ACTIVE_ANTHOS_ROOT) ? ACTIVE_ANTHOS_ROOT : null
   ].filter(Boolean)
 
-  return candidates.find(c => directoryExists(path.join(c, '.git'))) || candidates[0] || ACTIVE_HERMES_ROOT
+  return candidates.find(c => directoryExists(path.join(c, '.git'))) || candidates[0] || ACTIVE_ANTHOS_ROOT
 }
 
 function runGit(args, options = {}) {
@@ -1676,7 +1676,7 @@ async function readCommitLog(cwd, branch) {
 let updateInFlight = false
 
 // Resolve the staged updater binary. The Tauri installer copies itself to
-// HERMES_HOME/anthos-setup.exe on a successful install (see
+// ANTHOS_HOME/anthos-setup.exe on a successful install (see
 // apps/bootstrap-installer paths::copy_self_to_anthos_home). That binary owns
 // ALL repo mutation — running `anthos update` + rebuilding the desktop — so
 // the desktop never touches its own bits while running. Returns null when the
@@ -1684,7 +1684,7 @@ let updateInFlight = false
 // installer); callers degrade gracefully.
 function resolveUpdaterBinary() {
   const name = IS_WINDOWS ? 'anthos-setup.exe' : 'anthos-setup'
-  const candidate = path.join(HERMES_HOME, name)
+  const candidate = path.join(ANTHOS_HOME, name)
   return fileExists(candidate) ? candidate : null
 }
 
@@ -1860,7 +1860,7 @@ async function applyUpdates(opts = {}) {
     if (!updater) {
       // No staged updater binary — this is a CLI-installed user (they ran
       // `anthos desktop`, never the Tauri installer that self-copies
-      // anthos-setup.exe into HERMES_HOME). They DO have a working `anthos`
+      // anthos-setup.exe into ANTHOS_HOME). They DO have a working `anthos`
       // on PATH / in the venv, so the correct path is the one-liner in their
       // native medium. We show the EXACT command, branch-pinned to the
       // checkout they're on — bare `anthos update` defaults to main and would
@@ -1910,10 +1910,10 @@ async function applyUpdates(opts = {}) {
     // Detached so the updater outlives this process — it needs us GONE before
     // `anthos update` will run (the venv shim is locked while we live).
     const child = spawn(updater, updaterArgs, {
-      cwd: HERMES_HOME,
+      cwd: ANTHOS_HOME,
       env: {
         ...process.env,
-        HERMES_HOME,
+        ANTHOS_HOME,
         PATH: pathWithAnthosManagedNode(venvBin)
       },
       detached: true,
@@ -1951,16 +1951,16 @@ async function handOffWindowsBootstrapRecovery(reason) {
     ? await resolveHealedBranch(updateRoot, configuredBranch || DEFAULT_UPDATE_BRANCH)
     : configuredBranch || DEFAULT_UPDATE_BRANCH
   const venvBin = path.join(updateRoot, 'venv', IS_WINDOWS ? 'Scripts' : 'bin')
-  const venvHermes = path.join(venvBin, IS_WINDOWS ? 'anthos.exe' : 'anthos')
-  const updaterArgs = fileExists(venvHermes) ? ['--update', '--branch', branch] : ['--repair', '--branch', branch]
+  const venvAnthos = path.join(venvBin, IS_WINDOWS ? 'anthos.exe' : 'anthos')
+  const updaterArgs = fileExists(venvAnthos) ? ['--update', '--branch', branch] : ['--repair', '--branch', branch]
 
   await releaseBackendLockForUpdate(updateRoot)
 
   const child = spawn(updater, updaterArgs, {
-    cwd: HERMES_HOME,
+    cwd: ANTHOS_HOME,
     env: {
       ...process.env,
-      HERMES_HOME,
+      ANTHOS_HOME,
       PATH: pathWithAnthosManagedNode(venvBin)
     },
     detached: true,
@@ -1983,8 +1983,8 @@ async function handOffWindowsBootstrapRecovery(reason) {
 // Resolve the anthos CLI to drive an in-app update: prefer the venv shim in
 // the install we're updating, fall back to `anthos` on PATH.
 function resolveAnthosCliBinary(updateRoot) {
-  const venvHermes = path.join(updateRoot, 'venv', 'bin', 'anthos')
-  if (fileExists(venvHermes)) return venvHermes
+  const venvAnthos = path.join(updateRoot, 'venv', 'bin', 'anthos')
+  if (fileExists(venvAnthos)) return venvAnthos
   return findOnPath('anthos') || null
 }
 
@@ -2048,7 +2048,7 @@ async function applyUpdatesPosixInApp() {
   // npm build can find them on a machine with no system Node. Windows portable
   // Node lives directly under %LOCALAPPDATA%\anthos\node, not node\bin.
   const env = {
-    HERMES_HOME,
+    ANTHOS_HOME,
     PATH: pathWithAnthosManagedNode(path.join(updateRoot, 'venv', 'bin'))
   }
 
@@ -2058,7 +2058,7 @@ async function applyUpdatesPosixInApp() {
   // mid-update produces the boot→kill→crash loop in #37532 — the desktop
   // already restarts its own backend via the rebuild+relaunch below, so the
   // reap must spare it. Hand the live backend's PID to the update process;
-  // _kill_stale_dashboard_processes reads HERMES_DESKTOP_CHILD_PID and excludes
+  // _kill_stale_dashboard_processes reads ANTHOS_DESKTOP_CHILD_PID and excludes
   // it while still reaping any genuinely-orphaned dashboards. (#37532)
   // Exclude every desktop-managed backend (primary + all pool profiles) from
   // the update reaper. _kill_stale_dashboard_processes accepts a comma-separated
@@ -2073,7 +2073,7 @@ async function applyUpdatesPosixInApp() {
     }
   }
   if (desktopChildPids.length) {
-    env.HERMES_DESKTOP_CHILD_PID = desktopChildPids.join(',')
+    env.ANTHOS_DESKTOP_CHILD_PID = desktopChildPids.join(',')
   }
 
   // Branch-pin so a non-main checkout doesn't get switched to main (and self-heal
@@ -2327,7 +2327,7 @@ function isBootstrapComplete() {
   // a runnable venv: an interrupted or split-home install can leave the marker
   // + checkout without a venv, and trusting that spawns a dead backend
   // ("gateway offline") instead of re-running bootstrap to repair it.
-  return isAnthosSourceRoot(ACTIVE_HERMES_ROOT) && fileExists(getVenvPython(VENV_ROOT))
+  return isAnthosSourceRoot(ACTIVE_ANTHOS_ROOT) && fileExists(getVenvPython(VENV_ROOT))
 }
 
 function writeBootstrapMarker(payload) {
@@ -2344,7 +2344,7 @@ function writeBootstrapMarker(payload) {
 }
 
 function resolveWebDist() {
-  const override = process.env.HERMES_DESKTOP_WEB_DIST
+  const override = process.env.ANTHOS_DESKTOP_WEB_DIST
   if (override && directoryExists(path.resolve(override))) return path.resolve(override)
 
   const unpackedDist = path.join(unpackedPathFor(APP_ROOT), 'dist')
@@ -2361,7 +2361,7 @@ function resolveWebDist() {
     rememberLog(
       `[web-dist] dashboard frontend dir resolved to an asar-internal path that ` +
         `is not a real directory: ${fallback}. Static routes will 404. ` +
-        `Ensure dist/** is unpacked (asarUnpack) or set HERMES_DESKTOP_WEB_DIST.`
+        `Ensure dist/** is unpacked (asarUnpack) or set ANTHOS_DESKTOP_WEB_DIST.`
     )
   }
   return fallback
@@ -2407,7 +2407,7 @@ function resolveAnthosCwd() {
   // real directory), then the home dir.
   const candidates = [
     readDefaultProjectDir(),
-    process.env.HERMES_DESKTOP_CWD,
+    process.env.ANTHOS_DESKTOP_CWD,
     IS_PACKAGED ? null : process.env.INIT_CWD,
     IS_PACKAGED ? null : process.cwd(),
     !IS_PACKAGED ? SOURCE_REPO_ROOT : null,
@@ -2500,7 +2500,7 @@ function createPythonBackend(root, label, dashboardArgs, options = {}) {
     command: python,
     args: ['-m', 'anthos_cli.main', ...dashboardArgs],
     env: buildDesktopBackendEnv({
-      anthosHome: HERMES_HOME,
+      anthosHome: ANTHOS_HOME,
       pythonPathEntries: [root],
       venvRoot: path.join(root, 'venv')
     }),
@@ -2510,7 +2510,7 @@ function createPythonBackend(root, label, dashboardArgs, options = {}) {
   }
 }
 
-// createActiveBackend — build a backend pointing at ACTIVE_HERMES_ROOT, the
+// createActiveBackend — build a backend pointing at ACTIVE_ANTHOS_ROOT, the
 // canonical install location shared with the CLI installer. The venv at
 // VENV_ROOT may not exist yet on first run; bootstrap=true tells
 // ensureRuntime() to create / refresh it before launch.
@@ -2519,24 +2519,24 @@ function createActiveBackend(dashboardArgs) {
 
   return {
     kind: 'python',
-    label: `Anthos at ${ACTIVE_HERMES_ROOT}`,
+    label: `Anthos at ${ACTIVE_ANTHOS_ROOT}`,
     command: fileExists(venvPython) ? venvPython : findSystemPython(),
     args: ['-m', 'anthos_cli.main', ...dashboardArgs],
     env: buildDesktopBackendEnv({
-      anthosHome: HERMES_HOME,
-      pythonPathEntries: [ACTIVE_HERMES_ROOT],
+      anthosHome: ANTHOS_HOME,
+      pythonPathEntries: [ACTIVE_ANTHOS_ROOT],
       venvRoot: VENV_ROOT
     }),
-    root: ACTIVE_HERMES_ROOT,
+    root: ACTIVE_ANTHOS_ROOT,
     bootstrap: true,
     shell: false
   }
 }
 
 function resolveAnthosBackend(dashboardArgs) {
-  // 1. Explicit override -- HERMES_DESKTOP_HERMES_ROOT points at a developer
+  // 1. Explicit override -- ANTHOS_DESKTOP_ANTHOS_ROOT points at a developer
   //    checkout. Honour it as-is (no bootstrap; the user is driving).
-  const overrideRoot = process.env.HERMES_DESKTOP_HERMES_ROOT && path.resolve(process.env.HERMES_DESKTOP_HERMES_ROOT)
+  const overrideRoot = process.env.ANTHOS_DESKTOP_ANTHOS_ROOT && path.resolve(process.env.ANTHOS_DESKTOP_ANTHOS_ROOT)
   if (overrideRoot && isAnthosSourceRoot(overrideRoot)) {
     const backend = createPythonBackend(overrideRoot, `Anthos source at ${overrideRoot}`, dashboardArgs)
     if (backend) return backend
@@ -2551,7 +2551,7 @@ function resolveAnthosBackend(dashboardArgs) {
     if (backend) return backend
   }
 
-  // 3. Bootstrap-complete ACTIVE_HERMES_ROOT -- the canonical install at
+  // 3. Bootstrap-complete ACTIVE_ANTHOS_ROOT -- the canonical install at
   //    %LOCALAPPDATA%\anthos\anthos-agent (Windows) or ~/.anthos/anthos-agent.
   //    The bootstrap marker means install.ps1 stages finished and the user
   //    completed initial configuration; we trust the install and go straight
@@ -2565,10 +2565,10 @@ function resolveAnthosBackend(dashboardArgs) {
   //    a previous tool-only setup, or pip-installed system-wide. Use it but
   //    do NOT write a bootstrap marker; the user did this themselves and we
   //    don't want to take ownership of an install we didn't perform.
-  //    HERMES_DESKTOP_IGNORE_EXISTING=1 forces the bootstrap path for testing.
-  if (process.env.HERMES_DESKTOP_IGNORE_EXISTING !== '1') {
+  //    ANTHOS_DESKTOP_IGNORE_EXISTING=1 forces the bootstrap path for testing.
+  if (process.env.ANTHOS_DESKTOP_IGNORE_EXISTING !== '1') {
     let anthosCommand = null
-    const anthosOverride = process.env.HERMES_DESKTOP_HERMES
+    const anthosOverride = process.env.ANTHOS_DESKTOP_ANTHOS
 
     if (anthosOverride) {
       const resolvedOverride = findOnPath(anthosOverride)
@@ -2662,7 +2662,7 @@ function resolveAnthosBackend(dashboardArgs) {
     env: {},
     shell: false,
     // Hints for the bootstrap runner / UI layer:
-    activeRoot: ACTIVE_HERMES_ROOT,
+    activeRoot: ACTIVE_ANTHOS_ROOT,
     installStamp: INSTALL_STAMP, // may be null in dev
     isPackaged: IS_PACKAGED,
     platform: process.platform
@@ -2717,8 +2717,8 @@ async function ensureRuntime(backend) {
       installStamp: backend.installStamp,
       activeRoot: backend.activeRoot,
       sourceRepoRoot: SOURCE_REPO_ROOT,
-      anthosHome: HERMES_HOME,
-      logRoot: path.join(HERMES_HOME, 'logs'),
+      anthosHome: ANTHOS_HOME,
+      logRoot: path.join(ANTHOS_HOME, 'logs'),
       abortSignal: bootstrapAbortController.signal,
       onEvent: ev => {
         // Tee every bootstrap event to (a) the desktop log for forensics
@@ -2753,11 +2753,11 @@ async function ensureRuntime(backend) {
       const bootstrapError = new Error(
         `Anthos bootstrap failed${bootstrapResult.failedStage ? ` at stage '${bootstrapResult.failedStage}'` : ''}: ` +
           `${bootstrapResult.error || 'unknown error'}. ` +
-          `Check ${path.join(HERMES_HOME, 'logs', 'desktop.log')} for the full transcript.`
+          `Check ${path.join(ANTHOS_HOME, 'logs', 'desktop.log')} for the full transcript.`
       )
       bootstrapError.isBootstrapFailure = true
       bootstrapError.failedStage = bootstrapResult.failedStage || null
-      // Latch the failure so subsequent startHermes() calls return this
+      // Latch the failure so subsequent startAnthos() calls return this
       // same error without re-running install.ps1.  Cleared by the
       // anthos:bootstrap:reset IPC (renderer's "Reload and retry").
       bootstrapFailure = bootstrapError
@@ -2776,9 +2776,9 @@ async function ensureRuntime(backend) {
   // sync flow exited through, minus all the factory/pip/marker machinery
   // (install.ps1 owns those concerns now and the bootstrap-complete marker
   // attests they ran successfully).
-  if (!isAnthosSourceRoot(ACTIVE_HERMES_ROOT)) {
+  if (!isAnthosSourceRoot(ACTIVE_ANTHOS_ROOT)) {
     throw new Error(
-      `Anthos install at ${ACTIVE_HERMES_ROOT} is missing or incomplete. ` +
+      `Anthos install at ${ACTIVE_ANTHOS_ROOT} is missing or incomplete. ` +
         'Reinstall via the desktop installer or scripts/install.ps1.'
     )
   }
@@ -2813,7 +2813,7 @@ async function ensureRuntime(backend) {
   }
 
   backend.command = venvPython
-  backend.label = `Anthos at ${ACTIVE_HERMES_ROOT} (venv: ${VENV_ROOT})`
+  backend.label = `Anthos at ${ACTIVE_ANTHOS_ROOT} (venv: ${VENV_ROOT})`
   updateBootProgress({
     phase: 'runtime.ready',
     message: 'Anthos runtime is ready',
@@ -3460,7 +3460,7 @@ function closePreviewWatchers() {
   }
 }
 
-async function waitForHermes(baseUrl, token) {
+async function waitForAnthos(baseUrl, token) {
   const deadline = Date.now() + 45_000
   let lastError = null
 
@@ -4332,7 +4332,7 @@ function writeDesktopConnectionConfig(config) {
 }
 
 // Returns the desktop's chosen profile name, or null when unset. "default" is
-// a valid stored value (pins the root HERMES_HOME explicitly); null means "no
+// a valid stored value (pins the root ANTHOS_HOME explicitly); null means "no
 // preference" and preserves the legacy launch (no --profile flag).
 function readActiveDesktopProfile() {
   try {
@@ -4372,11 +4372,11 @@ async function sanitizeDesktopConnectionConfig(config = readDesktopConnectionCon
   const scoped = key ? config.profiles?.[key] || null : null
   const block = key ? scoped || {} : config.remote || {}
 
-  const envOverride = key ? false : Boolean(process.env.HERMES_DESKTOP_REMOTE_URL)
+  const envOverride = key ? false : Boolean(process.env.ANTHOS_DESKTOP_REMOTE_URL)
 
   const remoteToken = decryptDesktopSecret(block.token)
   const authMode = normAuthMode(block.authMode)
-  const remoteUrl = envOverride ? String(process.env.HERMES_DESKTOP_REMOTE_URL || '') : String(block.url || '')
+  const remoteUrl = envOverride ? String(process.env.ANTHOS_DESKTOP_REMOTE_URL || '') : String(block.url || '')
   const mode = envOverride || (key ? scoped?.mode : config.mode) === 'remote' ? 'remote' : 'local'
 
   let remoteOauthConnected = false
@@ -4402,7 +4402,7 @@ async function sanitizeDesktopConnectionConfig(config = readDesktopConnectionCon
     remoteTokenPreview: tokenPreview(remoteToken),
     remoteTokenSet: Boolean(remoteToken),
     // The env override only forces the global/primary connection; a per-profile
-    // scope is never overridden by HERMES_DESKTOP_REMOTE_URL.
+    // scope is never overridden by ANTHOS_DESKTOP_REMOTE_URL.
     envOverride
   }
 }
@@ -4524,7 +4524,7 @@ async function buildRemoteConnection(rawUrl, authMode, token, source) {
 // Resolve the remote backend for a given profile, or null when that profile
 // should run a LOCAL backend. Precedence:
 //   1. explicit per-profile remote override (connection.json `profiles[name]`)
-//   2. env override (HERMES_DESKTOP_REMOTE_URL/_TOKEN) — applies app-wide
+//   2. env override (ANTHOS_DESKTOP_REMOTE_URL/_TOKEN) — applies app-wide
 //   3. global remote (connection.json `mode: 'remote'`)
 // A null/empty profile resolves the env/global remote, so legacy callers and
 // the connection test (which pass no profile) are unchanged.
@@ -4541,12 +4541,12 @@ async function resolveRemoteBackend(profile) {
   }
 
   // 2. Env override (global, token-auth only).
-  const rawEnvUrl = process.env.HERMES_DESKTOP_REMOTE_URL
-  const rawEnvToken = process.env.HERMES_DESKTOP_REMOTE_TOKEN
+  const rawEnvUrl = process.env.ANTHOS_DESKTOP_REMOTE_URL
+  const rawEnvToken = process.env.ANTHOS_DESKTOP_REMOTE_TOKEN
   if (rawEnvUrl) {
     if (!rawEnvToken) {
       throw new Error(
-        'HERMES_DESKTOP_REMOTE_URL is set but HERMES_DESKTOP_REMOTE_TOKEN is not. ' +
+        'ANTHOS_DESKTOP_REMOTE_URL is set but ANTHOS_DESKTOP_REMOTE_TOKEN is not. ' +
           'Both must be provided to connect to a remote Anthos backend.'
       )
     }
@@ -4579,7 +4579,7 @@ function configuredRemoteProfileNames() {
 // Remote, or the env override): a SINGLE remote backend serves every profile via
 // ?profile=. Distinct from per-profile overrides — here there's one host for all.
 function globalRemoteActive() {
-  if (process.env.HERMES_DESKTOP_REMOTE_URL) {
+  if (process.env.ANTHOS_DESKTOP_REMOTE_URL) {
     return true
   }
   return readDesktopConnectionConfig().mode === 'remote'
@@ -4685,7 +4685,7 @@ async function testDesktopConnectionConfig(input = {}) {
       token = decryptDesktopSecret(block.token)
     }
   } else {
-    const remote = (await resolveRemoteBackend(key)) || (await startHermes())
+    const remote = (await resolveRemoteBackend(key)) || (await startAnthos())
     baseUrl = remote.baseUrl
     token = remote.token
     authMode = normAuthMode(remote.authMode)
@@ -4746,7 +4746,7 @@ function resetAnthosConnection() {
 
 // Re-home the primary backend: reset connection state, then wait for the live
 // dashboard process to actually exit (SIGKILL after 5s) so the next
-// startHermes() spawns fresh instead of racing the dying one. Shared by the
+// startAnthos() spawns fresh instead of racing the dying one. Shared by the
 // connection-config and profile switch flows.
 async function teardownPrimaryBackendAndWait() {
   // Capture the reference before resetAnthosConnection() nulls anthosProcess.
@@ -4792,14 +4792,14 @@ function primaryProfileKey() {
 }
 
 // Resolve a backend connection for the given profile. Routes the primary
-// profile to startHermes() (the window backend: boot UI, bootstrap, remote
+// profile to startAnthos() (the window backend: boot UI, bootstrap, remote
 // mode), and any OTHER profile to a lazily-spawned pool backend. An empty /
 // unknown profile resolves to the primary, so all legacy callers are unchanged.
 async function ensureBackend(profile) {
   const key = profile && String(profile).trim() ? String(profile).trim() : primaryProfileKey()
 
   if (key === primaryProfileKey()) {
-    return startHermes()
+    return startAnthos()
   }
 
   const existing = backendPool.get(key)
@@ -4868,7 +4868,7 @@ function startPoolIdleReaper() {
 }
 
 // Spawn an additional dashboard backend pinned to a named profile. Mirrors the
-// local-spawn portion of startHermes() but without the boot-progress UI,
+// local-spawn portion of startAnthos() but without the boot-progress UI,
 // bootstrap, or remote handling (those belong to the primary backend only).
 async function spawnPoolBackend(profile, entry) {
   // A profile may point at its OWN remote backend (connection.json
@@ -4879,7 +4879,7 @@ async function spawnPoolBackend(profile, entry) {
   // tolerate.
   const remote = await resolveRemoteBackend(profile)
   if (remote) {
-    await waitForHermes(remote.baseUrl, remote.token)
+    await waitForAnthos(remote.baseUrl, remote.token)
     return {
       ...remote,
       profile,
@@ -4889,7 +4889,7 @@ async function spawnPoolBackend(profile, entry) {
   }
 
   const token = crypto.randomBytes(32).toString('base64url')
-  // --profile wins over the inherited HERMES_HOME env (see _apply_profile_override
+  // --profile wins over the inherited ANTHOS_HOME env (see _apply_profile_override
   // step 3 in anthos_cli/main.py), so the child re-homes to this profile.
   // --port 0: the OS assigns an ephemeral port; the child announces it on stdout.
   const dashboardArgs = ['--profile', profile, 'dashboard', '--no-open', '--host', '127.0.0.1', '--port', '0']
@@ -4906,17 +4906,17 @@ async function spawnPoolBackend(profile, entry) {
       cwd: anthosCwd,
       env: {
         ...process.env,
-        HERMES_HOME,
+        ANTHOS_HOME,
         ...backend.env,
         // Pin the gateway's tool/terminal cwd to the same directory we chose for
         // the child process. Inherited TERMINAL_CWD (or a stale config bridge)
         // can still point at the install dir even when spawn cwd is home.
         TERMINAL_CWD: anthosCwd,
-        HERMES_DASHBOARD_SESSION_TOKEN: token,
+        ANTHOS_DASHBOARD_SESSION_TOKEN: token,
         // Marks this dashboard backend as desktop-spawned so it runs the cron
         // scheduler tick loop (the gateway isn't running under the app).
-        HERMES_DESKTOP: '1',
-        HERMES_WEB_DIST: webDist
+        ANTHOS_DESKTOP: '1',
+        ANTHOS_WEB_DIST: webDist
       },
       shell: backend.shell,
       stdio: ['ignore', 'pipe', 'pipe']
@@ -4953,7 +4953,7 @@ async function spawnPoolBackend(profile, entry) {
   entry.port = port
 
   const baseUrl = `http://127.0.0.1:${port}`
-  await Promise.race([waitForHermes(baseUrl, token), startFailed])
+  await Promise.race([waitForAnthos(baseUrl, token), startFailed])
   ready = true
   const authToken = await adoptServedDashboardToken(baseUrl, token, {
     childAlive: () => child.exitCode === null && !child.killed,
@@ -5052,9 +5052,9 @@ async function prepareProfileDeleteRequest(request) {
   await teardownPoolBackendAndWait(profile)
 }
 
-async function startHermes() {
+async function startAnthos() {
   // Latched-failure short-circuit: once bootstrap has failed in this
-  // process, every subsequent startHermes() call re-throws the same error
+  // process, every subsequent startAnthos() call re-throws the same error
   // without re-running install.ps1. This prevents the renderer's
   // ensureGatewayOpen retries (and any other getConnection callers) from
   // restarting a 5-10 minute install loop while the user is still reading
@@ -5071,7 +5071,7 @@ async function startHermes() {
     const remote = await resolveRemoteBackend(primaryProfileKey())
     if (remote) {
       await advanceBootProgress('backend.remote', `Connecting to remote Anthos backend at ${remote.baseUrl}`, 24)
-      await waitForHermes(remote.baseUrl, remote.token)
+      await waitForAnthos(remote.baseUrl, remote.token)
       updateBootProgress({
         phase: 'backend.ready',
         message: 'Remote Anthos backend is ready',
@@ -5104,7 +5104,7 @@ async function startHermes() {
     const dashboardArgs = ['dashboard', '--no-open', '--host', '127.0.0.1', '--port', '0']
     // Pin the desktop's chosen profile via the global --profile flag. This is
     // deterministic (it wins over the sticky ~/.anthos/active_profile file) and
-    // resolves HERMES_HOME the same way `anthos -p <name>` does on the CLI. An
+    // resolves ANTHOS_HOME the same way `anthos -p <name>` does on the CLI. An
     // unset preference keeps the legacy launch so existing installs are
     // unaffected.
     const activeProfile = readActiveDesktopProfile()
@@ -5126,22 +5126,22 @@ async function startHermes() {
         cwd: anthosCwd,
         env: {
           ...process.env,
-          // Explicitly pin HERMES_HOME for the child so Python's get_anthos_home()
+          // Explicitly pin ANTHOS_HOME for the child so Python's get_anthos_home()
           // resolves to the SAME location our resolveAnthosHome() picked. Without
           // this pin, Python falls back to ~/.anthos on every platform — fine on
           // mac/linux (where our default matches), but on Windows our default is
           // %LOCALAPPDATA%\anthos, which differs from C:\Users\<u>\.anthos.
           // Mismatch would split config / sessions / .env / logs across two
-          // directories. install.ps1 sets HERMES_HOME via setx; the desktop
+          // directories. install.ps1 sets ANTHOS_HOME via setx; the desktop
           // can't reliably do that, so we set it inline for every spawn.
-          HERMES_HOME,
+          ANTHOS_HOME,
           ...backend.env,
           TERMINAL_CWD: anthosCwd,
-          HERMES_DASHBOARD_SESSION_TOKEN: token,
+          ANTHOS_DASHBOARD_SESSION_TOKEN: token,
           // Marks this dashboard backend as desktop-spawned so it runs the cron
           // scheduler tick loop (the gateway isn't running under the app).
-          HERMES_DESKTOP: '1',
-          HERMES_WEB_DIST: webDist
+          ANTHOS_DESKTOP: '1',
+          ANTHOS_WEB_DIST: webDist
         },
         shell: backend.shell,
         stdio: ['ignore', 'pipe', 'pipe']
@@ -5201,7 +5201,7 @@ async function startHermes() {
 
     const baseUrl = `http://127.0.0.1:${port}`
     await advanceBootProgress('backend.wait', 'Waiting for Anthos backend to become ready', 90)
-    await Promise.race([waitForHermes(baseUrl, token), backendStartFailed])
+    await Promise.race([waitForAnthos(baseUrl, token), backendStartFailed])
     backendReady = true
     const authToken = await adoptServedDashboardToken(baseUrl, token, {
       // The exit/error handlers null anthosProcess when the child dies.
@@ -5462,7 +5462,7 @@ function createWindow() {
     restorePersistedZoomLevel(mainWindow)
     broadcastBootProgress()
     sendWindowStateChanged()
-    startHermes().catch(error => rememberLog(error.stack || error.message))
+    startAnthos().catch(error => rememberLog(error.stack || error.message))
   })
 }
 
@@ -5527,7 +5527,7 @@ ipcMain.handle('anthos:window:openNewSession', async () => {
 })
 ipcMain.handle('anthos:bootstrap:reset', async () => {
   // Renderer's "Reload and retry" path. Clear the latched failure and
-  // reset connection state so the next startHermes() call restarts the
+  // reset connection state so the next startAnthos() call restarts the
   // full backend flow (including a fresh runBootstrap pass).
   rememberLog('[bootstrap] reset requested by renderer; clearing latched failure')
   await teardownPrimaryBackendAndWait()
@@ -5546,7 +5546,7 @@ ipcMain.handle('anthos:bootstrap:reset', async () => {
 })
 ipcMain.handle('anthos:bootstrap:repair', async () => {
   // Forceful repair: drop the bootstrap-complete marker so the next
-  // startHermes() re-runs the full installer (refreshing a broken/partial
+  // startAnthos() re-runs the full installer (refreshing a broken/partial
   // venv), and clear any latched failure + live connection. The renderer
   // reloads afterwards to re-drive the boot flow from scratch.
   rememberLog('[bootstrap] repair requested by renderer; clearing marker + latched failure')
@@ -5631,7 +5631,7 @@ ipcMain.handle('anthos:profile:set', async (_event, name) => {
   const next = writeActiveDesktopProfile(name)
 
   // Switching profiles is a backend re-home: relaunch the dashboard under the
-  // new HERMES_HOME. Pool backends keep their own homes, so only the primary
+  // new ANTHOS_HOME. Pool backends keep their own homes, so only the primary
   // is torn down.
   await teardownPrimaryBackendAndWait()
   mainWindow?.reload()
@@ -6139,11 +6139,11 @@ function windowsShellSpec() {
 // Resolve the interactive shell for the embedded terminal: an explicit user
 // override wins, otherwise auto-detect the best one installed for the platform.
 function terminalShellCommand() {
-  // HERMES_DESKTOP_SHELL is the cross-platform escape hatch (a path or a bare
+  // ANTHOS_DESKTOP_SHELL is the cross-platform escape hatch (a path or a bare
   // name on PATH); $SHELL is honored on POSIX, where it's the user's canonical
   // choice, but ignored on Windows, where it's usually a stray MSYS/Git path
   // node-pty can't spawn natively.
-  const override = (process.env.HERMES_DESKTOP_SHELL || (IS_WINDOWS ? '' : process.env.SHELL) || '').trim()
+  const override = (process.env.ANTHOS_DESKTOP_SHELL || (IS_WINDOWS ? '' : process.env.SHELL) || '').trim()
 
   if (override) {
     const resolved = isExecutableFile(override) ? override : findOnPath(override)
@@ -6200,9 +6200,9 @@ function terminalShellEnv() {
   env.TERM_PROGRAM_VERSION = app.getVersion()
 
   // Let a anthos/--tui launched in this pane know it's embedded in the desktop
-  // GUI (build_environment_hints surfaces this). Distinct from HERMES_DESKTOP,
+  // GUI (build_environment_hints surfaces this). Distinct from ANTHOS_DESKTOP,
   // which marks the agent *backend* and gates cron/gateway behavior.
-  env.HERMES_DESKTOP_TERMINAL = '1'
+  env.ANTHOS_DESKTOP_TERMINAL = '1'
 
   return env
 }
@@ -6393,11 +6393,11 @@ function uninstallVenvPython() {
 
 async function getUninstallSummary() {
   const py = uninstallVenvPython()
-  const agentRoot = ACTIVE_HERMES_ROOT
+  const agentRoot = ACTIVE_ANTHOS_ROOT
   // Fast JS-side fallback used when the agent venv is gone (lite client) or the
   // probe fails — the renderer still needs *something* to render options from.
   const fallback = () => ({
-    anthos_home: HERMES_HOME,
+    anthos_home: ANTHOS_HOME,
     agent_installed: isAnthosSourceRoot(agentRoot) && fileExists(py),
     gui_installed: true,
     source_built_artifacts: [],
@@ -6426,7 +6426,7 @@ async function getUninstallSummary() {
         ['-m', 'anthos_cli.main', 'uninstall', '--gui-summary'],
         hiddenWindowsChildOptions({
           cwd: agentRoot,
-          env: { ...process.env, HERMES_HOME, NO_COLOR: '1' },
+          env: { ...process.env, ANTHOS_HOME, NO_COLOR: '1' },
           stdio: ['ignore', 'pipe', 'ignore']
         })
       )
@@ -6486,7 +6486,7 @@ async function runDesktopUninstall(mode) {
     const sysPy = findSystemPython()
     if (sysPy) {
       py = sysPy
-      pythonPath = ACTIVE_HERMES_ROOT
+      pythonPath = ACTIVE_ANTHOS_ROOT
     } else if (IS_WINDOWS) {
       rememberLog(
         '[uninstall] no system Python found for lite/full on Windows; falling back ' +
@@ -6506,7 +6506,7 @@ async function runDesktopUninstall(mode) {
   // lock would make the script's rmdir half-fail (#37532 for the update path).
   // Reuses the incident-hardened update teardown; no-op on macOS/Linux.
   try {
-    await releaseBackendLock(ACTIVE_HERMES_ROOT, 'uninstall')
+    await releaseBackendLock(ACTIVE_ANTHOS_ROOT, 'uninstall')
   } catch (error) {
     rememberLog(`[uninstall] backend teardown errored (continuing): ${error.message}`)
   }
@@ -6515,10 +6515,10 @@ async function runDesktopUninstall(mode) {
     desktopPid: process.pid,
     pythonExe: py,
     pythonPath,
-    agentRoot: ACTIVE_HERMES_ROOT,
+    agentRoot: ACTIVE_ANTHOS_ROOT,
     uninstallArgs,
     appPath: removeBundle,
-    anthosHome: HERMES_HOME
+    anthosHome: ANTHOS_HOME
   }
 
   let scriptPath
@@ -6581,13 +6581,13 @@ ipcMain.handle('anthos:vscode-theme:search', async (_event, query) => searchMark
 // running app's chat composer. Three delivery paths: macOS 'open-url',
 // Win/Linux running-app 'second-instance' (argv), Win/Linux cold-start argv.
 // ---------------------------------------------------------------------------
-const HERMES_PROTOCOL = 'anthos'
+const ANTHOS_PROTOCOL = 'anthos'
 let _pendingDeepLink = null
 let _rendererReadyForDeepLink = false
 
 function _extractDeepLink(argv) {
   if (!Array.isArray(argv)) return null
-  return argv.find(a => typeof a === 'string' && a.startsWith(`${HERMES_PROTOCOL}://`)) || null
+  return argv.find(a => typeof a === 'string' && a.startsWith(`${ANTHOS_PROTOCOL}://`)) || null
 }
 
 function handleDeepLink(url) {
@@ -6630,7 +6630,7 @@ ipcMain.handle('anthos:deep-link-ready', () => {
     const queued = _pendingDeepLink
     _pendingDeepLink = null
     handleDeepLink(
-      `${HERMES_PROTOCOL}://${queued.kind}/${encodeURIComponent(queued.name)}` +
+      `${ANTHOS_PROTOCOL}://${queued.kind}/${encodeURIComponent(queued.name)}` +
         (Object.keys(queued.params).length ? '?' + new URLSearchParams(queued.params).toString() : '')
     )
   }
@@ -6642,9 +6642,9 @@ function registerDeepLinkProtocol() {
     if (process.defaultApp && process.argv.length >= 2) {
       // Dev: register with the electron exec path + entry script so the OS can
       // relaunch us with the URL.
-      app.setAsDefaultProtocolClient(HERMES_PROTOCOL, process.execPath, [path.resolve(process.argv[1])])
+      app.setAsDefaultProtocolClient(ANTHOS_PROTOCOL, process.execPath, [path.resolve(process.argv[1])])
     } else {
-      app.setAsDefaultProtocolClient(HERMES_PROTOCOL)
+      app.setAsDefaultProtocolClient(ANTHOS_PROTOCOL)
     }
   } catch (err) {
     rememberLog(`[deeplink] protocol registration failed: ${err.message}`)

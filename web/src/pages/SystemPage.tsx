@@ -386,7 +386,7 @@ export default function SystemPage() {
   // ── Update check / apply ───────────────────────────────────────────
   const checkForUpdate = useCallback(
     async (force = false) => {
-      if (status?.can_update_hermes === false) return;
+      if (status?.can_update_anthos === false) return;
       setCheckingUpdate(true);
       try {
         const info = await api.checkAnthosUpdate(force);
@@ -411,14 +411,14 @@ export default function SystemPage() {
         setCheckingUpdate(false);
       }
     },
-    [showToast, status?.can_update_hermes],
+    [showToast, status?.can_update_anthos],
   );
 
   // Auto-check (cached) runs inside loadAll on mount; this is the
   // user-triggered forced re-check from the "Check for updates" button.
   const applyUpdate = async () => {
     setUpdateConfirmOpen(false);
-    if (status?.can_update_hermes === false) {
+    if (status?.can_update_anthos === false) {
       showToast(
         "Anthos updates are managed outside this dashboard.",
         "success",
@@ -426,7 +426,7 @@ export default function SystemPage() {
       return;
     }
     try {
-      const resp = await api.updateHermes();
+      const resp = await api.updateAnthos();
       if (!resp.ok) {
         showToast(
           resp.message ??
@@ -511,7 +511,7 @@ export default function SystemPage() {
   }
 
   const gatewayRunning = status?.gateway_running;
-  const canUpdateHermes = status?.can_update_hermes !== false;
+  const canUpdateAnthos = status?.can_update_anthos !== false;
   const validEvents = hooks?.valid_events?.length
     ? hooks.valid_events
     : HOOK_EVENTS_FALLBACK;
@@ -521,7 +521,7 @@ export default function SystemPage() {
       <Toast toast={toast} />
 
       <ConfirmDialog
-        open={canUpdateHermes && updateConfirmOpen}
+        open={canUpdateAnthos && updateConfirmOpen}
         onCancel={() => setUpdateConfirmOpen(false)}
         onConfirm={() => void applyUpdate()}
         title="Update Anthos?"
@@ -700,7 +700,7 @@ export default function SystemPage() {
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">Anthos</div>
                 <div className="flex items-center gap-2">
                   <span>v{stats?.anthos_version}</span>
-                  {canUpdateHermes &&
+                  {canUpdateAnthos &&
                     updateInfo &&
                     (updateInfo.update_available ? (
                       <Badge tone="warning">
@@ -761,7 +761,7 @@ export default function SystemPage() {
                 CPU / memory / disk metrics.
               </p>
             )}
-            {canUpdateHermes && (
+            {canUpdateAnthos && (
               <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
                 <Button
                   size="sm"

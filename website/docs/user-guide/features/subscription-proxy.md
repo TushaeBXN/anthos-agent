@@ -59,7 +59,7 @@ Any OpenAI-compatible app config takes the same triple:
 ```
 Base URL:   http://127.0.0.1:8645/v1
 API key:    anything (e.g. "sk-unused")
-Model:      Anthos-4-70B    # or Anthos-4.3-36B, Anthos-4-405B
+Model:      Hermes-4-70B    # or Hermes-4.3-36B, Hermes-4-405B
 ```
 
 The proxy ignores the `Authorization` header from your app and attaches
@@ -122,7 +122,7 @@ Edit `~/.openviking/ov.conf`:
 {
   "vlm": {
     "provider": "openai",
-    "model": "Anthos-4-70B",
+    "model": "Hermes-4-70B",
     "api_base": "http://127.0.0.1:8645/v1",
     "api_key": "unused-proxy-attaches-real-creds"
   }
@@ -142,7 +142,7 @@ openviking-server
 OpenViking's VLM calls now flow through your Portal subscription. The
 embedding model side still needs its own provider — Portal does serve
 `/v1/embeddings` but the model selection depends on what your tier
-supports; check `portal.anthosai.com/models`.
+supports; check `portal.nousresearch.com/models`.
 
 ## Configuring Karakeep (or any bookmark/summarizer app)
 
@@ -153,7 +153,7 @@ bookmark summarization. In its config:
 # Karakeep .env
 OPENAI_API_BASE_URL=http://127.0.0.1:8645/v1
 OPENAI_API_KEY=any-non-empty-string
-INFERENCE_TEXT_MODEL=Anthos-4-70B
+INFERENCE_TEXT_MODEL=Hermes-4-70B
 ```
 
 Same pattern works for Open WebUI, LobeChat, NextChat, or any other
@@ -178,7 +178,7 @@ this beyond your trusted network.
 Your Portal tier's RPM/TPM limits apply across the whole proxy. The
 proxy doesn't fan out or pool — it's a single bearer with your full
 subscription quota. Monitor usage at
-[portal.anthosai.com](https://portal.anthosai.com).
+[portal.nousresearch.com](https://portal.nousresearch.com).
 
 ## Architecture
 

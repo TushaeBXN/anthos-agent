@@ -78,7 +78,7 @@ def test_targeted_chown_covers_legacy_and_new_pairing_dirs(stage2_text: str) -> 
 
 
 def test_seeded_directory_list_covers_legacy_and_new_pairing_dirs(stage2_text: str) -> None:
-    seed_block = stage2_text.split("as_hermes mkdir -p \\", 1)[1].split(
+    seed_block = stage2_text.split("as_anthos mkdir -p \\", 1)[1].split(
         "# --- Install-method stamp",
         1,
     )[0]

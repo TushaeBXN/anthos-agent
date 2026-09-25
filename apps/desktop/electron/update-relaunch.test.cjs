@@ -10,7 +10,7 @@
  *      relaunch/claim a GUI update; AppImage/.deb/.rpm/dev/unresolved paths land
  *      on the guiSkew terminal state and do NOT claim the GUI was updated.
  *   2. Launch context is replayed on re-exec (args filtered of Electron
- *      internals; HERMES_HOME / HERMES_DESKTOP_* env + cwd preserved) and is
+ *      internals; ANTHOS_HOME / ANTHOS_DESKTOP_* env + cwd preserved) and is
  *      safely shell-quoted.
  *   3. The sandbox preflight: chrome-sandbox must be root-owned + setuid to be
  *      launchable; otherwise the decision degrades to a manual terminal state
@@ -57,7 +57,7 @@ test('resolveUnpackedRelease returns the dir for a binary UNDER release/<plat>-u
 
 test('resolveUnpackedRelease is null for AppImage / .deb / .rpm / dev / unresolved paths', () => {
   // AppImage mount
-  assert.equal(resolveUnpackedRelease('/tmp/.mount_Hermes12345/AppRun', ROOT, 'linux'), null)
+  assert.equal(resolveUnpackedRelease('/tmp/.mount_Anthos12345/AppRun', ROOT, 'linux'), null)
   // .deb / .rpm system install
   assert.equal(resolveUnpackedRelease('/usr/lib/anthos/anthos', ROOT, 'linux'), null)
   assert.equal(resolveUnpackedRelease('/opt/Anthos/anthos', ROOT, 'linux'), null)
@@ -151,22 +151,22 @@ test('collectRelaunchArgs drops Electron internals, keeps user/launcher args', (
   assert.deepEqual(collectRelaunchArgs(undefined), [])
 })
 
-test('collectRelaunchEnv preserves HERMES_HOME + HERMES_DESKTOP_* + sandbox opt-out only', () => {
+test('collectRelaunchEnv preserves ANTHOS_HOME + ANTHOS_DESKTOP_* + sandbox opt-out only', () => {
   const env = {
-    HERMES_HOME: '/home/u/.anthos',
-    HERMES_DESKTOP_REMOTE_URL: 'http://box:9119',
-    HERMES_DESKTOP_REMOTE_TOKEN: 'secret',
-    HERMES_DESKTOP_HERMES_ROOT: '/home/u/dev/anthos',
+    ANTHOS_HOME: '/home/u/.anthos',
+    ANTHOS_DESKTOP_REMOTE_URL: 'http://box:9119',
+    ANTHOS_DESKTOP_REMOTE_TOKEN: 'secret',
+    ANTHOS_DESKTOP_ANTHOS_ROOT: '/home/u/dev/anthos',
     ELECTRON_DISABLE_SANDBOX: '1', // sandbox opt-out — preserved
     PATH: '/usr/bin', // not preserved
     HOME: '/home/u', // not preserved
     UNRELATED: 'x'
   }
   assert.deepEqual(collectRelaunchEnv(env), {
-    HERMES_HOME: '/home/u/.anthos',
-    HERMES_DESKTOP_REMOTE_URL: 'http://box:9119',
-    HERMES_DESKTOP_REMOTE_TOKEN: 'secret',
-    HERMES_DESKTOP_HERMES_ROOT: '/home/u/dev/anthos',
+    ANTHOS_HOME: '/home/u/.anthos',
+    ANTHOS_DESKTOP_REMOTE_URL: 'http://box:9119',
+    ANTHOS_DESKTOP_REMOTE_TOKEN: 'secret',
+    ANTHOS_DESKTOP_ANTHOS_ROOT: '/home/u/dev/anthos',
     ELECTRON_DISABLE_SANDBOX: '1'
   })
   assert.deepEqual(collectRelaunchEnv(null), {})
@@ -186,7 +186,7 @@ test('buildRelaunchScript embeds pid/exec/args/env/cwd and is valid bash', () =>
     pid: 4242,
     execPath: '/home/u/.anthos/anthos-agent/apps/desktop/release/linux-unpacked/Anthos',
     args: ['anthos://open/agent/42', "--note=it's fine"],
-    env: { HERMES_HOME: '/home/u/.anthos', HERMES_DESKTOP_REMOTE_URL: 'http://box:9119' },
+    env: { ANTHOS_HOME: '/home/u/.anthos', ANTHOS_DESKTOP_REMOTE_URL: 'http://box:9119' },
     cwd: '/home/u/work dir'
   })
 
@@ -196,8 +196,8 @@ test('buildRelaunchScript embeds pid/exec/args/env/cwd and is valid bash', () =>
   assert.match(script, /kill -9 "\$APP_PID"/)
   assert.match(script, /rm -f -- "\$0"/)
   // env exports + cwd restore + args replay are present and quoted.
-  assert.match(script, /export HERMES_HOME='\/home\/u\/\.anthos'/)
-  assert.match(script, /export HERMES_DESKTOP_REMOTE_URL='http:\/\/box:9119'/)
+  assert.match(script, /export ANTHOS_HOME='\/home\/u\/\.anthos'/)
+  assert.match(script, /export ANTHOS_DESKTOP_REMOTE_URL='http:\/\/box:9119'/)
   assert.match(script, /cd '\/home\/u\/work dir'/)
   assert.match(script, /exec '.*\/linux-unpacked\/Anthos' 'anthos:\/\/open\/agent\/42' '--note=it'\\''s fine'/)
 

@@ -2694,7 +2694,7 @@ class TestSharedBoardPaths:
         monkeypatch.setenv("ANTHOS_HOME", str(anthos_home))
         monkeypatch.delenv("ANTHOS_KANBAN_HOME", raising=False)
 
-    def test_default_install_anchors_at_home_dot_hermes(
+    def test_default_install_anchors_at_home_dot_anthos(
         self, tmp_path, monkeypatch
     ):
         # Standard install: ANTHOS_HOME == ~/.anthos, no profile active.
@@ -3307,18 +3307,18 @@ def test_resolve_anthos_argv_anthos_bin_bare_name_uses_path(monkeypatch, tmp_pat
     import stat
     import anthos_cli.kanban_db as kb
 
-    cwd_hermes = tmp_path / "anthos"
-    cwd_hermes.write_text("wrong\n", encoding="utf-8")
-    cwd_hermes.chmod(cwd_hermes.stat().st_mode | stat.S_IXUSR)
-    path_hermes = tmp_path / "bin" / "anthos"
-    path_hermes.parent.mkdir()
-    path_hermes.write_text("right\n", encoding="utf-8")
-    path_hermes.chmod(path_hermes.stat().st_mode | stat.S_IXUSR)
+    cwd_anthos = tmp_path / "anthos"
+    cwd_anthos.write_text("wrong\n", encoding="utf-8")
+    cwd_anthos.chmod(cwd_anthos.stat().st_mode | stat.S_IXUSR)
+    path_anthos = tmp_path / "bin" / "anthos"
+    path_anthos.parent.mkdir()
+    path_anthos.write_text("right\n", encoding="utf-8")
+    path_anthos.chmod(path_anthos.stat().st_mode | stat.S_IXUSR)
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("PATH", str(path_hermes.parent))
+    monkeypatch.setenv("PATH", str(path_anthos.parent))
     monkeypatch.setenv("ANTHOS_BIN", "anthos")
 
-    assert kb._resolve_anthos_argv() == [str(path_hermes)]
+    assert kb._resolve_anthos_argv() == [str(path_anthos)]
 
 
 def test_resolve_anthos_argv_anthos_bin_bare_name_ignores_cwd(monkeypatch, tmp_path):

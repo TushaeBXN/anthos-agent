@@ -247,7 +247,7 @@ class TestWebServerEndpoints:
         assert "version" in data
         assert "anthos_home" in data
         assert "active_sessions" in data
-        assert data["can_update_hermes"] is True
+        assert data["can_update_anthos"] is True
 
     def test_get_status_hides_update_capability_in_managed_runtime(self, monkeypatch):
         import anthos_cli.web_server as web_server
@@ -256,7 +256,7 @@ class TestWebServerEndpoints:
 
         resp = self.client.get("/api/status")
         assert resp.status_code == 200
-        assert resp.json()["can_update_hermes"] is False
+        assert resp.json()["can_update_anthos"] is False
 
     def test_dashboard_update_capability_detects_generic_container(self, monkeypatch):
         import anthos_constants
@@ -1638,7 +1638,7 @@ class TestWebServerEndpoints:
         assert "personal WeChat" in weixin["description"]
         assert "Official Account" not in f"{weixin['name']} {weixin['description']}"
         assert weixin["docs_url"] == (
-            "https://anthos-agent.nousresearch.com/docs/user-guide/messaging/weixin/"
+            "https://anthos-agent.anthosai.com/docs/user-guide/messaging/weixin/"
         )
 
         fields = {field["key"]: field for field in weixin["env_vars"]}
@@ -2241,7 +2241,7 @@ class TestWebServerEndpoints:
 
         resp = self.client.post(
             "/api/model/set",
-            json={"scope": "main", "provider": "nous", "model": "anthos-4"},
+            json={"scope": "main", "provider": "nous", "model": "hermes-4"},
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -2501,7 +2501,7 @@ class TestWebServerEndpoints:
         from anthos_cli.config import load_config, save_config
 
         cfg = load_config()
-        cfg["model"] = {"provider": "nous", "default": "anthos-4"}
+        cfg["model"] = {"provider": "nous", "default": "hermes-4"}
         cfg["auxiliary"] = {
             # Pinned to nous — same as the OLD main, becomes stale after switch.
             "compression": {"provider": "nous", "model": "anthropic/claude-sonnet-4.6"},
@@ -2532,7 +2532,7 @@ class TestWebServerEndpoints:
         from anthos_cli.config import load_config, save_config
 
         cfg = load_config()
-        cfg["model"] = {"provider": "nous", "default": "anthos-4"}
+        cfg["model"] = {"provider": "nous", "default": "hermes-4"}
         cfg["auxiliary"] = {
             "compression": {"provider": "openrouter", "model": "google/gemini-2.5-flash"},
             "vision": {"provider": "auto", "model": ""},
@@ -2561,7 +2561,7 @@ class TestWebServerEndpoints:
 
         resp = self.client.post(
             "/api/model/set",
-            json={"scope": "main", "provider": "nous", "model": "anthos-4"},
+            json={"scope": "main", "provider": "nous", "model": "hermes-4"},
         )
         assert resp.status_code == 200
         data = resp.json()

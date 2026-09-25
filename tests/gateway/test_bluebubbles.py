@@ -144,7 +144,7 @@ class TestBlueBubblesHelpers:
         assert adapter._message_matches_mention_patterns("Anthos, summarize this")
         assert adapter._message_matches_mention_patterns("@Anthos agent help")
         assert not adapter._message_matches_mention_patterns("casual family chatter")
-        assert not adapter._message_matches_mention_patterns("antihermes should not match")
+        assert not adapter._message_matches_mention_patterns("antianthos should not match")
 
     def test_custom_mention_patterns_override_defaults(self, monkeypatch):
         adapter = _make_adapter(

@@ -120,8 +120,8 @@ export const hu: Translations = {
     starting: "Indul",
     startedInBackground: "Háttérben elindítva — kövesse a naplókat a folyamathoz",
     stopped: "Leállítva",
-    updateHermes: "Anthos frissítése",
-    updatingHermes: "Anthos frissítése…",
+    updateAnthos: "Anthos frissítése",
+    updatingAnthos: "Anthos frissítése…",
     waitingForOutput: "Várakozás a kimenetre…",
   },
 

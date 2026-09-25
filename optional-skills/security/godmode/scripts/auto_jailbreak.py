@@ -178,8 +178,8 @@ MODEL_STRATEGIES = {
             ),
         },
     },
-    # Nous/Anthos models — already uncensored, just needs clean prompt
-    "anthos": {
+    # Nous/Hermes models — already uncensored, just needs clean prompt
+    "hermes": {
         "order": ["prefill_only"],
         "system_templates": {},
     },
@@ -305,8 +305,8 @@ def _detect_model_family(model: str) -> str:
         return "gemini"
     if "grok" in model_lower or "x-ai" in model_lower:
         return "grok"
-    if "anthos" in model_lower or "nous" in model_lower:
-        return "anthos"
+    if "hermes" in model_lower or "nous" in model_lower:
+        return "hermes"
     if "deepseek" in model_lower:
         return "deepseek"
     if "llama" in model_lower or "meta" in model_lower:

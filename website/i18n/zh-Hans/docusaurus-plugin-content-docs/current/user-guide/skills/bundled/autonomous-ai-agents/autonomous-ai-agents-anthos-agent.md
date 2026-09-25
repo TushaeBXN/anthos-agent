@@ -810,7 +810,7 @@ anthos-agent/
 ├── run_agent.py          # AIAgent — core conversation loop
 ├── model_tools.py        # Tool discovery and dispatch
 ├── toolsets.py           # Toolset definitions
-├── cli.py                # Interactive CLI (HermesCLI)
+├── cli.py                # Interactive CLI (AnthosCLI)
 ├── anthos_state.py       # SQLite session store
 ├── agent/                # Prompt builder, context compression, memory, model routing, credential pooling, skill dispatch
 ├── anthos_cli/           # CLI subcommands, config, setup, commands
@@ -857,7 +857,7 @@ registry.register(
 
 自动发现：任何包含顶层 `registry.register()` 调用的 `tools/*.py` 文件都会自动导入——无需手动列出。
 
-所有处理器必须返回 JSON 字符串。路径使用 `get_hermes_home()`，永远不要硬编码 `~/.anthos`。
+所有处理器必须返回 JSON 字符串。路径使用 `get_anthos_home()`，永远不要硬编码 `~/.anthos`。
 
 ### 添加斜杠命令
 
@@ -941,6 +941,6 @@ Optional body.
 
 - **永远不要破坏 prompt 缓存** — 不要在对话中途更改上下文、工具或系统 prompt
 - **消息角色交替** — 永远不要连续出现两条 assistant 或两条 user 消息
-- 所有路径使用 `anthos_constants` 中的 `get_hermes_home()`（profile 安全）
+- 所有路径使用 `anthos_constants` 中的 `get_anthos_home()`（profile 安全）
 - 配置值放入 `config.yaml`，密钥放入 `.env`
 - 新工具需要 `check_fn`，以便仅在满足要求时才显示

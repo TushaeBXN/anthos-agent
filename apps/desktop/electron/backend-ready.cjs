@@ -1,4 +1,4 @@
-const _READY_RE = /^HERMES_DASHBOARD_READY port=(\d+)/m
+const _READY_RE = /^ANTHOS_DASHBOARD_READY port=(\d+)/m
 
 // The announcement clock starts the instant the backend process is spawned —
 // before uvicorn binds its socket. On a cold install the child must first
@@ -15,12 +15,12 @@ const MIN_PORT_ANNOUNCE_TIMEOUT_MS = 45_000
 
 /**
  * Resolve the port-announcement deadline. Honors the
- * HERMES_DESKTOP_PORT_ANNOUNCE_TIMEOUT_MS env override (for users on slow
+ * ANTHOS_DESKTOP_PORT_ANNOUNCE_TIMEOUT_MS env override (for users on slow
  * disks / aggressive AV who need an even longer cold-start window), clamped
  * to a sane floor so a bad value can't make boot flakier than the default.
  */
 function resolvePortAnnounceTimeoutMs(env = process.env) {
-  const parsed = Number(env.HERMES_DESKTOP_PORT_ANNOUNCE_TIMEOUT_MS)
+  const parsed = Number(env.ANTHOS_DESKTOP_PORT_ANNOUNCE_TIMEOUT_MS)
   if (Number.isFinite(parsed) && parsed > 0) {
     return Math.max(MIN_PORT_ANNOUNCE_TIMEOUT_MS, Math.round(parsed))
   }
@@ -28,7 +28,7 @@ function resolvePortAnnounceTimeoutMs(env = process.env) {
 }
 
 /**
- * Watch a child process's stdout for the `HERMES_DASHBOARD_READY port=<N>`
+ * Watch a child process's stdout for the `ANTHOS_DASHBOARD_READY port=<N>`
  * line that web_server.py prints after uvicorn binds its socket.
  *
  * Returns the parsed port. Rejects if:

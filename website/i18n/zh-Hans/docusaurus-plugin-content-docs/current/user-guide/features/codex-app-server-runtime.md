@@ -62,7 +62,7 @@ Anthos 将自身注册为 MCP server，以便 Codex 能够回调获取 Codex 自
 - **`skill_view` / `skills_list`** — 读取 Anthos 的技能库。
 - **`text_to_speech`** — 通过 Anthos 配置的提供商进行 TTS。
 
-当模型需要其中某个工具时，Codex 通过 stdio MCP 生成 `hermes_tools_mcp_server` 子进程，调用通过 `model_tools.handle_function_call()` 分发（与 Anthos 默认运行时的代码路径相同），结果像其他 MCP 响应一样返回给 Codex。
+当模型需要其中某个工具时，Codex 通过 stdio MCP 生成 `anthos_tools_mcp_server` 子进程，调用通过 `model_tools.handle_function_call()` 分发（与 Anthos 默认运行时的代码路径相同），结果像其他 MCP 响应一样返回给 Codex。
 
 ### 此运行时上不可用的工具
 
@@ -349,13 +349,13 @@ Codex 的内置工具集涵盖 shell/文件操作/patch，但没有网络搜索�
 ```toml
 [mcp_servers.anthos-tools]
 command = "/path/to/python"
-args = ["-m", "agent.transports.hermes_tools_mcp_server"]
+args = ["-m", "agent.transports.anthos_tools_mcp_server"]
 env = { ANTHOS_HOME = "/your/.anthos", PYTHONPATH = "...", ANTHOS_QUIET = "1" }
 startup_timeout_sec = 30.0
 tool_timeout_sec = 600.0
 ```
 
-当模型调用 `web_search`（或其他暴露的 Anthos 工具）时，Codex 通过 stdio 生成 `hermes_tools_mcp_server` 子进程，请求通过 `model_tools.handle_function_call()` 分发，结果像其他 MCP 响应一样投影回 Codex。
+当模型调用 `web_search`（或其他暴露的 Anthos 工具）时，Codex 通过 stdio 生成 `anthos_tools_mcp_server` 子进程，请求通过 `model_tools.handle_function_call()` 分发，结果像其他 MCP 响应一样投影回 Codex。
 
 **通过回调可用的工具：** `web_search`、`web_extract`、`browser_navigate`、`browser_click`、`browser_type`、`browser_press`、`browser_snapshot`、`browser_scroll`、`browser_back`、`browser_get_images`、`browser_console`、`browser_vision`、`vision_analyze`、`image_generate`、`skill_view`、`skills_list`、`text_to_speech`。
 
@@ -432,7 +432,7 @@ tool_timeout_sec = 600.0
                                                         │
                                                         ▼
         ┌──────────────────────────────────────────────────────────┐
-        │  hermes_tools_mcp_server.py (subprocess on demand)        │
+        │  anthos_tools_mcp_server.py (subprocess on demand)        │
         │   web_search, web_extract, browser_*, vision_analyze,    │
         │   image_generate, skill_view, skills_list, text_to_speech│
         └──────────────────────────────────────────────────────────┘

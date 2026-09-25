@@ -1,9 +1,8 @@
 name: Build Skills Index
 
 on:
-  schedule:
-    # Run twice daily: 6 AM and 6 PM UTC
-    - cron: '0 6,18 * * *'
+  # Scheduled runs disabled: this private fork has no deployed docs site to
+  # refresh, and each run spends Actions minutes. Run manually.
   workflow_dispatch:  # Manual trigger
   push:
     branches: [main]

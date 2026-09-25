@@ -8,7 +8,7 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def _isolate_hermes(tmp_path, monkeypatch):
+def _isolate_anthos(tmp_path, monkeypatch):
     monkeypatch.setenv("ANTHOS_HOME", str(tmp_path / ".anthos"))
     (tmp_path / ".anthos").mkdir(exist_ok=True)
 

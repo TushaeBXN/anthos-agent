@@ -27,7 +27,7 @@ anthos acp / anthos-acp / python -m acp_adapter
   -> parse --version / --check / --setup before server startup
   -> load ~/.anthos/.env
   -> configure stderr logging
-  -> construct HermesACPAgent
+  -> construct AnthosACPAgent
   -> acp.run_agent(agent, use_unstable_protocol=True)
 ```
 
@@ -37,7 +37,7 @@ stdout 保留用于 ACP JSON-RPC 传输。人类可读的日志输出至 stderr�
 
 ## 主要组件
 
-### `HermesACPAgent`
+### `AnthosACPAgent`
 
 `acp_adapter/server.py` 实现 ACP agent 协议。
 

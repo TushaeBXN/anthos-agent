@@ -18,7 +18,7 @@ The `PluginManager` scans four sources, in order:
 1. **Bundled** — `<repo>/plugins/<name>/` (what this page documents)
 2. **User** — `~/.anthos/plugins/<name>/`
 3. **Project** — `./.anthos/plugins/<name>/` (requires `ANTHOS_ENABLE_PROJECT_PLUGINS=1`)
-4. **Pip entry points** — `hermes_agent.plugins`
+4. **Pip entry points** — `anthos_agent.plugins`
 
 On name collision, later sources win — a user plugin named `disk-cleanup` would replace the bundled one.
 

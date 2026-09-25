@@ -432,7 +432,7 @@ configure_managed_node_npm_prefix() {
     printf 'prefix=%s\n' "$(dirname "$link_dir")" > "$ANTHOS_HOME/node/etc/npmrc"
 }
 
-get_hermes_command_path() {
+get_anthos_command_path() {
     local link_dir
     link_dir="$(get_command_link_dir)"
     if [ -x "$link_dir/anthos" ]; then
@@ -2048,7 +2048,7 @@ maybe_start_gateway() {
             log_info "Running 'anthos whatsapp' to pair via QR code..."
             echo ""
             if prompt_yes_no "Pair WhatsApp now?" "yes"; then
-                ANTHOS_CMD="$(get_hermes_command_path)"
+                ANTHOS_CMD="$(get_anthos_command_path)"
                 $ANTHOS_CMD whatsapp || true
             fi
         else
@@ -2077,7 +2077,7 @@ maybe_start_gateway() {
     fi
 
     if [ "$should_install_gateway" = true ]; then
-        ANTHOS_CMD="$(get_hermes_command_path)"
+        ANTHOS_CMD="$(get_anthos_command_path)"
 
         if [ "$DISTRO" != "termux" ] && command -v systemctl &> /dev/null; then
             log_info "Installing systemd service..."

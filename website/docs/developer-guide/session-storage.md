@@ -388,7 +388,7 @@ db.delete_session("sess_abc123")
 
 Default path: `~/.anthos/state.db`
 
-This is derived from `anthos_constants.get_hermes_home()` which resolves to
+This is derived from `anthos_constants.get_anthos_home()` which resolves to
 `~/.anthos/` by default, or the value of `ANTHOS_HOME` environment variable.
 
 The database file, WAL file (`state.db-wal`), and shared-memory file

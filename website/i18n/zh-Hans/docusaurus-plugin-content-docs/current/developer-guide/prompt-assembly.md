@@ -123,7 +123,7 @@ renderable inside a terminal.
 ```python
 # From agent/prompt_builder.py (simplified)
 def load_soul_md() -> Optional[str]:
-    soul_path = get_hermes_home() / "SOUL.md"
+    soul_path = get_anthos_home() / "SOUL.md"
     if not soul_path.exists():
         return None
     content = soul_path.read_text(encoding="utf-8").strip()
@@ -157,7 +157,7 @@ def build_context_files_prompt(cwd=None, skip_soul=False):
 
     # Priority: first match wins — only ONE project context loaded
     project_context = (
-        _load_hermes_md(cwd_path)       # 1. .anthos.md / HERMES.md (walks to git root)
+        _load_anthos_md(cwd_path)       # 1. .anthos.md / ANTHOS.md (walks to git root)
         or _load_agents_md(cwd_path)    # 2. AGENTS.md (cwd only)
         or _load_claude_md(cwd_path)    # 3. CLAUDE.md (cwd only)
         or _load_cursorrules(cwd_path)  # 4. .cursorrules / .cursor/rules/*.mdc
@@ -188,7 +188,7 @@ def build_context_files_prompt(cwd=None, skip_soul=False):
 
 | 优先级 | 文件 | 搜索范围 | 说明 |
 |--------|------|----------|------|
-| 1 | `.anthos.md`、`HERMES.md` | 从 CWD 向上至 git 根目录 | Anthos 原生项目配置 |
+| 1 | `.anthos.md`、`ANTHOS.md` | 从 CWD 向上至 git 根目录 | Anthos 原生项目配置 |
 | 2 | `AGENTS.md` | 仅 CWD | 常见 agent 指令文件 |
 | 3 | `CLAUDE.md` | 仅 CWD | Claude Code 兼容性 |
 | 4 | `.cursorrules`、`.cursor/rules/*.mdc` | 仅 CWD | Cursor 兼容性 |
@@ -217,7 +217,7 @@ def build_context_files_prompt(cwd=None, skip_soul=False):
 
 `agent/prompt_builder.py` 使用**优先级系统**扫描并清理项目上下文文件——只加载一种类型（先匹配先赢）：
 
-1. `.anthos.md` / `HERMES.md`（向上遍历至 git 根目录）
+1. `.anthos.md` / `ANTHOS.md`（向上遍历至 git 根目录）
 2. `AGENTS.md`（启动时的 CWD；子目录在会话期间通过 `agent/subdirectory_hints.py` 逐步发现）
 3. `CLAUDE.md`（仅 CWD）
 4. `.cursorrules` / `.cursor/rules/*.mdc`（仅 CWD）
@@ -238,7 +238,7 @@ def build_context_files_prompt(cwd=None, skip_soul=False):
 
 - `~/.anthos/SOUL.md` — 用自定义 agent 角色和固定行为替换内置默认身份块。
 - `~/.anthos/MEMORY.md` 和 `~/.anthos/USER.md` — 提供应在新会话中快照的持久跨会话事实和用户配置文件数据。
-- 项目上下文文件，如 `.anthos.md`、`HERMES.md`、`AGENTS.md`、`CLAUDE.md` 或 `.cursorrules` — 注入仓库特定的工作规则。
+- 项目上下文文件，如 `.anthos.md`、`ANTHOS.md`、`AGENTS.md`、`CLAUDE.md` 或 `.cursorrules` — 注入仓库特定的工作规则。
 - Skills — 打包可复用的工作流和参考资料，无需编辑核心 prompt 代码。
 - 可选系统 prompt 配置 / API 覆盖 — 添加部署特定的指令文本，无需 fork Anthos。
 - 临时覆盖层，如 `ANTHOS_EPHEMERAL_SYSTEM_PROMPT` 或 prefill 消息 — 添加不应成为已缓存 prompt 前缀一部分的轮次级指导。

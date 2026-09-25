@@ -2354,21 +2354,21 @@ def _anthos_home_for_target_user(target_home_dir: str) -> str:
       /root/.anthos/profiles/coder     → /home/alice/.anthos/profiles/coder
       /opt/custom-anthos               → /opt/custom-anthos  (kept as-is)
     """
-    current_hermes = get_anthos_home().resolve()
+    current_anthos = get_anthos_home().resolve()
     current_default = (Path.home() / ".anthos").resolve()
     target_default = Path(target_home_dir) / ".anthos"
 
     # Default ~/.anthos → remap to target user's default
-    if current_hermes == current_default:
+    if current_anthos == current_default:
         return str(target_default)
 
     # Profile or subdir of ~/.anthos → preserve the relative structure
     try:
-        relative = current_hermes.relative_to(current_default)
+        relative = current_anthos.relative_to(current_default)
         return str(target_default / relative)
     except ValueError:
         # Completely custom path (not under ~/.anthos) — keep as-is
-        return str(current_hermes)
+        return str(current_anthos)
 
 
 def _build_service_path_dirs(project_root: Path | None = None) -> list[str]:

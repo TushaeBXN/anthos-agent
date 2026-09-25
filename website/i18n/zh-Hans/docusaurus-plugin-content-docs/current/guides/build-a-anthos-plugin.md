@@ -1057,7 +1057,7 @@ tts:
 
 ```toml
 # pyproject.toml
-[project.entry-points."hermes_agent.plugins"]
+[project.entry-points."anthos_agent.plugins"]
 my-plugin = "my_plugin_package"
 ```
 

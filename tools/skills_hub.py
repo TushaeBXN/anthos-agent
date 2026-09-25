@@ -3521,7 +3521,7 @@ def check_for_skill_updates(
 # Anthos centralized index source
 # ---------------------------------------------------------------------------
 
-ANTHOS_INDEX_URL = "https://anthos-agent.nousresearch.com/docs/api/skills-index.json"
+ANTHOS_INDEX_URL = "https://anthos-agent.anthosai.com/docs/api/skills-index.json"
 ANTHOS_INDEX_CACHE_FILE = INDEX_CACHE_DIR / "anthos-index.json"
 ANTHOS_INDEX_TTL = 6 * 3600  # 6 hours
 

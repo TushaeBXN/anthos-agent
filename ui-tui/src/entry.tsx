@@ -109,7 +109,7 @@ const stopMemoryMonitor = startMemoryMonitor({
   }
 })
 
-if (process.env.HERMES_HEAPDUMP_ON_START === '1') {
+if (process.env.ANTHOS_HEAPDUMP_ON_START === '1') {
   void performHeapDump('manual')
 }
 

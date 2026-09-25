@@ -47,13 +47,13 @@ const WHATSAPP_DEBUG =
 const PORT = parseInt(getArg('port', '3000'), 10);
 const SESSION_DIR = getArg('session', path.join(process.env.HOME || '~', '.anthos', 'whatsapp', 'session'));
 // Cache directories: the Python gateway passes the profile-aware paths via
-// env (HERMES_HOME-aware, new cache/ layout).  Fall back to the legacy
+// env (ANTHOS_HOME-aware, new cache/ layout).  Fall back to the legacy
 // hardcoded locations for bridges launched outside the gateway.
-const IMAGE_CACHE_DIR = process.env.HERMES_IMAGE_CACHE_DIR
+const IMAGE_CACHE_DIR = process.env.ANTHOS_IMAGE_CACHE_DIR
   || path.join(process.env.HOME || '~', '.anthos', 'image_cache');
-const DOCUMENT_CACHE_DIR = process.env.HERMES_DOCUMENT_CACHE_DIR
+const DOCUMENT_CACHE_DIR = process.env.ANTHOS_DOCUMENT_CACHE_DIR
   || path.join(process.env.HOME || '~', '.anthos', 'document_cache');
-const AUDIO_CACHE_DIR = process.env.HERMES_AUDIO_CACHE_DIR
+const AUDIO_CACHE_DIR = process.env.ANTHOS_AUDIO_CACHE_DIR
   || path.join(process.env.HOME || '~', '.anthos', 'audio_cache');
 
 // Self-hash of this script file.  Reported in /health so the Python gateway

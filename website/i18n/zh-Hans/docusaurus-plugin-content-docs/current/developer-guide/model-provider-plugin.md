@@ -250,11 +250,11 @@ anthos -z "hello" --provider my-provider -m some-model
 与所有 Anthos 插件一样，模型提供商可以作为 pip 包发布。在你的 `pyproject.toml` 中添加入口点：
 
 ```toml
-[project.entry-points."hermes_agent.plugins"]
-acme-inference = "acme_hermes_plugin:register"
+[project.entry-points."anthos_agent.plugins"]
+acme-inference = "acme_anthos_plugin:register"
 ```
 
-……其中 `acme_hermes_plugin:register` 是一个调用 `register_provider(profile)` 的函数。通用 PluginManager 在 `discover_and_load()` 期间会拾取入口点插件。对于 `kind: model-provider` 的 pip 插件，你仍需在 manifest 中声明 kind（或依赖源码文本启发式检测）。
+……其中 `acme_anthos_plugin:register` 是一个调用 `register_provider(profile)` 的函数。通用 PluginManager 在 `discover_and_load()` 期间会拾取入口点插件。对于 `kind: model-provider` 的 pip 插件，你仍需在 manifest 中声明 kind（或依赖源码文本启发式检测）。
 
 完整的入口点设置请参阅 [构建 Anthos 插件](/guides/build-a-anthos-plugin#distribute-via-pip)。
 

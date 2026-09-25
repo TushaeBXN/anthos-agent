@@ -5,14 +5,14 @@
  * ~/.anthos/kanban.db. Calls the plugin's backend at /api/plugins/kanban/
  * and tails task_events over a WebSocket for live updates.
  *
- * Plain IIFE, no build step. Uses window.__HERMES_PLUGIN_SDK__ for React +
+ * Plain IIFE, no build step. Uses window.__ANTHOS_PLUGIN_SDK__ for React +
  * shadcn primitives; HTML5 drag-and-drop for card movement on desktop and
  * a pointer-based fallback for touch.
  */
 (function () {
   "use strict";
 
-  const SDK = window.__HERMES_PLUGIN_SDK__;
+  const SDK = window.__ANTHOS_PLUGIN_SDK__;
   if (!SDK) return;
 
   const { React } = SDK;
@@ -198,8 +198,8 @@
   // Docs link — surfaced as a `?` icon next to the board switcher and as
   // `title=` hints on unlabelled controls. Kept in one place so rebrands or
   // path changes are a single edit.
-  const DOCS_URL = "https://anthos-agent.nousresearch.com/docs/user-guide/features/kanban";
-  const DOCS_TUTORIAL_URL = "https://anthos-agent.nousresearch.com/docs/user-guide/features/kanban-tutorial";
+  const DOCS_URL = "https://anthos-agent.anthosai.com/docs/user-guide/features/kanban";
+  const DOCS_TUTORIAL_URL = "https://anthos-agent.anthosai.com/docs/user-guide/features/kanban-tutorial";
 
   // localStorage key for the user's selected board. Independent of the
   // CLI's on-disk ``<root>/kanban/current`` pointer so browser users
@@ -632,7 +632,7 @@
         if (wsClosedRef.current) return;
         // Build the WS URL via the host SDK so the correct auth param is used
         // in BOTH modes: single-use ?ticket= in gated OAuth mode, ?token= in
-        // loopback. Reading window.__HERMES_SESSION_TOKEN__ directly (the old
+        // loopback. Reading window.__ANTHOS_SESSION_TOKEN__ directly (the old
         // path) sends an empty token and is rejected in gated mode. buildWsUrl
         // also applies the dashboard base-path prefix for reverse-proxied
         // deployments, which the old inline URL did not. It's async (gated
@@ -3911,7 +3911,7 @@
   // Register
   // -------------------------------------------------------------------------
 
-  if (window.__HERMES_PLUGINS__ && typeof window.__HERMES_PLUGINS__.register === "function") {
-    window.__HERMES_PLUGINS__.register("kanban", KanbanPage);
+  if (window.__ANTHOS_PLUGINS__ && typeof window.__ANTHOS_PLUGINS__.register === "function") {
+    window.__ANTHOS_PLUGINS__.register("kanban", KanbanPage);
   }
 })();

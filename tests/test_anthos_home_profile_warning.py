@@ -1,6 +1,6 @@
 """Tests for get_anthos_home() profile-mode fallback warning.
 
-Regression test for https://github.com/NousResearch/anthos-agent/issues/18594.
+Regression test for https://github.com/TushaeBXN/anthos-agent/issues/18594.
 
 When ANTHOS_HOME is unset but an active_profile file indicates a non-default
 profile is active, get_anthos_home() should:

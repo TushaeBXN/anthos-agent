@@ -30,6 +30,12 @@ pip install -e ".[all]"
 anthos
 ```
 
+On native Windows, run the PowerShell installer from the checkout instead:
+
+```powershell
+powershell -ExecutionPolicy ByPass -File scripts\install.ps1
+```
+
 ## Usage
 
 ```bash

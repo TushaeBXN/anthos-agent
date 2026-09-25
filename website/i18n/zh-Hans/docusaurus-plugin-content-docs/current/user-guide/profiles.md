@@ -251,7 +251,7 @@ eval "$(anthos completion zsh)"
 
 ## 工作原理
 
-profile 使用 `ANTHOS_HOME` 环境变量。运行 `coder chat` 时，包装脚本在启动 anthos 前将 `ANTHOS_HOME` 设置为 `~/.anthos/profiles/coder`。由于代码库中 119+ 个文件通过 `get_hermes_home()` 解析路径，Anthos 状态会自动限定在 profile 目录范围内——包括配置、会话、记忆、技能、状态数据库、gateway PID、日志和 cron 任务。
+profile 使用 `ANTHOS_HOME` 环境变量。运行 `coder chat` 时，包装脚本在启动 anthos 前将 `ANTHOS_HOME` 设置为 `~/.anthos/profiles/coder`。由于代码库中 119+ 个文件通过 `get_anthos_home()` 解析路径，Anthos 状态会自动限定在 profile 目录范围内——包括配置、会话、记忆、技能、状态数据库、gateway PID、日志和 cron 任务。
 
 这与终端工作目录是分开的。工具执行从 `terminal.cwd` 开始（或在 local 后端使用 `cwd: "."` 时从启动目录开始），而非自动从 `ANTHOS_HOME` 开始。
 

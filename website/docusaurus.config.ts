@@ -7,7 +7,7 @@ const config: Config = {
   tagline: 'The self-improving AI agent',
   favicon: 'img/favicon.ico',
 
-  url: 'https://anthos-agent.nousresearch.com',
+  url: 'https://anthos-agent.anthosai.com',
   baseUrl: '/docs/',
 
   organizationName: 'NousResearch',
@@ -90,7 +90,7 @@ const config: Config = {
         docs: {
           routeBasePath: '/',  // Docs at the root of /docs/
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/NousResearch/anthos-agent/edit/main/website/',
+          editUrl: 'https://github.com/TushaeBXN/anthos-agent/edit/main/website/',
         },
         blog: false,
         theme: {
@@ -131,7 +131,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          href: 'https://anthos-agent.nousresearch.com/',
+          href: 'https://anthos-agent.anthosai.com/',
           label: 'Download',
           position: 'left',
         },
@@ -140,12 +140,12 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://anthos-agent.nousresearch.com',
+          href: 'https://anthos-agent.anthosai.com',
           label: 'Home',
           position: 'right',
         },
         {
-          href: 'https://github.com/NousResearch/anthos-agent',
+          href: 'https://github.com/TushaeBXN/anthos-agent',
           label: 'GitHub',
           position: 'right',
         },
@@ -172,15 +172,15 @@ const config: Config = {
           title: 'Community',
           items: [
             { label: 'Discord', href: 'https://discord.gg/NousResearch' },
-            { label: 'GitHub Issues', href: 'https://github.com/NousResearch/anthos-agent/issues' },
+            { label: 'GitHub Issues', href: 'https://github.com/TushaeBXN/anthos-agent/issues' },
             { label: 'Skills Hub', href: 'https://agentskills.io' },
           ],
         },
         {
           title: 'More',
           items: [
-            { label: 'Desktop Download', href: 'https://anthos-agent.nousresearch.com/' },
-            { label: 'GitHub', href: 'https://github.com/NousResearch/anthos-agent' },
+            { label: 'Desktop Download', href: 'https://anthos-agent.anthosai.com/' },
+            { label: 'GitHub', href: 'https://github.com/TushaeBXN/anthos-agent' },
             { label: 'Nous Research', href: 'https://nousresearch.com' },
           ],
         },

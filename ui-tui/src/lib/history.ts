@@ -3,7 +3,7 @@ import { homedir } from 'node:os'
 import { join } from 'node:path'
 
 const MAX = 1000
-const dir = process.env.HERMES_HOME ?? join(homedir(), '.anthos')
+const dir = process.env.ANTHOS_HOME ?? join(homedir(), '.anthos')
 const file = join(dir, '.anthos_history')
 
 let cache: string[] | null = null

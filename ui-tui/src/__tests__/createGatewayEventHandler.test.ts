@@ -466,7 +466,7 @@ describe('createGatewayEventHandler', () => {
     const raw = 'Anthos here.\n\nLine two.'
     // Rich-rendered ANSI (`final_response_markdown: render`) used to win,
     // which left visible escape codes in Ink output. Raw text must win.
-    const rendered = '\u001b[33mHermes here.\u001b[0m\n\n\u001b[2mLine two.\u001b[0m'
+    const rendered = '\u001b[33mAnthos here.\u001b[0m\n\n\u001b[2mLine two.\u001b[0m'
 
     onEvent({ payload: { rendered, text: raw }, type: 'message.complete' } as any)
 

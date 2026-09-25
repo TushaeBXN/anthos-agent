@@ -99,7 +99,7 @@ export const en: Translations = {
     backendOutOfDateTitle: 'Backend out of date',
     backendOutOfDateMessage:
       'Your Anthos backend is older than this desktop build and may not work correctly. Update to align them.',
-    updateHermes: 'Update Anthos',
+    updateAnthos: 'Update Anthos',
     updateReadyTitle: 'Update ready',
     updateReadyMessage: count => `${count} new change${count === 1 ? '' : 's'} available.`,
     seeWhatsNew: "See what's new",
@@ -454,7 +454,7 @@ export const en: Translations = {
         `Connection used only when “${profile}” is the active profile. Set it to Local to inherit the default.`,
       envOverrideTitle: 'Environment variables are controlling this desktop session.',
       envOverrideDesc:
-        'Unset HERMES_DESKTOP_REMOTE_URL and HERMES_DESKTOP_REMOTE_TOKEN to use the saved setting below.',
+        'Unset ANTHOS_DESKTOP_REMOTE_URL and ANTHOS_DESKTOP_REMOTE_TOKEN to use the saved setting below.',
       localTitle: 'Local gateway',
       localDesc: 'Start a private Anthos backend on localhost. This is the default and works offline.',
       remoteTitle: 'Remote gateway',
@@ -772,7 +772,7 @@ export const en: Translations = {
     anthosActiveSessions: (version, count) => `Anthos ${version} · Active sessions ${count}`,
     restartGateway: 'Restart gateway',
     gatewayRestartFailed: 'Gateway restart failed.',
-    updateHermes: 'Update Anthos',
+    updateAnthos: 'Update Anthos',
     actionRunning: 'running',
     actionDone: 'done',
     actionFailed: 'failed',

@@ -188,7 +188,7 @@ prefer `ANTHOS_HOME` for Anthos data and `ANTHOS_REAL_HOME` for the account home
 from pathlib import Path
 import os
 
-hermes_home = Path(os.environ["ANTHOS_HOME"])
+anthos_home = Path(os.environ["ANTHOS_HOME"])
 real_home = Path(os.environ.get("ANTHOS_REAL_HOME", os.environ["HOME"]))
 ```
 
@@ -268,7 +268,7 @@ Edge cases worth knowing:
 - **OOM kill of in-container PID 1** transitions the container to `Exited`. Next reuse will `docker start` it; filesystem state survives, bg processes do not.
 - **Switching profiles** isolates containers from each other — a container labeled `anthos-profile=work` is invisible to a Anthos process running under `anthos-profile=research`. The orphan reaper is profile-scoped too, so cross-profile containers don't get reaped accidentally, but they also won't get cleaned up automatically until you start Anthos again under their original profile.
 
-Parallel subagents spawned via `delegate_task(tasks=[...])` share this one container — concurrent `cd`, env mutations, and writes to the same path will collide. If a subagent needs an isolated sandbox, it must register a per-task image override via `register_task_env_overrides()`, which RL and benchmark environments (TerminalBench2, HermesSweEnv, etc.) do automatically for their per-task Docker images.
+Parallel subagents spawned via `delegate_task(tasks=[...])` share this one container — concurrent `cd`, env mutations, and writes to the same path will collide. If a subagent needs an isolated sandbox, it must register a per-task image override via `register_task_env_overrides()`, which RL and benchmark environments (TerminalBench2, AnthosSweEnv, etc.) do automatically for their per-task Docker images.
 
 **Security hardening:**
 - `--cap-drop ALL` with only `DAC_OVERRIDE`, `CHOWN`, `FOWNER` added back
@@ -1900,7 +1900,7 @@ Anthos uses two different context scopes:
 | File | Purpose | Scope |
 |------|---------|-------|
 | `SOUL.md` | **Primary agent identity** — defines who the agent is (slot #1 in the system prompt) | `~/.anthos/SOUL.md` or `$ANTHOS_HOME/SOUL.md` |
-| `.anthos.md` / `HERMES.md` | Project-specific instructions (highest priority) | Walks to git root |
+| `.anthos.md` / `ANTHOS.md` | Project-specific instructions (highest priority) | Walks to git root |
 | `AGENTS.md` | Project-specific instructions, coding conventions | Recursive directory walk |
 | `CLAUDE.md` | Claude Code context files (also detected) | Working directory only |
 | `.cursorrules` | Cursor IDE rules (also detected) | Working directory only |

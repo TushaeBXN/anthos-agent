@@ -230,7 +230,7 @@ class TestMem0Defaults:
 
         assert provider._user_id == "anthos-user"
 
-    def test_default_agent_id_hermes(self, monkeypatch, tmp_path):
+    def test_default_agent_id_anthos(self, monkeypatch, tmp_path):
         monkeypatch.setenv("MEM0_API_KEY", "test-key")
         monkeypatch.delenv("MEM0_AGENT_ID", raising=False)
         monkeypatch.setenv("ANTHOS_HOME", str(tmp_path))

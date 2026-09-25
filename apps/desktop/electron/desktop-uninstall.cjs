@@ -133,7 +133,7 @@ function buildPosixCleanupScript({ desktopPid, pythonExe, pythonPath, agentRoot,
     '    sleep 0.5',
     '  done',
     'fi',
-    `export HERMES_HOME=${q(anthosHome)}`
+    `export ANTHOS_HOME=${q(anthosHome)}`
   ]
   if (pythonPath) {
     lines.push(`export PYTHONPATH=${q(pythonPath)}\${PYTHONPATH:+:$PYTHONPATH}`)
@@ -178,7 +178,7 @@ function buildWindowsCleanupScript({ desktopPid, pythonExe, pythonPath, agentRoo
   const lines = [
     '@echo off',
     'setlocal enableextensions',
-    `set "HERMES_HOME=${String(anthosHome).replace(/"/g, '')}"`,
+    `set "ANTHOS_HOME=${String(anthosHome).replace(/"/g, '')}"`,
     `set "PID=${pid}"`
   ]
   if (pythonPath) {

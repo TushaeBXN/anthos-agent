@@ -100,7 +100,7 @@ export const ja = defineLocale({
     backendOutOfDateTitle: 'バックエンドが古いです',
     backendOutOfDateMessage:
       'Anthos バックエンドがこのデスクトップビルドより古く、正常に動作しない場合があります。更新して揃えてください。',
-    updateHermes: 'Anthos を更新',
+    updateAnthos: 'Anthos を更新',
     updateReadyTitle: '更新の準備ができました',
     updateReadyMessage: count => `${count} 件の新しい変更が利用可能です。`,
     seeWhatsNew: '新機能を見る',
@@ -575,7 +575,7 @@ export const ja = defineLocale({
         `"${profile}" がアクティブプロファイルのときのみ使用される接続。ローカルに設定するとデフォルトを継承します。`,
       envOverrideTitle: '環境変数がこのデスクトップセッションを制御しています。',
       envOverrideDesc:
-        '保存された設定を使用するには HERMES_DESKTOP_REMOTE_URL と HERMES_DESKTOP_REMOTE_TOKEN の設定を解除してください。',
+        '保存された設定を使用するには ANTHOS_DESKTOP_REMOTE_URL と ANTHOS_DESKTOP_REMOTE_TOKEN の設定を解除してください。',
       localTitle: 'ローカルゲートウェイ',
       localDesc:
         'ローカルホストでプライベートな Anthos バックエンドを起動します。これがデフォルトで、オフラインでも動作します。',
@@ -892,7 +892,7 @@ export const ja = defineLocale({
     anthosActiveSessions: (version, count) => `Anthos ${version} · アクティブセッション ${count}`,
     restartGateway: 'ゲートウェイを再起動',
     gatewayRestartFailed: 'ゲートウェイの再起動に失敗しました。',
-    updateHermes: 'Anthos を更新',
+    updateAnthos: 'Anthos を更新',
     actionRunning: '実行中',
     actionDone: '完了',
     actionFailed: '失敗',

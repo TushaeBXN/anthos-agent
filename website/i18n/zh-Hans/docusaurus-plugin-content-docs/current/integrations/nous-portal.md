@@ -6,7 +6,7 @@ description: "一个订阅，300+ 前沿模型，Tool Gateway，以及 Nous Chat
 
 # Nous Portal
 
-[Nous Portal](https://portal.anthosai.com) 是 Anthos Intelligence 的统一订阅网关，也是**运行 Anthos Agent 的推荐方式**。一次 OAuth 登录，即可替代原本需要手动配置的各模型厂商独立账号、API 密钥和计费关系。
+[Nous Portal](https://portal.nousresearch.com) 是 Anthos Intelligence 的统一订阅网关，也是**运行 Anthos Agent 的推荐方式**。一次 OAuth 登录，即可替代原本需要手动配置的各模型厂商独立账号、API 密钥和计费关系。
 
 如果你只有时间配置一件事，就配置这个。最快路径：
 
@@ -16,7 +16,7 @@ anthos setup --portal
 
 这条命令会完成 Portal OAuth 认证，让你选择一个 Nous 模型，在 `config.yaml` 中将 Nous 设为推理提供商，并开启 Tool Gateway。完成后即可立即运行 `anthos chat`。
 
-还没有订阅？前往 [portal.anthosai.com/manage-subscription](https://portal.anthosai.com/manage-subscription) 注册，然后回来运行上面的命令。
+还没有订阅？前往 [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription) 注册，然后回来运行上面的命令。
 
 ## 订阅包含的内容
 
@@ -35,7 +35,7 @@ Portal 代理了来自整个生态系统的精选 agentic 模型目录——统�
 | **GLM / Zhipu** | GLM-4.6、GLM-4-Plus |
 | **MiniMax** | M2.7、M1 |
 | **xAI** | Grok-4、Grok-3 |
-| **Anthos** | Anthos-4-70B、Anthos-4-405B（对话，见[下方说明](#a-note-on-anthos-4)） |
+| **Hermes** | Hermes-4-70B、Hermes-4-405B（对话，见[下方说明](#a-note-on-hermes-4)） |
 | **+ 其他所有模型** | 240+ 额外模型——完整的 agentic 前沿生态 |
 
 底层路由通过 OpenRouter 实现，因此模型可用性和故障转移行为与使用 OpenRouter 密钥一致——只是计费走你的 Nous 订阅。在会话中途用 `/model` 即可在 Claude Sonnet 4.6（适合代码）和 Gemini 2.5 Pro（适合长上下文）之间切换——无需新凭证，无需充值，不会遇到余额为零的意外报错。
@@ -58,7 +58,7 @@ Portal 代理了来自整个生态系统的精选 agentic 模型目录——统�
 
 ### Nous Chat
 
-你的 Portal 账号同样覆盖 [chat.anthosai.com](https://chat.anthosai.com)——Anthos Intelligence 的网页对话界面，使用相同的模型目录。适合离开终端时使用，或用于非 agent 的普通对话场景。
+你的 Portal 账号同样覆盖 [chat.nousresearch.com](https://chat.nousresearch.com)——Anthos Intelligence 的网页对话界面，使用相同的模型目录。适合离开终端时使用，或用于非 agent 的普通对话场景。
 
 ### 凭证不落入 dotfiles
 
@@ -68,11 +68,11 @@ Portal 代理了来自整个生态系统的精选 agentic 模型目录——统�
 
 [原生 Windows](/user-guide/windows-native) 上，逐个配置 API 密钥是其最大痛点——在 Windows 上分别安装 Firecrawl 账号、FAL 账号、Browser Use 账号、OpenAI 密钥，是整个 agent 配置过程中摩擦最高的部分。Portal 订阅消除了这一问题：一次 OAuth 覆盖模型和所有 gateway 工具，Windows 用户无需手动配置四个后端，即可获得与 macOS/Linux 相同的体验。
 
-## 关于 Anthos 4 的说明
+## 关于 Hermes 4 的说明
 
-Anthos Intelligence 自家的 **Anthos 4** 系列（Anthos-4-70B、Anthos-4-405B）通过 Portal 提供，享有大幅折扣。这些是**前沿混合推理对话模型**——在数学、科学、指令遵循、schema 遵从、角色扮演和长文写作方面表现出色。
+Anthos Intelligence 自家的 **Anthos 4** 系列（Hermes-4-70B、Hermes-4-405B）通过 Portal 提供，享有大幅折扣。这些是**前沿混合推理对话模型**——在数学、科学、指令遵循、schema 遵从、角色扮演和长文写作方面表现出色。
 
-但**不建议在 Anthos Agent 内部使用它们**。Anthos 4 针对对话和推理进行了调优，而非 agent 所依赖的高频工具调用循环。请将它们用于 [Nous Chat](https://chat.anthosai.com)、研究工作流，或通过[订阅代理](/user-guide/features/subscription-proxy)从其他工具调用——但在 agent 场景下，请从目录中选择前沿 agentic 模型：
+但**不建议在 Anthos Agent 内部使用它们**。Hermes 4 针对对话和推理进行了调优，而非 agent 所依赖的高频工具调用循环。请将它们用于 [Nous Chat](https://chat.nousresearch.com)、研究工作流，或通过[订阅代理](/user-guide/features/subscription-proxy)从其他工具调用——但在 agent 场景下，请从目录中选择前沿 agentic 模型：
 
 ```bash
 /model anthropic/claude-sonnet-4.6     # 最佳通用 agentic 模型
@@ -81,7 +81,7 @@ Anthos Intelligence 自家的 **Anthos 4** 系列（Anthos-4-70B、Anthos-4-405B
 /model deepseek/deepseek-v3.2          # 高性价比代码模型
 ```
 
-Portal 自身的[模型信息页](https://portal.anthosai.com/info)也有相同警告，因此这不是 Anthos 侧的主观意见——这是 Anthos Intelligence 的官方指导。
+Portal 自身的[模型信息页](https://portal.nousresearch.com/info)也有相同警告，因此这不是 Anthos 侧的主观意见——这是 Anthos Intelligence 的官方指导。
 
 ## 配置
 
@@ -93,14 +93,14 @@ anthos setup --portal
 
 一次性完成全部配置：
 
-1. 打开浏览器跳转至 portal.anthosai.com 进行 OAuth 登录
+1. 打开浏览器跳转至 portal.nousresearch.com 进行 OAuth 登录
 2. 将 refresh token 存储至 `~/.anthos/auth.json`
 3. 让你从精选列表中选择一个 Nous 模型（也可跳过以保留当前模型）
 4. 在 `~/.anthos/config.yaml` 中将 Nous 设为推理提供商（当你选择模型时）
 5. 开启 Tool Gateway（网页、图像、TTS、浏览器路由）
 6. 返回终端，即可运行 `anthos chat`
 
-如果还没有订阅，请先在 [portal.anthosai.com/manage-subscription](https://portal.anthosai.com/manage-subscription) 注册。
+如果还没有订阅，请先在 [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription) 注册。
 
 ### 已有安装——在现有提供商旁添加 Portal
 
@@ -141,7 +141,7 @@ anthos portal open       # 在浏览器中打开订阅管理页面
   Nous Portal
   ───────────
   Auth:    ✓ logged in
-  Portal:  https://portal.anthosai.com
+  Portal:  https://portal.nousresearch.com
   Model:   ✓ using Nous as inference provider
 
   Tool Gateway
@@ -194,7 +194,7 @@ Tool Gateway 是按工具单独选择启用的，而非全部或全不。完整�
 
 随时管理套餐、查看用量或升级/取消：
 
-- **网页端：** [portal.anthosai.com/manage-subscription](https://portal.anthosai.com/manage-subscription)
+- **网页端：** [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription)
 - **CLI 快捷方式：** `anthos portal open`（在默认浏览器中打开同一页面）
 
 ## 配置参考
@@ -205,7 +205,7 @@ Tool Gateway 是按工具单独选择启用的，而非全部或全不。完整�
 model:
   provider: nous
   default: anthropic/claude-sonnet-4.6     # 或你选择的其他模型
-  base_url: https://inference.anthosai.com/v1
+  base_url: https://inference.nousresearch.com/v1
 ```
 
 Tool Gateway 设置位于各自工具的配置节下：

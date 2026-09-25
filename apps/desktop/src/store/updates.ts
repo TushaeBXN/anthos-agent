@@ -13,7 +13,7 @@ import type {
   DesktopUpdateStatus,
   DesktopVersionInfo
 } from '@/global'
-import { checkAnthosUpdate, getActionStatus, updateHermes } from '@/anthos'
+import { checkAnthosUpdate, getActionStatus, updateAnthos } from '@/anthos'
 import { translateNow } from '@/i18n'
 import { persistString, storedString } from '@/lib/storage'
 import { dismissNotification, notify } from '@/store/notifications'
@@ -134,7 +134,7 @@ export function reportBackendContract(contract: number | undefined): void {
 
   notify({
     action: {
-      label: translateNow('notifications.updateHermes'),
+      label: translateNow('notifications.updateAnthos'),
       onClick: () => {
         snoozeSkewToast()
         void applyBackendUpdate()
@@ -460,7 +460,7 @@ export async function applyBackendUpdate(): Promise<DesktopUpdateApplyResult> {
   $backendUpdateApply.set({ ...IDLE, applying: true, stage: 'prepare', message: translateNow('updates.applyStatus.preparing') })
 
   try {
-    const started = await updateHermes()
+    const started = await updateAnthos()
 
     if (!started.ok) {
       const message = (started as { message?: string }).message || translateNow('updates.applyStatus.notAvailable')

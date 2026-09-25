@@ -68,30 +68,30 @@ def _bare_custom_provider_def(current_base_url: str) -> Optional[ProviderDef]:
 # Non-agentic model warning
 # ---------------------------------------------------------------------------
 
-_ANTHOS_MODEL_WARNING = (
-    "Nous Research Anthos 3 & 4 models are NOT agentic and are not designed "
+_HERMES_MODEL_WARNING = (
+    "Nous Research Hermes 3 & 4 models are NOT agentic and are not designed "
     "for use with Anthos Agent. They lack the tool-calling capabilities "
     "required for agent workflows. Consider using an agentic model instead "
     "(Claude, GPT, Gemini, DeepSeek, etc.)."
 )
 
-# Match only the real Nous Research Anthos 3 / Anthos 4 chat families.
-# The previous substring check (`"anthos" in name.lower()`) false-positived on
-# unrelated local Modelfiles like ``anthos-brain:qwen3-14b-ctx16k`` that just
-# happen to carry "anthos" in their tag but are fully tool-capable.
+# Match only the real Nous Research Hermes 3 / Hermes 4 chat families.
+# The previous substring check (`"hermes" in name.lower()`) false-positived on
+# unrelated local Modelfiles like ``hermes-brain:qwen3-14b-ctx16k`` that just
+# happen to carry "hermes" in their tag but are fully tool-capable.
 #
 # Positive examples the regex must match:
-#   NousResearch/Anthos-3-Llama-3.1-70B, anthos-4-405b, openrouter/anthos3:70b
+#   NousResearch/Hermes-3-Llama-3.1-70B, hermes-4-405b, openrouter/hermes3:70b
 # Negative examples it must NOT match:
-#   anthos-brain:qwen3-14b-ctx16k, qwen3:14b, claude-opus-4-6
-_NOUS_ANTHOS_NON_AGENTIC_RE = re.compile(
-    r"(?:^|[/:])anthos[-_ ]?[34](?:[-_.:]|$)",
+#   hermes-brain:qwen3-14b-ctx16k, qwen3:14b, claude-opus-4-6
+_NOUS_HERMES_NON_AGENTIC_RE = re.compile(
+    r"(?:^|[/:])hermes[-_ ]?[34](?:[-_.:]|$)",
     re.IGNORECASE,
 )
 
 
-def is_nous_anthos_non_agentic(model_name: str) -> bool:
-    """Return True if *model_name* is a real Nous Anthos 3/4 chat model.
+def is_nous_hermes_non_agentic(model_name: str) -> bool:
+    """Return True if *model_name* is a real Nous Hermes 3/4 chat model.
 
     Used to decide whether to surface the non-agentic warning at startup.
     Callers in :mod:`cli.py` and here should go through this single helper
@@ -99,13 +99,13 @@ def is_nous_anthos_non_agentic(model_name: str) -> bool:
     """
     if not model_name:
         return False
-    return bool(_NOUS_ANTHOS_NON_AGENTIC_RE.search(model_name))
+    return bool(_NOUS_HERMES_NON_AGENTIC_RE.search(model_name))
 
 
-def _check_anthos_model_warning(model_name: str) -> str:
-    """Return a warning string if *model_name* is a Nous Anthos 3/4 chat model."""
-    if is_nous_anthos_non_agentic(model_name):
-        return _ANTHOS_MODEL_WARNING
+def _check_hermes_model_warning(model_name: str) -> str:
+    """Return a warning string if *model_name* is a Nous Hermes 3/4 chat model."""
+    if is_nous_hermes_non_agentic(model_name):
+        return _HERMES_MODEL_WARNING
     return ""
 
 
@@ -1159,7 +1159,7 @@ def switch_model(
     warnings: list[str] = []
     if validation.get("message"):
         warnings.append(validation["message"])
-    anthos_warn = _check_anthos_model_warning(new_model)
+    anthos_warn = _check_hermes_model_warning(new_model)
     if anthos_warn:
         warnings.append(anthos_warn)
 
@@ -1382,7 +1382,7 @@ def list_authenticated_providers(
     curated: dict[str, list[str]] = dict(_PROVIDER_MODELS)
     curated["openrouter"] = [mid for mid, _ in OPENROUTER_MODELS]
     # "nous" pulls from the remote model-catalog manifest published at
-    # https://anthos-agent.nousresearch.com/docs/api/model-catalog.json so
+    # https://anthos-agent.anthosai.com/docs/api/model-catalog.json so
     # newly added Portal models surface in the /model picker without
     # requiring a Anthos release. Falls back to the in-repo
     # _PROVIDER_MODELS["nous"] snapshot when the manifest is unreachable.
@@ -1512,14 +1512,14 @@ def list_authenticated_providers(
     # Build reverse mapping: models.dev ID → Anthos provider ID.
     # ANTHOS_OVERLAYS keys may be models.dev IDs (e.g. "github-copilot")
     # while _PROVIDER_MODELS and config.yaml use Anthos IDs ("copilot").
-    _mdev_to_hermes = {v: k for k, v in PROVIDER_TO_MODELS_DEV.items()}
+    _mdev_to_anthos = {v: k for k, v in PROVIDER_TO_MODELS_DEV.items()}
 
     for pid, overlay in ANTHOS_OVERLAYS.items():
         if pid.lower() in seen_slugs:
             continue
 
         # Resolve Anthos slug — e.g. "github-copilot" → "copilot"
-        anthos_slug = _mdev_to_hermes.get(pid, pid)
+        anthos_slug = _mdev_to_anthos.get(pid, pid)
         if anthos_slug.lower() in seen_slugs:
             continue
 

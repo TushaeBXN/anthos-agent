@@ -424,8 +424,8 @@ DANGEROUS_PATTERNS = [
     # Gateway lifecycle protection: prevent the agent from killing its own
     # gateway process.  These commands trigger a gateway restart/stop that
     # terminates all running agents mid-work.
-    (r'\bhermes\s+gateway\s+(stop|restart)\b', "stop/restart anthos gateway (kills running agents)"),
-    (r'\bhermes\s+update\b', "anthos update (restarts gateway, kills running agents)"),
+    (r'\banthos\s+gateway\s+(stop|restart)\b', "stop/restart anthos gateway (kills running agents)"),
+    (r'\banthos\s+update\b', "anthos update (restarts gateway, kills running agents)"),
     # Docker container lifecycle — any user with docker.sock mounted (a common
     # Docker Compose pattern) gives the agent the ability to restart/stop/kill
     # containers without approval.  These are agent-initiated lifecycle operations

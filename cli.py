@@ -3126,7 +3126,7 @@ class ChatConsole:
         """
         yield self
 
-# ASCII Art - HERMES-AGENT logo (full width, single line - requires ~95 char terminal)
+# ASCII Art - ANTHOS-AGENT logo (full width, single line - requires ~95 char terminal)
 ANTHOS_AGENT_LOGO = """[bold #FFD700]██╗  ██╗███████╗██████╗ ███╗   ███╗███████╗███████╗       █████╗  ██████╗ ███████╗███╗   ██╗████████╗[/]
 [bold #FFD700]██║  ██║██╔════╝██╔══██╗████╗ ████║██╔════╝██╔════╝      ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝[/]
 [#FFBF00]███████║█████╗  ██████╔╝██╔████╔██║█████╗  ███████╗█████╗███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║[/]
@@ -5507,14 +5507,14 @@ class AnthosCLI(CLIAgentSetupMixin, CLICommandsMixin):
                     "[dim]   Fix: Set model.context_length in config.yaml, or increase your server's context setting[/]"
                 )
 
-        # Warn if the configured model is a Nous Anthos LLM (not agentic)
-        from anthos_cli.model_switch import is_nous_anthos_non_agentic
+        # Warn if the configured model is a Nous Hermes LLM (not agentic)
+        from anthos_cli.model_switch import is_nous_hermes_non_agentic
 
         model_name = getattr(self, "model", "") or ""
-        if is_nous_anthos_non_agentic(model_name):
+        if is_nous_hermes_non_agentic(model_name):
             self._console_print()
             self._console_print(
-                "[bold yellow]⚠  Nous Research Anthos 3 & 4 models are NOT agentic and are not "
+                "[bold yellow]⚠  Nous Research Hermes 3 & 4 models are NOT agentic and are not "
                 "designed for use with Anthos Agent.[/]"
             )
             self._console_print(

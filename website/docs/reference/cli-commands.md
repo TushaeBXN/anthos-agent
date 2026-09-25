@@ -310,7 +310,7 @@ Inspect Nous Portal auth, Tool Gateway routing, and reach the subscription page.
 | Subcommand | Description |
 |------------|-------------|
 | `status` (default) | Portal auth state + per-tool Tool Gateway routing summary. Also shown when no subcommand is given. |
-| `open` | Open `portal.anthosai.com/manage-subscription` in your default browser. |
+| `open` | Open `portal.nousresearch.com/manage-subscription` in your default browser. |
 | `tools` | List every Tool Gateway partner (Firecrawl, FAL, OpenAI TTS, Browser Use, Modal) and which are routed via Nous. |
 
 For configuration of the gateway itself, see [Tool Gateway](../user-guide/features/tool-gateway.md). For the one-shot setup path, see `anthos setup --portal` above.
@@ -692,7 +692,7 @@ os:               Linux 6.14.0-37-generic x86_64
 python:           3.11.14
 openai_sdk:       2.24.0
 profile:          default
-hermes_home:      ~/.anthos
+anthos_home:      ~/.anthos
 model:            anthropic/claude-opus-4.6
 provider:         openrouter
 terminal:         local

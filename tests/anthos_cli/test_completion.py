@@ -142,8 +142,8 @@ class TestGenerateZsh:
 
     def test_registers_compdef_instead_of_invoking_completion_function(self):
         out = generate_zsh(_make_parser())
-        assert 'compdef _hermes anthos' in out
-        assert '_hermes "$@"' not in out
+        assert 'compdef _anthos anthos' in out
+        assert '_anthos "$@"' not in out
 
     def test_preserves_valid_zsh_arguments_alias_syntax(self):
         out = generate_zsh(_make_parser())
@@ -178,7 +178,7 @@ class TestGenerateZsh:
                 [
                     "zsh",
                     "-fc",
-                    f"autoload -Uz compinit && compinit -D; source {path}; [[ ${{_comps[anthos]}} == _hermes ]]",
+                    f"autoload -Uz compinit && compinit -D; source {path}; [[ ${{_comps[anthos]}} == _anthos ]]",
                 ],
                 capture_output=True,
                 text=True,

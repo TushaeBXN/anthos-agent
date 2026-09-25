@@ -624,7 +624,7 @@ services.anthos-agent.extraPlugins = [
 
 ### 入口点插件（`extraPythonPackages`）
 
-对于通过 `[project.entry-points."hermes_agent.plugins"]` 注册的 pip 打包插件（例如 [rtk-anthos](https://github.com/ogallotti/rtk-anthos)）：
+对于通过 `[project.entry-points."anthos_agent.plugins"]` 注册的 pip 打包插件（例如 [rtk-anthos](https://github.com/ogallotti/rtk-anthos)）：
 
 ```nix
 services.anthos-agent.extraPythonPackages = [

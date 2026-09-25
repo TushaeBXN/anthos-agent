@@ -104,7 +104,7 @@ def register(ctx):
 | 附带数据文件 | `Path(__file__).parent / "data" / "file.yaml"` |
 | 打包 skill | `ctx.register_skill(name, path)` — 命名空间为 `plugin:skill`，通过 `skill_view("plugin:skill")` 加载 |
 | 按环境变量控制 | 在 plugin.yaml 中设置 `requires_env: [API_KEY]` — 在 `anthos plugins install` 时提示输入 |
-| 通过 pip 分发 | `[project.entry-points."hermes_agent.plugins"]` |
+| 通过 pip 分发 | `[project.entry-points."anthos_agent.plugins"]` |
 | 注册 gateway 平台（Discord、Telegram、IRC 等） | `ctx.register_platform(name, label, adapter_factory, check_fn, ...)` — 参见 [Adding Platform Adapters](/developer-guide/adding-platform-adapters) |
 | 注册图像生成后端 | `ctx.register_image_gen_provider(provider)` — 参见 [Image Generation Provider Plugins](/developer-guide/image-gen-provider-plugin) |
 | 注册视频生成后端 | `ctx.register_video_gen_provider(provider)` — 参见 [Video Generation Provider Plugins](/developer-guide/video-gen-provider-plugin) |
@@ -120,7 +120,7 @@ def register(ctx):
 | 内置 | `<repo>/plugins/` | 随 Anthos 附带 — 参见 [Built-in Plugins](/user-guide/features/built-in-plugins) |
 | 用户 | `~/.anthos/plugins/` | 个人插件 |
 | 项目 | `.anthos/plugins/` | 项目专属插件（需要 `ANTHOS_ENABLE_PROJECT_PLUGINS=true`） |
-| pip | `hermes_agent.plugins` entry_points | 分发包 |
+| pip | `anthos_agent.plugins` entry_points | 分发包 |
 | Nix | `services.anthos-agent.extraPlugins` / `extraPythonPackages` | NixOS 声明式安装 — 参见 [Nix Setup](/getting-started/nix-setup#plugins) |
 
 名称冲突时，后面的来源会覆盖前面的，因此与内置插件同名的用户插件会替换它。

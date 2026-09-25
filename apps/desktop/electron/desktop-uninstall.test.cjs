@@ -95,7 +95,7 @@ test('resolveRemovableAppPath returns null for an unrecognized Windows dir', () 
 
 test('resolveRemovableAppPath uses APPIMAGE on Linux when set', () => {
   assert.equal(
-    resolveRemovableAppPath('/tmp/.mount_HermesXXXX/anthos', 'linux', { APPIMAGE: '/home/x/Apps/Anthos.AppImage' }),
+    resolveRemovableAppPath('/tmp/.mount_AnthosXXXX/anthos', 'linux', { APPIMAGE: '/home/x/Apps/Anthos.AppImage' }),
     '/home/x/Apps/Anthos.AppImage'
   )
 })
@@ -142,7 +142,7 @@ test('buildPosixCleanupScript waits for the PID, runs the uninstall module, remo
   assert.match(script, /seq 1 60/)
   assert.match(script, /'-m' 'anthos_cli\.uninstall' '--mode' 'gui'/)
   assert.match(script, /rm -rf '\/opt\/anthos\/linux-unpacked'/)
-  assert.match(script, /export HERMES_HOME='\/home\/x\/\.anthos'/)
+  assert.match(script, /export ANTHOS_HOME='\/home\/x\/\.anthos'/)
 })
 
 test('buildPosixCleanupScript exports PYTHONPATH when pythonPath is set (lite/full)', () => {

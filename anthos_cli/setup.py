@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 
-_DOCS_BASE = "https://anthos-agent.nousresearch.com/docs"
+_DOCS_BASE = "https://anthos-agent.anthosai.com/docs"
 
 
 def _model_config_dict(config: Dict[str, Any]) -> Dict[str, Any]:
@@ -1894,7 +1894,7 @@ def _setup_webhooks():
     print_warning("   internet. For security, run the gateway in a sandboxed environment")
     print_warning("   (Docker, VM, etc.) to limit blast radius from prompt injection.")
     print()
-    print_info("   Full guide: https://anthos-agent.nousresearch.com/docs/user-guide/messaging/webhooks/")
+    print_info("   Full guide: https://anthos-agent.anthosai.com/docs/user-guide/messaging/webhooks/")
     print()
 
     port = prompt("Webhook port (default 8644)")
@@ -1921,7 +1921,7 @@ def _setup_webhooks():
     print_info("      http://your-server:8644/webhooks/<route-name>")
     print()
     print_info("   Route configuration guide:")
-    print_info("   https://anthos-agent.nousresearch.com/docs/user-guide/messaging/webhooks/#configuring-routes")
+    print_info("   https://anthos-agent.anthosai.com/docs/user-guide/messaging/webhooks/#configuring-routes")
     print()
     print_info("   Open config in your editor:  anthos config edit")
     print_info("   Open config in your editor:  anthos config edit")
@@ -2335,12 +2335,12 @@ _OPENCLAW_SCRIPT = (
     / "migration"
     / "openclaw-migration"
     / "scripts"
-    / "openclaw_to_hermes.py"
+    / "openclaw_to_anthos.py"
 )
 
 
 def _load_openclaw_migration_module():
-    """Load the openclaw_to_hermes migration script as a module.
+    """Load the openclaw_to_anthos migration script as a module.
 
     Returns the loaded module, or None if the script can't be loaded.
     """
@@ -2348,7 +2348,7 @@ def _load_openclaw_migration_module():
         return None
 
     spec = importlib.util.spec_from_file_location(
-        "openclaw_to_hermes", _OPENCLAW_SCRIPT
+        "openclaw_to_anthos", _OPENCLAW_SCRIPT
     )
     if spec is None or spec.loader is None:
         return None

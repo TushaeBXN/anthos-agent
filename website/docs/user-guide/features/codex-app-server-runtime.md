@@ -66,7 +66,7 @@ Anthos registers itself as an MCP server so codex can call back for tools codex 
 - **`skill_view` / `skills_list`** — read from Anthos' skill library.
 - **`text_to_speech`** — TTS through Anthos' configured provider.
 
-When the model wants one of these, codex spawns the `hermes_tools_mcp_server` subprocess via stdio MCP, the call is dispatched through `model_tools.handle_function_call()` (same code path as Anthos' default runtime), and the result is returned to codex like any other MCP response.
+When the model wants one of these, codex spawns the `anthos_tools_mcp_server` subprocess via stdio MCP, the call is dispatched through `model_tools.handle_function_call()` (same code path as Anthos' default runtime), and the result is returned to codex like any other MCP response.
 
 ### What's NOT available on this runtime
 
@@ -353,13 +353,13 @@ Codex's built-in toolset covers shell/file ops/patches but doesn't have web sear
 ```toml
 [mcp_servers.anthos-tools]
 command = "/path/to/python"
-args = ["-m", "agent.transports.hermes_tools_mcp_server"]
+args = ["-m", "agent.transports.anthos_tools_mcp_server"]
 env = { ANTHOS_HOME = "/your/.anthos", PYTHONPATH = "...", ANTHOS_QUIET = "1" }
 startup_timeout_sec = 30.0
 tool_timeout_sec = 600.0
 ```
 
-When the model calls `web_search` (or another exposed Anthos tool), codex spawns the `hermes_tools_mcp_server` subprocess via stdio, the request is dispatched through `model_tools.handle_function_call()`, and the result is projected back to codex like any other MCP response.
+When the model calls `web_search` (or another exposed Anthos tool), codex spawns the `anthos_tools_mcp_server` subprocess via stdio, the request is dispatched through `model_tools.handle_function_call()`, and the result is projected back to codex like any other MCP response.
 
 **Tools available via the callback:** `web_search`, `web_extract`, `browser_navigate`, `browser_click`, `browser_type`, `browser_press`, `browser_snapshot`, `browser_scroll`, `browser_back`, `browser_get_images`, `browser_console`, `browser_vision`, `vision_analyze`, `image_generate`, `skill_view`, `skills_list`, `text_to_speech`.
 
@@ -436,7 +436,7 @@ If you find a bug, [open an issue](https://github.com/TushaeBXN/anthos-agent/iss
                                                         │
                                                         ▼
         ┌──────────────────────────────────────────────────────────┐
-        │  hermes_tools_mcp_server.py (subprocess on demand)        │
+        │  anthos_tools_mcp_server.py (subprocess on demand)        │
         │   web_search, web_extract, browser_*, vision_analyze,    │
         │   image_generate, skill_view, skills_list, text_to_speech│
         └──────────────────────────────────────────────────────────┘

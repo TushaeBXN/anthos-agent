@@ -46,7 +46,7 @@ def test_dockerfile_disables_runtime_install_mutations() -> None:
     assert "ANTHOS_TUI_DIR=/opt/anthos/ui-tui" in text
 
 
-def test_dockerfile_does_not_chown_install_trees_to_hermes() -> None:
+def test_dockerfile_does_not_chown_install_trees_to_anthos() -> None:
     text = _dockerfile_text()
     forbidden_patterns = (
         r"chown\s+-R\s+anthos:anthos\s+/opt/anthos/\.venv",

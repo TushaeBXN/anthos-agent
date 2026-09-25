@@ -48,17 +48,17 @@ const APP = (() => {
   }
 })()
 
-// Default HERMES_HOME for non-sandboxed runs -- matches main.cjs's
+// Default ANTHOS_HOME for non-sandboxed runs -- matches main.cjs's
 // resolveAnthosHome(). On Windows it's %LOCALAPPDATA%\anthos; elsewhere
 // it's ~/.anthos. The fresh-install sandbox launchFresh() sets its own
-// HERMES_HOME and never touches this.
-const DEFAULT_HERMES_HOME = (() => {
+// ANTHOS_HOME and never touches this.
+const DEFAULT_ANTHOS_HOME = (() => {
   if (PLATFORM === 'win32' && process.env.LOCALAPPDATA) {
     return path.join(process.env.LOCALAPPDATA, 'anthos')
   }
   return path.join(os.homedir(), '.anthos')
 })()
-const VENV_ROOT = path.join(DEFAULT_HERMES_HOME, 'anthos-agent', 'venv')
+const VENV_ROOT = path.join(DEFAULT_ANTHOS_HOME, 'anthos-agent', 'venv')
 const FRESH_SANDBOX_ROOT = path.join(os.tmpdir(), 'anthos-desktop-fresh-install')
 
 function die(message) {
@@ -109,7 +109,7 @@ function ensurePlatformBuilds() {
 }
 
 function ensurePackagedApp() {
-  if (process.env.HERMES_DESKTOP_SKIP_BUILD === '1' && exists(APP.binary)) {
+  if (process.env.ANTHOS_DESKTOP_SKIP_BUILD === '1' && exists(APP.binary)) {
     return
   }
 
@@ -156,7 +156,7 @@ function ensureDmg() {
   if (PLATFORM !== 'darwin') {
     die('DMG mode is macOS-only; on Windows use the `nsis` mode instead.')
   }
-  if (process.env.HERMES_DESKTOP_SKIP_BUILD === '1' && exists(resolveDmgPath())) {
+  if (process.env.ANTHOS_DESKTOP_SKIP_BUILD === '1' && exists(resolveDmgPath())) {
     return
   }
   run('npm', ['run', 'dist:mac:dmg'])
@@ -166,7 +166,7 @@ function ensureNsis() {
   if (PLATFORM !== 'win32') {
     die('NSIS mode is win32-only; on macOS use the `dmg` mode instead.')
   }
-  if (process.env.HERMES_DESKTOP_SKIP_BUILD === '1' && resolveNsisPath()) {
+  if (process.env.ANTHOS_DESKTOP_SKIP_BUILD === '1' && resolveNsisPath()) {
     return
   }
   run('npm', ['run', 'dist:win:nsis'])
@@ -250,13 +250,13 @@ function launchFresh() {
     env[key] = value
   }
 
-  env.HERMES_DESKTOP_CWD = cwd
-  env.HERMES_DESKTOP_IGNORE_EXISTING = '1'
-  env.HERMES_DESKTOP_TEST_MODE = 'fresh-install'
-  env.HERMES_DESKTOP_USER_DATA_DIR = userDataDir
-  env.HERMES_HOME = anthosHome
-  delete env.HERMES_DESKTOP_HERMES
-  delete env.HERMES_DESKTOP_HERMES_ROOT
+  env.ANTHOS_DESKTOP_CWD = cwd
+  env.ANTHOS_DESKTOP_IGNORE_EXISTING = '1'
+  env.ANTHOS_DESKTOP_TEST_MODE = 'fresh-install'
+  env.ANTHOS_DESKTOP_USER_DATA_DIR = userDataDir
+  env.ANTHOS_HOME = anthosHome
+  delete env.ANTHOS_DESKTOP_ANTHOS
+  delete env.ANTHOS_DESKTOP_ANTHOS_ROOT
 
   const child = spawn(APP.binary, [], {
     cwd: os.homedir(),
@@ -269,7 +269,7 @@ function launchFresh() {
   console.log('\nFresh install sandbox:')
   console.log(`  root: ${sandbox}`)
   console.log(`  electron userData: ${userDataDir}`)
-  console.log(`  HERMES_HOME: ${anthosHome}`)
+  console.log(`  ANTHOS_HOME: ${anthosHome}`)
   console.log(`  cwd: ${cwd}`)
 
   return { runtimeRoot: path.join(anthosHome, 'anthos-agent', 'venv') }
@@ -383,13 +383,13 @@ function printArtifacts(options = {}) {
 function help() {
   console.log(`Usage:
   npm run test:desktop:existing  # build packaged app, launch with normal PATH/existing Anthos
-  npm run test:desktop:fresh     # build packaged app, launch with temp userData + HERMES_HOME
+  npm run test:desktop:fresh     # build packaged app, launch with temp userData + ANTHOS_HOME
   npm run test:desktop:dmg       # (macOS only) build DMG and open it
   npm run test:desktop:nsis      # (win32 only) build NSIS installer
   npm run test:desktop:all       # build installer, validate app payload, print paths
 
 Fast rerun (skip rebuild if the packaged app already exists):
-  HERMES_DESKTOP_SKIP_BUILD=1 npm run test:desktop:fresh
+  ANTHOS_DESKTOP_SKIP_BUILD=1 npm run test:desktop:fresh
 `)
 }
 

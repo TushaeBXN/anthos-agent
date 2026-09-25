@@ -37,7 +37,7 @@ const getActionStatusSpy = vi.fn()
 
 vi.mock('@/anthos', () => ({
   checkAnthosUpdate: (...args: unknown[]) => checkAnthosUpdateSpy(...args),
-  updateHermes: (...args: unknown[]) => updateAnthosSpy(...args),
+  updateAnthos: (...args: unknown[]) => updateAnthosSpy(...args),
   getActionStatus: (...args: unknown[]) => getActionStatusSpy(...args)
 }))
 

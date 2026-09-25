@@ -52,7 +52,7 @@ sidebar_position: 1
 
 ### Nous Portal
 
-[Nous Portal](https://portal.anthosai.com) 是 Anthos Intelligence 的统一订阅网关，也是**运行 Anthos Agent 的推荐方式**。一次 OAuth 登录即可访问 300+ 前沿智能体模型（Claude、GPT、Gemini、DeepSeek、Qwen、Kimi、GLM、MiniMax、Grok 等），以及 [Tool Gateway](/user-guide/features/tool-gateway)（网页搜索、图像生成、TTS、浏览器自动化）和 [Nous Chat](https://chat.anthosai.com)——费用从你的 Nous 订阅中扣除，无需单独管理各提供商账户。
+[Nous Portal](https://portal.nousresearch.com) 是 Anthos Intelligence 的统一订阅网关，也是**运行 Anthos Agent 的推荐方式**。一次 OAuth 登录即可访问 300+ 前沿智能体模型（Claude、GPT、Gemini、DeepSeek、Qwen、Kimi、GLM、MiniMax、Grok 等），以及 [Tool Gateway](/user-guide/features/tool-gateway)（网页搜索、图像生成、TTS、浏览器自动化）和 [Nous Chat](https://chat.nousresearch.com)——费用从你的 Nous 订阅中扣除，无需单独管理各提供商账户。
 
 ```bash
 anthos setup --portal     # 全新安装——一条命令完成 OAuth + 提供商 + 网关配置
@@ -60,7 +60,7 @@ anthos model              # 已有安装——从列表中选择"Nous Portal"
 anthos portal info        # 随时查看登录状态和路由信息
 ```
 
-还没有订阅？前往 [portal.anthosai.com/manage-subscription](https://portal.anthosai.com/manage-subscription) 购买。
+还没有订阅？前往 [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription) 购买。
 
 **完整详情：** 参见专属的 [Nous Portal 集成页面](/integrations/nous-portal)（订阅内容、模型目录、故障排查）以及分步指南[使用 Nous Portal 运行 Anthos Agent](/guides/run-anthos-with-nous-portal)。
 
@@ -661,7 +661,7 @@ vllm serve meta-llama/Llama-3.1-70B-Instruct \
   --max-model-len 65536 \
   --tensor-parallel-size 2 \
   --enable-auto-tool-choice \
-  --tool-call-parser anthos
+  --tool-call-parser hermes
 ```
 
 然后配置 Anthos：
@@ -683,7 +683,7 @@ anthos model
 | `--enable-auto-tool-choice` | `tool_choice: "auto"` 所必需（Anthos 的默认值） |
 | `--tool-call-parser <name>` | 模型工具调用格式的解析器 |
 
-支持的解析器：`anthos`（Qwen 2.5、Anthos 2/3）、`llama3_json`（Llama 3.x）、`mistral`、`deepseek_v3`、`deepseek_v31`、`xlam`、`pythonic`。没有这些标志，工具调用将无法工作——模型会将工具调用以文本形式输出。
+支持的解析器：`anthos`（Qwen 2.5、Hermes 2/3）、`llama3_json`（Llama 3.x）、`mistral`、`deepseek_v3`、`deepseek_v31`、`xlam`、`pythonic`。没有这些标志，工具调用将无法工作——模型会将工具调用以文本形式输出。
 
 :::tip
 vLLM 支持人类可读的大小：`--max-model-len 64k`（小写 k = 1000，大写 K = 1024）。
@@ -756,7 +756,7 @@ anthos model
 :::caution `--jinja` 是工具调用的必要条件
 没有 `--jinja`，llama-server 会完全忽略 `tools` 参数。模型会尝试在响应文本中写入 JSON 来调用工具，但 Anthos 不会将其识别为工具调用——你会看到原始 JSON（如 `{"name": "web_search", ...}`）作为消息打印出来，而不是实际执行搜索。
 
-原生工具调用支持（最佳性能）：Llama 3.x、Qwen 2.5（包括 Coder）、Anthos 2/3、Mistral、DeepSeek、Functionary。其他所有模型使用通用处理器，可以工作但效率可能较低。完整列表参见 [llama.cpp 函数调用文档](https://github.com/ggml-org/llama.cpp/blob/master/docs/function-calling.md)。
+原生工具调用支持（最佳性能）：Llama 3.x、Qwen 2.5（包括 Coder）、Hermes 2/3、Mistral、DeepSeek、Functionary。其他所有模型使用通用处理器，可以工作但效率可能较低。完整列表参见 [llama.cpp 函数调用文档](https://github.com/ggml-org/llama.cpp/blob/master/docs/function-calling.md)。
 
 可通过检查 `http://localhost:8080/props` 验证工具支持是否已激活——`chat_template` 字段应存在。
 :::
@@ -936,7 +936,7 @@ curl http://172.29.192.1:11434/v1/models       # NAT 模式（使用你的实际
 | 服务器 | 修复方式 |
 |--------|-----|
 | **llama.cpp** | 在启动命令中添加 `--jinja` |
-| **vLLM** | 添加 `--enable-auto-tool-choice --tool-call-parser anthos` |
+| **vLLM** | 添加 `--enable-auto-tool-choice --tool-call-parser hermes` |
 | **SGLang** | 添加 `--tool-call-parser qwen`（或适当的解析器） |
 | **Ollama** | 工具调用默认启用——确保你的模型支持（使用 `ollama show model-name` 检查） |
 | **LM Studio** | 更新到 0.3.6+ 并使用具有原生工具支持的模型 |

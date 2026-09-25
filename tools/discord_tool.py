@@ -79,7 +79,7 @@ def _discord_request(
         headers={
             "Authorization": f"Bot {token}",
             "Content-Type": "application/json",
-            "User-Agent": "Anthos-Agent (https://github.com/NousResearch/anthos-agent)",
+            "User-Agent": "Anthos-Agent (https://github.com/TushaeBXN/anthos-agent)",
         },
     )
 

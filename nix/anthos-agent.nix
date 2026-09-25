@@ -1,9 +1,9 @@
-# nix/hermes-agent.nix — Overridable Hermes Agent package
+# nix/anthos-agent.nix — Overridable Anthos Agent package
 #
 # callPackage auto-wires nixpkgs args; flake inputs are passed explicitly.
 # Users override via:
-#   pkgs.hermes-agent.override { extraPythonPackages = [...]; }
-#   pkgs.hermes-agent.override { extraDependencyGroups = [ "hindsight" ]; }
+#   pkgs.anthos-agent.override { extraPythonPackages = [...]; }
+#   pkgs.anthos-agent.override { extraDependencyGroups = [ "hindsight" ]; }
 {
   lib,
   stdenv,
@@ -37,21 +37,21 @@
 }:
 let
   nodejs = nodejs_22;
-  hermesVenv = callPackage ./python.nix {
+  anthosVenv = callPackage ./python.nix {
     inherit uv2nix pyproject-nix pyproject-build-systems;
     dependency-groups = [ "all" ] ++ extraDependencyGroups;
   };
 
-  hermesNpmLib = callPackage ./lib.nix {
+  anthosNpmLib = callPackage ./lib.nix {
     inherit npm-lockfile-fix nodejs;
   };
 
-  hermesTui = callPackage ./tui.nix {
-    inherit hermesNpmLib;
+  anthosTui = callPackage ./tui.nix {
+    inherit anthosNpmLib;
   };
 
-  hermesWeb = callPackage ./web.nix {
-    inherit hermesNpmLib;
+  anthosWeb = callPackage ./web.nix {
+    inherit anthosNpmLib;
   };
 
   bundledSkills = lib.cleanSourceWith {
@@ -120,7 +120,7 @@ let
 
     # Collect core venv package names
     core = set()
-    venv_sp = pathlib.Path('${hermesVenv}/${sitePackagesPath}')
+    venv_sp = pathlib.Path('${anthosVenv}/${sitePackagesPath}')
     for di in venv_sp.glob('*.dist-info'):
         meta = di / 'METADATA'
         if meta.exists():
@@ -143,7 +143,7 @@ let
                 if line.startswith('Name:'):
                     pkg = canonical(line.split(':', 1)[1].strip())
                     if pkg in core:
-                        print(f'ERROR: plugin package \"{pkg}\" collides with a package in hermes sealed venv', file=sys.stderr)
+                        print(f'ERROR: plugin package \"{pkg}\" collides with a package in anthos sealed venv', file=sys.stderr)
                         print(f'  from: {di}', file=sys.stderr)
                         print(f'  Remove this dependency from extraPythonPackages.', file=sys.stderr)
                         sys.exit(1)
@@ -153,7 +153,7 @@ let
   '';
 in
 stdenv.mkDerivation (finalAttrs: {
-  pname = "hermes-agent";
+  pname = "anthos-agent";
   version = (fromTOML (builtins.readFile ../pyproject.toml)).project.version;
 
   dontUnpack = true;
@@ -163,39 +163,39 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/share/hermes-agent $out/bin
-    cp -r ${bundledSkills} $out/share/hermes-agent/skills
-    cp -r ${bundledPlugins} $out/share/hermes-agent/plugins
-    cp -r ${bundledLocales} $out/share/hermes-agent/locales
-    cp -r ${hermesWeb} $out/share/hermes-agent/web_dist
+    mkdir -p $out/share/anthos-agent $out/bin
+    cp -r ${bundledSkills} $out/share/anthos-agent/skills
+    cp -r ${bundledPlugins} $out/share/anthos-agent/plugins
+    cp -r ${bundledLocales} $out/share/anthos-agent/locales
+    cp -r ${anthosWeb} $out/share/anthos-agent/web_dist
 
     mkdir -p $out/ui-tui
-    cp -r ${hermesTui}/lib/hermes-tui/* $out/ui-tui/
+    cp -r ${anthosTui}/lib/anthos-tui/* $out/ui-tui/
 
     ${lib.concatMapStringsSep "\n"
       (name: ''
-        makeWrapper ${hermesVenv}/bin/${name} $out/bin/${name} \
+        makeWrapper ${anthosVenv}/bin/${name} $out/bin/${name} \
           --suffix PATH : "${runtimePath}" \
-          --set ANTHOS_BUNDLED_SKILLS $out/share/hermes-agent/skills \
-          --set ANTHOS_BUNDLED_PLUGINS $out/share/hermes-agent/plugins \
-          --set ANTHOS_BUNDLED_LOCALES $out/share/hermes-agent/locales \
-          --set ANTHOS_WEB_DIST $out/share/hermes-agent/web_dist \
+          --set ANTHOS_BUNDLED_SKILLS $out/share/anthos-agent/skills \
+          --set ANTHOS_BUNDLED_PLUGINS $out/share/anthos-agent/plugins \
+          --set ANTHOS_BUNDLED_LOCALES $out/share/anthos-agent/locales \
+          --set ANTHOS_WEB_DIST $out/share/anthos-agent/web_dist \
           --set ANTHOS_TUI_DIR $out/ui-tui \
-          --set ANTHOS_PYTHON ${hermesVenv}/bin/python3 \
+          --set ANTHOS_PYTHON ${anthosVenv}/bin/python3 \
           --set ANTHOS_NODE ${lib.getExe nodejs} \
           ${lib.optionalString (rev != null) ''--set ANTHOS_REVISION ${rev} \''}
           ${lib.optionalString (extraPythonPackages != [ ]) ''--suffix PYTHONPATH : "${pythonPath}"''}
       '')
       [
-        "hermes"
-        "hermes-agent"
-        "hermes-acp"
+        "anthos"
+        "anthos-agent"
+        "anthos-acp"
       ]
     }
 
     ${lib.optionalString (extraPythonPackages != [ ]) ''
       echo "=== Checking for plugin/core package collisions ==="
-      ${hermesVenv}/bin/python3 -c "${checkPackageCollisions}"
+      ${anthosVenv}/bin/python3 -c "${checkPackageCollisions}"
       echo "=== No collisions ==="
     ''}
 
@@ -204,29 +204,29 @@ stdenv.mkDerivation (finalAttrs: {
 
   passthru = {
     inherit
-      hermesTui
-      hermesWeb
-      hermesNpmLib
-      hermesVenv
+      anthosTui
+      anthosWeb
+      anthosNpmLib
+      anthosVenv
       ;
 
-    # `hermesDesktop` references `finalAttrs.finalPackage` (this whole
+    # `anthosDesktop` references `finalAttrs.finalPackage` (this whole
     # derivation, after all overrides are applied) so the desktop wrapper
     # can prepend its `/bin` to PATH.  The desktop's resolver step 4
-    # ("existing hermes on PATH") then picks up the fully wrapped
-    # `hermes` binary — venv with all deps, bundled skills/plugins,
+    # ("existing anthos on PATH") then picks up the fully wrapped
+    # `anthos` binary — venv with all deps, bundled skills/plugins,
     # runtime PATH (ripgrep/git/ffmpeg/etc).  No re-implementation
     # of the agent resolution in the desktop wrapper.
-    hermesDesktop = callPackage ./desktop.nix {
-      inherit hermesNpmLib electron;
-      hermesAgent = finalAttrs.finalPackage;
+    anthosDesktop = callPackage ./desktop.nix {
+      inherit anthosNpmLib electron;
+      anthosAgent = finalAttrs.finalPackage;
     };
 
     devShellHook = ''
-      STAMP=".nix-stamps/hermes-agent"
+      STAMP=".nix-stamps/anthos-agent"
       STAMP_VALUE="${pyprojectHash}:${uvLockHash}"
       if [ ! -f "$STAMP" ] || [ "$(cat "$STAMP")" != "$STAMP_VALUE" ]; then
-        echo "hermes-agent: installing Python dependencies..."
+        echo "anthos-agent: installing Python dependencies..."
         uv venv .venv --python ${python312}/bin/python3 2>/dev/null || true
         source .venv/bin/activate
         uv pip install -e ".[all]"
@@ -235,15 +235,15 @@ stdenv.mkDerivation (finalAttrs: {
         echo "$STAMP_VALUE" > "$STAMP"
       else
         source .venv/bin/activate
-        export ANTHOS_PYTHON=${hermesVenv}/bin/python3
+        export ANTHOS_PYTHON=${anthosVenv}/bin/python3
       fi
     '';
   };
 
   meta = with lib; {
     description = "AI agent with advanced tool-calling capabilities";
-    homepage = "https://github.com/NousResearch/hermes-agent";
-    mainProgram = "hermes";
+    homepage = "https://github.com/TushaeBXN/anthos-agent";
+    mainProgram = "anthos";
     license = licenses.mit;
     platforms = platforms.unix;
   };

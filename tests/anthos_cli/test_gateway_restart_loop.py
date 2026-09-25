@@ -30,8 +30,8 @@ class TestGatewayLifecyclePattern:
         "anthos gateway stop",
         "anthos gateway start",
         "anthos  gateway  restart",         # double spaces
-        "Hermez Gateway Restart".lower().replace("z", "s"),  # case handled
-        "HERMES GATEWAY RESTART",           # uppercase
+        "Anthos Gateway Restart",          # mixed case
+        "ANTHOS GATEWAY RESTART",           # uppercase
     ])
     def test_anthos_gateway_commands(self, text):
         assert _contains_gateway_lifecycle_command(text), f"Should match: {text!r}"
@@ -124,7 +124,7 @@ class TestCronCreateLifecycleBlock:
 
     def test_block_script_with_lifecycle_command(self, tmp_path, capsys):
         script = tmp_path / "restart.sh"
-        script.write_text("#!/bin/bash\nhermes gateway restart\n")
+        script.write_text("#!/bin/bash\nanthos gateway restart\n")
         args = Namespace(
             cron_command="create",
             schedule="1h",

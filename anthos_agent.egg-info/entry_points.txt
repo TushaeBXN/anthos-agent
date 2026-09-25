@@ -1,4 +1,0 @@
-[console_scripts]
-anthos = hermes_cli.main:main
-anthos-acp = acp_adapter.entry:main
-anthos-agent = run_agent:main

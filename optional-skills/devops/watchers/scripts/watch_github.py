@@ -6,7 +6,7 @@ Usage (via cron with --no-agent):
     anthos cron create anthos-issues \\
       --schedule "*/5 * * * *" --no-agent \\
       --script "$ANTHOS_HOME/skills/devops/watchers/scripts/watch_github.py" \\
-      --script-args "--name anthos-issues --repo NousResearch/anthos-agent --scope issues"
+      --script-args "--name anthos-issues --repo TushaeBXN/anthos-agent --scope issues"
 
 Set GITHUB_TOKEN (or GH_TOKEN) in the Anthos .env file
 (``${ANTHOS_HOME:-~/.anthos}/.env``) to avoid the 60 req/hr

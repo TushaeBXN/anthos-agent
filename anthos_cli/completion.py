@@ -213,7 +213,7 @@ _anthos_profiles() {{
     _describe 'profile' profiles
 }}
 
-_hermes() {{
+_anthos() {{
     local context state line
     typeset -A opt_args
 
@@ -240,7 +240,7 @@ _hermes() {{
     esac
 }}
 
-compdef _hermes anthos
+compdef _anthos anthos
 """
 
 

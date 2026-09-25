@@ -12,7 +12,7 @@ Anthos Agent automatically discovers and loads context files that shape how it b
 
 | File | Purpose | Discovery |
 |------|---------|-----------| 
-| **.anthos.md** / **HERMES.md** | Project instructions (highest priority) | Walks to git root |
+| **.anthos.md** / **ANTHOS.md** | Project instructions (highest priority) | Walks to git root |
 | **AGENTS.md** | Project instructions, conventions, architecture | CWD at startup + subdirectories progressively |
 | **CLAUDE.md** | Claude Code context files (also detected) | CWD at startup + subdirectories progressively |
 | **SOUL.md** | Global personality and tone customization for this Anthos instance | `ANTHOS_HOME/SOUL.md` only |

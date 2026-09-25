@@ -156,7 +156,7 @@ terminal:
 
 **容器生命周期：** Anthos 为每个终端和文件工具调用重用单个长期运行的容器（`docker run -d ... sleep 2h`），跨会话、`/new`、`/reset` 和 `delegate_task` 子 agent，贯穿 Anthos 进程的整个生命周期。命令通过带登录 shell 的 `docker exec` 运行，因此工作目录更改、已安装的包以及 `/workspace` 中的文件都会从一次工具调用延续到下一次。容器在 Anthos 关闭时（或空闲清理回收时）停止并删除。
 
-通过 `delegate_task(tasks=[...])` 生成的并行子 agent 共享这一个容器 —— 并发的 `cd`、环境变量修改以及对同一路径的写入会发生冲突。如果子 agent 需要隔离的沙箱，必须通过 `register_task_env_overrides()` 注册每任务镜像覆盖，RL 和基准测试环境（TerminalBench2、HermesSweEnv 等）会自动为其每任务 Docker 镜像执行此操作。
+通过 `delegate_task(tasks=[...])` 生成的并行子 agent 共享这一个容器 —— 并发的 `cd`、环境变量修改以及对同一路径的写入会发生冲突。如果子 agent 需要隔离的沙箱，必须通过 `register_task_env_overrides()` 注册每任务镜像覆盖，RL 和基准测试环境（TerminalBench2、AnthosSweEnv 等）会自动为其每任务 Docker 镜像执行此操作。
 
 **安全加固：**
 - `--cap-drop ALL`，仅添加回 `DAC_OVERRIDE`、`CHOWN`、`FOWNER`
@@ -1660,7 +1660,7 @@ Anthos 使用两种不同的上下文范围：
 | 文件 | 用途 | 范围 |
 |------|---------|-------|
 | `SOUL.md` | **主要 agent 身份** —— 定义 agent 是谁（系统提示词第 #1 槽位） | `~/.anthos/SOUL.md` 或 `$ANTHOS_HOME/SOUL.md` |
-| `.anthos.md` / `HERMES.md` | 项目特定指令（最高优先级） | 向上走到 git 根目录 |
+| `.anthos.md` / `ANTHOS.md` | 项目特定指令（最高优先级） | 向上走到 git 根目录 |
 | `AGENTS.md` | 项目特定指令、编码规范 | 递归目录遍历 |
 | `CLAUDE.md` | Claude Code 上下文文件（也会检测） | 仅工作目录 |
 | `.cursorrules` | Cursor IDE 规则（也会检测） | 仅工作目录 |

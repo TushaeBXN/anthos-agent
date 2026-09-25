@@ -85,7 +85,7 @@ Installers are built and uploaded to GitHub Releases manually. macOS/Windows sig
 
 ### How it works
 
-The packaged app ships the Electron shell and a native React chat surface. On first launch it can install the Anthos Agent runtime into `ANTHOS_HOME` (`~/.anthos`, or `%LOCALAPPDATA%\anthos` on Windows) — the **same layout a CLI install uses**, so the two are interchangeable. Backend resolution first honours `ANTHOS_DESKTOP_ANTHOS_ROOT`, then a completed managed install, then a probed `anthos` on `PATH` (unless `ANTHOS_DESKTOP_IGNORE_EXISTING=1` is set), and finally an explicit `ANTHOS_DESKTOP_HERMES` command override for packagers/troubleshooting. The renderer (React, in `src/`) talks to a `anthos dashboard` backend over the `tui_gateway`/dashboard APIs and reuses the agent runtime rather than embedding `anthos --tui`. The install, backend-resolution, and self-update logic all live in `electron/main.cjs`.
+The packaged app ships the Electron shell and a native React chat surface. On first launch it can install the Anthos Agent runtime into `ANTHOS_HOME` (`~/.anthos`, or `%LOCALAPPDATA%\anthos` on Windows) — the **same layout a CLI install uses**, so the two are interchangeable. Backend resolution first honours `ANTHOS_DESKTOP_ANTHOS_ROOT`, then a completed managed install, then a probed `anthos` on `PATH` (unless `ANTHOS_DESKTOP_IGNORE_EXISTING=1` is set), and finally an explicit `ANTHOS_DESKTOP_ANTHOS` command override for packagers/troubleshooting. The renderer (React, in `src/`) talks to a `anthos dashboard` backend over the `tui_gateway`/dashboard APIs and reuses the agent runtime rather than embedding `anthos --tui`. The install, backend-resolution, and self-update logic all live in `electron/main.cjs`.
 
 ### Verification
 

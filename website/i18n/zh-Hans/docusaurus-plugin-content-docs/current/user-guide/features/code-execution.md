@@ -10,15 +10,15 @@ description: "通过 RPC 工具访问实现程序化 Python 执行——将多�
 
 ## 工作原理
 
-1. Agent 编写使用 `from hermes_tools import ...` 的 Python 脚本
-2. Anthos 生成带有 RPC 函数的 `hermes_tools.py` 存根模块
+1. Agent 编写使用 `from anthos_tools import ...` 的 Python 脚本
+2. Anthos 生成带有 RPC 函数的 `anthos_tools.py` 存根模块
 3. Anthos 打开 Unix 域套接字并启动 RPC 监听线程
 4. 脚本在子进程中运行——工具调用通过套接字传回 Anthos
 5. 只有脚本的 `print()` 输出会返回给 LLM；中间工具结果不会进入上下文窗口
 
 ```python
 # The agent can write scripts like:
-from hermes_tools import web_search, web_extract
+from anthos_tools import web_search, web_extract
 
 results = web_search("Python 3.13 features", limit=5)
 for r in results["data"]["web"]:
@@ -44,7 +44,7 @@ print(summary)
 ### 数据处理流水线
 
 ```python
-from hermes_tools import search_files, read_file
+from anthos_tools import search_files, read_file
 import json
 
 # Find all config files and extract database settings
@@ -60,7 +60,7 @@ print(json.dumps(configs, indent=2))
 ### 多步骤网络调研
 
 ```python
-from hermes_tools import web_search, web_extract
+from anthos_tools import web_search, web_extract
 import json
 
 # Search, extract, and summarize in one turn
@@ -82,7 +82,7 @@ print(json.dumps(summaries, indent=2))
 ### 批量文件重构
 
 ```python
-from hermes_tools import search_files, read_file, patch
+from anthos_tools import search_files, read_file, patch
 
 # Find all Python files using deprecated API and fix them
 matches = search_files("old_api_call", path="src/", file_glob="*.py")
@@ -103,7 +103,7 @@ print(f"Fixed {fixed} files out of {len(matches.get('matches', []))} matches")
 ### 构建与测试流水线
 
 ```python
-from hermes_tools import terminal, read_file
+from anthos_tools import terminal, read_file
 import json
 
 # Run tests, parse results, and report
@@ -219,7 +219,7 @@ terminal:
 
 详情参见[安全指南](/user-guide/security#environment-variable-passthrough)。
 
-Anthos 始终将脚本和自动生成的 `hermes_tools.py` RPC 存根写入临时暂存目录，执行完成后清理。在 `strict` 模式下，脚本也在该目录中*运行*；在 `project` 模式下，脚本在会话的工作目录中运行（暂存目录保留在 `PYTHONPATH` 中以确保导入正常解析）。子进程在独立的进程组中运行，以便在超时或中断时干净地终止。
+Anthos 始终将脚本和自动生成的 `anthos_tools.py` RPC 存根写入临时暂存目录，执行完成后清理。在 `strict` 模式下，脚本也在该目录中*运行*；在 `project` 模式下，脚本在会话的工作目录中运行（暂存目录保留在 `PYTHONPATH` 中以确保导入正常解析）。子进程在独立的进程组中运行，以便在超时或中断时干净地终止。
 
 ## execute_code 与 terminal 对比
 

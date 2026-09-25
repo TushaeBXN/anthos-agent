@@ -22,7 +22,7 @@ def stage2_text() -> str:
     return STAGE2_HOOK.read_text()
 
 
-def test_stage2_does_not_chown_install_tree_to_hermes(stage2_text: str) -> None:
+def test_stage2_does_not_chown_install_tree_to_anthos(stage2_text: str) -> None:
     assert "Fixing ownership of build trees under $INSTALL_DIR" not in stage2_text
     assert 'chown -R anthos:anthos \\\n        "$INSTALL_DIR/.venv"' not in stage2_text
 

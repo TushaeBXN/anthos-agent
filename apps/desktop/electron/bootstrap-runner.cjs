@@ -11,10 +11,10 @@
  *   const { runBootstrap } = require('./bootstrap-runner.cjs')
  *   const result = await runBootstrap({
  *     installStamp,        // INSTALL_STAMP from main.cjs (may be null in dev)
- *     activeRoot,          // ACTIVE_HERMES_ROOT
+ *     activeRoot,          // ACTIVE_ANTHOS_ROOT
  *     sourceRepoRoot,      // SOURCE_REPO_ROOT (for dev install.ps1 lookup)
- *     anthosHome,          // HERMES_HOME
- *     logRoot,             // HERMES_HOME/logs
+ *     anthosHome,          // ANTHOS_HOME
+ *     logRoot,             // ANTHOS_HOME/logs
  *     emit: ev => {...}    // event sink (sender.send or similar)
  *   })
  *
@@ -109,7 +109,7 @@ function downloadInstallScript(commit, destPath) {
   // is immutable (unlike a branch ref), so we don't need integrity
   // verification beyond "did the file we wrote pass a syntax probe."
   const scriptName = installScriptName()
-  const url = `https://raw.githubusercontent.com/NousResearch/anthos-agent/${commit}/scripts/${scriptName}`
+  const url = `https://raw.githubusercontent.com/TushaeBXN/anthos-agent/${commit}/scripts/${scriptName}`
   return new Promise((resolve, reject) => {
     fs.mkdirSync(path.dirname(destPath), { recursive: true })
     const tmpPath = destPath + '.tmp'
@@ -297,9 +297,9 @@ function spawnPowerShell(scriptPath, args, { emit, stageName, abortSignal, antho
       stdio: ['ignore', 'pipe', 'pipe'],
       env: {
         ...process.env,
-        // Pass HERMES_HOME through so install.ps1 respects the caller's
+        // Pass ANTHOS_HOME through so install.ps1 respects the caller's
         // choice rather than re-computing the default.
-        HERMES_HOME: anthosHome || process.env.HERMES_HOME || ''
+        ANTHOS_HOME: anthosHome || process.env.ANTHOS_HOME || ''
       }
     }))
 
@@ -372,7 +372,7 @@ function spawnBash(scriptPath, args, { emit, stageName, abortSignal, anthosHome 
       stdio: ['ignore', 'pipe', 'pipe'],
       env: {
         ...process.env,
-        HERMES_HOME: anthosHome || process.env.HERMES_HOME || ''
+        ANTHOS_HOME: anthosHome || process.env.ANTHOS_HOME || ''
       }
     })
 

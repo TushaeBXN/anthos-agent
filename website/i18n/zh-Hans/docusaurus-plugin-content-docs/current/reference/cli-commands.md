@@ -292,7 +292,7 @@ anthos portal [status|open|tools]
 | 子命令 | 说明 |
 |------------|-------------|
 | `status`（默认） | Portal 认证状态 + 每个工具的 Tool Gateway 路由摘要。不带子命令时也会显示。 |
-| `open` | 在默认浏览器中打开 `portal.anthosai.com/manage-subscription`。 |
+| `open` | 在默认浏览器中打开 `portal.nousresearch.com/manage-subscription`。 |
 | `tools` | 列出每个 Tool Gateway 合作伙伴（Firecrawl、FAL、OpenAI TTS、Browser Use、Modal）及哪些通过 Nous 路由。 |
 
 关于 gateway 本身的配置，请参阅 [Tool Gateway](../user-guide/features/tool-gateway.md)。关于一键设置路径，请参阅上方的 `anthos setup --portal`。
@@ -526,7 +526,7 @@ os:               Linux 6.14.0-37-generic x86_64
 python:           3.11.14
 openai_sdk:       2.24.0
 profile:          default
-hermes_home:      ~/.anthos
+anthos_home:      ~/.anthos
 model:            anthropic/claude-opus-4.6
 provider:         openrouter
 terminal:         local

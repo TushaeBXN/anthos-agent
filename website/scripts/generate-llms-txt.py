@@ -9,8 +9,8 @@ Outputs:
                                     comments separating files.
 
 Both publish at:
-  https://anthos-agent.nousresearch.com/docs/llms.txt
-  https://anthos-agent.nousresearch.com/docs/llms-full.txt
+  https://anthos-agent.anthosai.com/docs/llms.txt
+  https://anthos-agent.anthosai.com/docs/llms-full.txt
 
 The `/docs/` prefix is not a mistake — Docusaurus serves `website/static/`
 at the `docs/` base path. Clients and IDE plugins that probe the classic
@@ -31,7 +31,7 @@ WEBSITE = SCRIPT_DIR.parent
 DOCS = WEBSITE / "docs"
 STATIC = WEBSITE / "static"
 
-SITE_BASE = "https://anthos-agent.nousresearch.com/docs"
+SITE_BASE = "https://anthos-agent.anthosai.com/docs"
 
 # Curated sections for llms.txt — mirrors the product story, not the filesystem.
 # Each entry: (docs-relative path without .md, display title, optional short desc).
@@ -215,7 +215,7 @@ def emit_llms_index() -> str:
         "(Linux, macOS, WSL2, Termux)"
     )
     lines.append("")
-    lines.append("Repo: https://github.com/NousResearch/anthos-agent")
+    lines.append("Repo: https://github.com/TushaeBXN/anthos-agent")
     lines.append("")
 
     for section, items in SECTIONS:
@@ -248,8 +248,8 @@ def emit_llms_full() -> str:
             "Started, Using Anthos, Features, Messaging, Integrations, Guides, "
             "Developer Guide, Reference, then everything else.\n"
         ),
-        "Canonical site: https://anthos-agent.nousresearch.com/docs\n",
-        "Short index: https://anthos-agent.nousresearch.com/docs/llms.txt\n",
+        "Canonical site: https://anthos-agent.anthosai.com/docs\n",
+        "Short index: https://anthos-agent.anthosai.com/docs/llms.txt\n",
         "\n---\n\n",
     ]
 

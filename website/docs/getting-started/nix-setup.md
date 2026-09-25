@@ -641,7 +641,7 @@ Plugins are symlinked into `$ANTHOS_HOME/plugins/` at activation time. Anthos di
 
 ### Entry-Point Plugins (`extraPythonPackages`)
 
-For pip-packaged plugins that register via `[project.entry-points."hermes_agent.plugins"]` (e.g., [rtk-anthos](https://github.com/ogallotti/rtk-anthos)):
+For pip-packaged plugins that register via `[project.entry-points."anthos_agent.plugins"]` (e.g., [rtk-anthos](https://github.com/ogallotti/rtk-anthos)):
 
 ```nix
 services.anthos-agent.extraPythonPackages = [

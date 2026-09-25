@@ -1,13 +1,13 @@
-# nix/web.nix — Hermes Web Dashboard (Vite/React) frontend build
-{ pkgs, hermesNpmLib, ... }:
+# nix/web.nix — Anthos Web Dashboard (Vite/React) frontend build
+{ pkgs, anthosNpmLib, ... }:
 let
-  npm = hermesNpmLib.mkNpmPassthru { folder = "web"; attr = "web"; pname = "hermes-web"; };
+  npm = anthosNpmLib.mkNpmPassthru { folder = "web"; attr = "web"; pname = "anthos-web"; };
 
   packageJson = builtins.fromJSON (builtins.readFile (npm.src + "/web/package.json"));
   version = packageJson.version;
 in
 pkgs.buildNpmPackage (npm // {
-  pname = "hermes-web";
+  pname = "anthos-web";
   inherit version;
 
   doCheck = false;

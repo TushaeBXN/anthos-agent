@@ -75,11 +75,11 @@ def _find_git_root(start: Path) -> Optional[Path]:
     return None
 
 
-_ANTHOS_MD_NAMES = (".anthos.md", "HERMES.md")
+_ANTHOS_MD_NAMES = (".anthos.md", "ANTHOS.md")
 
 
 def _find_anthos_md(cwd: Path) -> Optional[Path]:
-    """Discover the nearest ``.anthos.md`` or ``HERMES.md``.
+    """Discover the nearest ``.anthos.md`` or ``ANTHOS.md``.
 
     Search order: *cwd* first, then each parent directory up to (and
     including) the git repository root.  Returns the first match, or
@@ -1666,7 +1666,7 @@ def load_soul_md(context_length: Optional[int] = None) -> Optional[str]:
 
 
 def _load_anthos_md(cwd_path: Path, context_length: Optional[int] = None) -> str:
-    """.anthos.md / HERMES.md — walk to git root."""
+    """.anthos.md / ANTHOS.md — walk to git root."""
     anthos_md_path = _find_anthos_md(cwd_path)
     if not anthos_md_path:
         return ""
@@ -1770,7 +1770,7 @@ def build_context_files_prompt(
     """Discover and load context files for the system prompt.
 
     Priority (first found wins — only ONE project context type is loaded):
-      1. .anthos.md / HERMES.md  (walk to git root)
+      1. .anthos.md / ANTHOS.md  (walk to git root)
       2. AGENTS.md / agents.md   (cwd only)
       3. CLAUDE.md / claude.md   (cwd only)
       4. .cursorrules / .cursor/rules/*.mdc  (cwd only)

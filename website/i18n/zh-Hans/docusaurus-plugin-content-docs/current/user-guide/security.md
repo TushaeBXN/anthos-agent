@@ -602,7 +602,7 @@ terminal:
 # ~/.anthos/.env
 TERMINAL_SSH_HOST=agent-worker.local
 TERMINAL_SSH_USER=anthos
-TERMINAL_SSH_KEY=~/.ssh/hermes_agent_key
+TERMINAL_SSH_KEY=~/.ssh/anthos_agent_key
 ```
 
 SSH 连接详情保存在 `.env`（而非 `config.yaml`）中，以避免随 profile 导出时被检入或共享。这样可以将 gateway 的消息连接与 Agent 的命令执行分离。
