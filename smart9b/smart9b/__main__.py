@@ -37,7 +37,11 @@ def cmd_do(agent: Agent, args) -> int:
     task = " ".join(args.task)
     if args.file:
         task += "\n\n" + Path(args.file).read_text()
-    out = agent.run(task)
+    for img in args.image:
+        if not Path(img).is_file():
+            print(f"error: image not found: {img}", file=sys.stderr)
+            return 2
+    out = agent.run(task, images=args.image)
     print("\n" + "=" * 60)
     print(out.answer)
     print("=" * 60)
@@ -112,6 +116,8 @@ def main(argv=None) -> int:
     p = sub.add_parser("do", help="do a task, learning the skill first if needed")
     p.add_argument("task", nargs="+")
     p.add_argument("--file", help="attach a file's contents to the task")
+    p.add_argument("--image", action="append", default=[],
+                   help="attach a picture (repeatable; needs a vision model)")
     p.add_argument("--review", action="store_true", help="you approve each result (best training data)")
     p.set_defaults(fn=cmd_do)
 

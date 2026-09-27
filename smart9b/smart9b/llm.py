@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import base64
 import json
+import mimetypes
 import os
 import re
 import urllib.request
+from pathlib import Path
 
 from .config import ModelEndpoint
 
@@ -53,15 +56,30 @@ class LLM:
         return strip_thinking(text)
 
     def ask(self, system: str, user: str, temperature: float | None = None,
-            think: bool = True) -> str:
+            think: bool = True, images: list[Path] | None = None) -> str:
         if not think and self.ep.no_think_suffix:
             user = user.rstrip() + " /no_think"
         return self.chat([{"role": "system", "content": system},
-                          {"role": "user", "content": user}], temperature)
+                          self.user_message(user, images or [])], temperature)
 
-    def ask_json(self, system: str, user: str, think: bool = False) -> dict | list:
+    def user_message(self, text: str, images: list[Path]) -> dict:
+        """Attach images the way each backend expects (vision models only)."""
+        if not images:
+            return {"role": "user", "content": text}
+        encoded = [base64.b64encode(Path(p).read_bytes()).decode() for p in images]
+        if self.ep.backend == "ollama":
+            return {"role": "user", "content": text, "images": encoded}
+        parts = [{"type": "text", "text": text}]
+        for p, b64 in zip(images, encoded):
+            mime = mimetypes.guess_type(str(p))[0] or "image/png"
+            parts.append({"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}})
+        return {"role": "user", "content": parts}
+
+    def ask_json(self, system: str, user: str, think: bool = False,
+                 images: list[Path] | None = None) -> dict | list:
         """Ask for JSON; retry once with the parse error if the model fumbles it."""
-        text = self.ask(system + "\nReply with JSON only.", user, temperature=0, think=think)
+        text = self.ask(system + "\nReply with JSON only.", user, temperature=0, think=think,
+                        images=images)
         try:
             return extract_json(text)
         except ValueError as exc:

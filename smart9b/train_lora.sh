@@ -3,7 +3,7 @@
 # Needs: pip install "mlx-lm>=0.20,<1"   and training data from:  python -m smart9b dataset
 #
 # Settings are sized for a 16 GB M4: 4-bit base model, batch size 1, only the last
-# 8 layers trained, gradient checkpointing on. Stop the model server (it holds ~9.5 GB)
+# 8 layers trained, gradient checkpointing on. Stop the model server / `ollama stop` first
 # and close other apps while it runs.
 set -euo pipefail
 

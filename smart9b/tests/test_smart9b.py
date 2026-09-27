@@ -179,6 +179,7 @@ def test_review_rejection_blocks_training_data(tmp_path, serve):
 
 def test_grade_cannot_pass_with_a_failed_item():
     agent = Agent.__new__(Agent)
+    agent.images = []
 
     class W:
         def ask_json(self, *_, **__):
@@ -212,6 +213,30 @@ def test_no_think_only_on_quick_steps(tmp_path, serve, monkeypatch):
     assert flags[prompts.PICK_SKILL[:30]] is True        # quick step: no thinking
     assert flags[prompts.SOLVE[:30]] is False            # real work: thinks
     assert flags[prompts.GRADE[:30]] is False            # grading: thinks
+
+
+def test_images_reach_the_vision_model_but_not_training_data(tmp_path, serve, monkeypatch):
+    model = FakeModel({"pick": [PICK_CSV], "solve": ["The photo shows a brown wallet.\n## Result\nok"],
+                       "grade": [PASS]})
+    home = make_home(tmp_path, serve(model))
+    main(["--home", str(home), "init"])
+    photo = tmp_path / "wallet.png"
+    photo.write_bytes(b"\x89PNG fake")
+
+    import smart9b.llm as llm
+    sent = []
+    real_chat = llm.LLM.chat
+    monkeypatch.setattr(llm.LLM, "chat",
+                        lambda self, m, t=None: sent.append(m[-1]) or real_chat(self, m, t))
+    answers = iter(["y"])
+    agent = Agent(load_config(home), review=True, ask=lambda _: next(answers))
+    assert agent.run("clean messy csv using the photo", images=[photo]).passed
+
+    with_images = [m for m in sent if m.get("images")]
+    assert len(with_images) == 2                     # solve + grade, not the quick steps
+    assert with_images[0]["images"][0] == "iVBORyBmYWtl"   # base64 of the file
+    # Approved, but it's about a picture, so it stays out of text-only fine-tuning.
+    assert dataset.build(agent.journal.entries(), home / "training_data")["train"] == 0
 
 
 def test_skill_roundtrip_and_search_prefers_matching_skill(tmp_path):

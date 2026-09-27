@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import time
 from dataclasses import dataclass
+from pathlib import Path
 
 from . import prompts
 from .config import Config
@@ -57,6 +58,7 @@ class Agent:
         self.journal = Journal(cfg.journal_path)
         self.review = review
         self.ask = ask
+        self.images: list[Path] = []
 
     # ---- 1. notice the gap ------------------------------------------------
     def find_skill(self, task: str) -> Skill | None:
@@ -108,7 +110,7 @@ class Agent:
         lesson_text = ("Lessons from earlier tries on THIS task:\n" +
                        "\n".join(f"- {l}" for l in lessons)) if lessons else ""
         system = prompts.SOLVE.format(skill=skill.as_prompt(), lessons=lesson_text)
-        answer = self.worker.ask(system, task)
+        answer = self.worker.ask(system, task, images=self.images)
 
         run_output, code_ok = "", None
         code = extract_code(answer)
@@ -135,7 +137,7 @@ class Agent:
             evidence += f"\n\nPROGRAM OUTPUT:\n{run_output}"
         evidence += "\n\nCHECKLIST:\n" + "\n".join(f"- {c}" for c in checklist)
         try:
-            grade = self.worker.ask_json(prompts.GRADE, evidence, think=True)
+            grade = self.worker.ask_json(prompts.GRADE, evidence, think=True, images=self.images)
         except (LLMError, ValueError, json.JSONDecodeError) as exc:
             grade = {"overall_pass": False, "error": str(exc)}
         items = grade.get("items", []) if isinstance(grade, dict) else []
@@ -146,7 +148,10 @@ class Agent:
         return passed, grade
 
     # ---- the whole loop ---------------------------------------------------
-    def run(self, task: str) -> Outcome:
+    def run(self, task: str, images: list[Path] | None = None) -> Outcome:
+        # Pictures that go with the task (screenshots, product photos, receipts...).
+        # The worker sees them while solving and grading; needs a vision model.
+        self.images = [Path(p) for p in images or []]
         skill = self.find_skill(task) or self.learn(task)
         lessons: list[str] = []
         last = {}
@@ -162,6 +167,7 @@ class Agent:
                     last["grade"] = {"reason": "you rejected it",
                                      "your_feedback": self.ask("What's wrong with it? ")}
             self.journal.write(task=task, skill=skill.name, attempt=n, approved=approved,
+                               images=[str(p) for p in self.images],
                                verified_by_code=last["code_ok"] is True, **last)
             if last["passed"]:
                 skill.status = "proven"

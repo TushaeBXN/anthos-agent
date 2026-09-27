@@ -11,6 +11,10 @@ from pathlib import Path
 def trusted(entry: dict, include_self_graded: bool) -> bool:
     if not entry.get("passed"):
         return False
+    if entry.get("images"):
+        # Fine-tuning here is text-only; an answer about a picture the model
+        # can't see during training would teach it to make things up.
+        return False
     if entry.get("approved") is True or entry.get("verified_by_code"):
         return True
     return include_self_graded and entry.get("approved") is None

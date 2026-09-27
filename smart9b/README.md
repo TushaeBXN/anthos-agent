@@ -38,18 +38,16 @@ task ──► do I have notes for this?  ── yes ─────────
 
 ## Setup on the Mac
 
-The example config is set up for `lukey03/Qwen3.5-9B-abliterated-MLX-8bit` (text-only,
-~9.5 GB) served by `mlx_lm`, which speaks the OpenAI-style API smart9b uses.
+The example config uses `lukey03/qwen3.5-9b-abliterated-vision` in Ollama (~6.1 GB, can
+see pictures).
 
 ```bash
 # 1. The model
-brew install python@3.11
-python3.11 -m venv ~/mlx && source ~/mlx/bin/activate
-pip install "mlx-lm>=0.20,<1"
-python -m mlx_lm server --model lukey03/Qwen3.5-9B-abliterated-MLX-8bit --port 8081
-#    (first start downloads ~9.5 GB; leave this terminal running)
+brew install ollama python@3.11      # or install the Ollama app
+ollama serve &                       # skip if the Ollama app is running
+ollama pull lukey03/qwen3.5-9b-abliterated-vision
 
-# 2. smart9b (in a second terminal)
+# 2. smart9b
 cd smart9b
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -e .
@@ -61,20 +59,20 @@ smart9b init              # creates smart9b.json and the starter skills
 
 In `~/smart9b-data/smart9b.json`, delete the `teacher` block until you have one.
 
-Other ways to serve the same model:
-- **LM Studio**: load the model, start the server, and set `base_url` to `http://localhost:1234/v1`.
-- **Ollama** (4-bit, ~5.2 GB): `ollama run lukey03/qwen3.5-9b-abliterated`, then set
-  `"backend": "ollama"`, `"base_url": "http://localhost:11434"`,
-  `"model": "lukey03/qwen3.5-9b-abliterated"`.
+Other ways to run it:
+- **Text-only MLX 8-bit** (a bit higher quality text, no pictures, ~9.5 GB):
+  `python -m mlx_lm server --model lukey03/Qwen3.5-9B-abliterated-MLX-8bit --port 8081`, then set
+  `"backend": "openai"`, `"base_url": "http://localhost:8081/v1"` and that model name.
+- **LM Studio**: load a model, start the server, `"backend": "openai"`,
+  `"base_url": "http://localhost:1234/v1"`.
 
 **Thinking mode.** Qwen3.5 thinks before it answers, which is slower but smarter.
 With `"no_think_suffix": true`, smart9b adds `/no_think` only to quick steps (picking
 notes, planning searches, writing short lessons). Solving tasks, writing notes, and
 grading still think.
 
-**Memory on a 16 GB Mac.** The 8-bit model leaves about 5-6 GB for macOS and everything
-else, which is fine for running it. Close heavy apps (browsers with many tabs) while it works.
-For fine-tuning, use the 4-bit version (see below).
+**Memory on a 16 GB Mac.** The vision model (~6.1 GB) leaves plenty of room. The 8-bit MLX
+one leaves about 5-6 GB, which is fine but tight; close heavy apps while it works.
 
 **About this model being "abliterated".** Its refusals were removed. That matters for an
 agent that reads random web pages: text on a page can tell the model to do something, and
@@ -89,6 +87,14 @@ smart9b do "write 3 product descriptions for a leather wallet" --review
 smart9b learn "how to write a cold email to a small business"
 smart9b skills                     # what it knows, and how often each note worked
 smart9b skills email               # search its notes
+```
+
+Pictures: add `--image` (as many as you like) and the model looks at them while it works
+and while it checks its work:
+
+```bash
+smart9b do "write a product listing for the item in these photos" --image front.jpg --image back.jpg --review
+smart9b do "type up this receipt as a CSV with date, item, price" --image receipt.jpg
 ```
 
 - **`--review`**: you approve or reject each result and say what's wrong. This is the best
@@ -124,14 +130,15 @@ smart9b teach "write product descriptions" "clean messy csv" "fix a python error
 ```bash
 smart9b dataset                    # -> training_data/train.jsonl, valid.jsonl
 pip install -e ".[train]"
-# stop the mlx_lm server first (Ctrl-C): it and training won't both fit in 16 GB
+ollama stop lukey03/qwen3.5-9b-abliterated-vision   # free the memory first
 ./train_lora.sh                    # trains on lukey03/Qwen3.5-9B-abliterated-MLX-4bit
 ```
 
-Training uses the **4-bit** version (~4.7 GB): training on the 8-bit one would very likely
-run out of memory on 16 GB. The adapter it produces belongs to that 4-bit model, so after
-training, serve the 4-bit model with the adapter (the script prints the command) and point
-`base_url` at it. Until you have enough data, keep using the 8-bit model.
+Fine-tuning runs on the **text-only 4-bit MLX** copy of the same model (~4.7 GB), because
+that's what MLX can train on a 16 GB Mac. The result is a tuned **text** model:
+- Use the tuned model for the text jobs it was trained on (the script prints how to serve it).
+- Keep using the vision model for anything with pictures. Tasks that had pictures are left out
+  of the training data automatically, since the text model can't see them.
 
 Only work that was **verified by running code** or **approved by you** is used
 (add `--include-self-graded` to also use work the model only checked itself; it's noisier).
