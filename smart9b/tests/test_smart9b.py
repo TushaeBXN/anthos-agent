@@ -181,13 +181,37 @@ def test_grade_cannot_pass_with_a_failed_item():
     agent = Agent.__new__(Agent)
 
     class W:
-        def ask_json(self, *_):
+        def ask_json(self, *_, **__):
             return {"items": [{"check": "a", "pass": True}, {"check": "b", "pass": False}],
                     "overall_pass": True}
 
     agent.worker = W()
     passed, _ = agent.check("t", Skill("s", "", SKILL_BODY), "answer", "", None)
     assert passed is False
+
+
+def test_no_think_only_on_quick_steps(tmp_path, serve, monkeypatch):
+    seen = []
+    model = FakeModel({"pick": [PICK_CSV], "solve": [GOOD_CODE], "grade": [PASS]})
+    home = make_home(tmp_path, serve(model))
+    cfg = json.loads((home / "smart9b.json").read_text())
+    cfg["worker"].update(backend="openai", no_think_suffix=True, base_url=cfg["worker"]["base_url"] + "/v1")
+    (home / "smart9b.json").write_text(json.dumps(cfg))
+    main(["--home", str(home), "init"])
+
+    import smart9b.llm as llm
+    real_chat = llm.LLM.chat
+
+    def record(self, messages, temperature=None):
+        seen.append((messages[0]["content"][:30], messages[-1]["content"].endswith("/no_think")))
+        return real_chat(self, messages, temperature)
+    monkeypatch.setattr(llm.LLM, "chat", record)
+
+    assert Agent(load_config(home)).run("clean messy csv").passed
+    flags = dict(seen)
+    assert flags[prompts.PICK_SKILL[:30]] is True        # quick step: no thinking
+    assert flags[prompts.SOLVE[:30]] is False            # real work: thinks
+    assert flags[prompts.GRADE[:30]] is False            # grading: thinks
 
 
 def test_skill_roundtrip_and_search_prefers_matching_skill(tmp_path):
@@ -203,6 +227,8 @@ def test_skill_roundtrip_and_search_prefers_matching_skill(tmp_path):
 def test_helpers():
     assert extract_json('sure! ```json\n{"a": [1]}\n``` done') == {"a": [1]}
     assert strip_thinking("<think>hmm</think>answer") == "answer"
+    assert strip_thinking("hmm, let me see</think>\n\nanswer") == "answer"
+    assert strip_thinking("<think>never finished") == ""
     assert extract_code("x\n```bash\necho 1\n```\n```python\nprint(2)\n```") == ("python", "print(2)\n")
     text = html_to_text("<html><script>bad()</script><nav>Home About</nav>"
                         "<h2>Install</h2><p>Run the installer and follow every prompt carefully.</p></html>")

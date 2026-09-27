@@ -3,11 +3,12 @@
 # Needs: pip install "mlx-lm>=0.20,<1"   and training data from:  python -m smart9b dataset
 #
 # Settings are sized for a 16 GB M4: 4-bit base model, batch size 1, only the last
-# 8 layers trained, gradient checkpointing on. Close other apps while it runs.
+# 8 layers trained, gradient checkpointing on. Stop the model server (it holds ~9.5 GB)
+# and close other apps while it runs.
 set -euo pipefail
 
 # A 4-bit MLX copy of your Qwen model (8-bit + training will very likely run out of memory on 16 GB).
-MODEL="${MODEL:?set MODEL, e.g. MODEL=mlx-community/<qwen-9b>-4bit ./train_lora.sh}"
+MODEL="${MODEL:-lukey03/Qwen3.5-9B-abliterated-MLX-4bit}"
 DATA="${DATA:-training_data}"
 ITERS="${ITERS:-600}"
 

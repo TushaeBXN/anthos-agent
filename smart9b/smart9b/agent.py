@@ -135,7 +135,7 @@ class Agent:
             evidence += f"\n\nPROGRAM OUTPUT:\n{run_output}"
         evidence += "\n\nCHECKLIST:\n" + "\n".join(f"- {c}" for c in checklist)
         try:
-            grade = self.worker.ask_json(prompts.GRADE, evidence)
+            grade = self.worker.ask_json(prompts.GRADE, evidence, think=True)
         except (LLMError, ValueError, json.JSONDecodeError) as exc:
             grade = {"overall_pass": False, "error": str(exc)}
         items = grade.get("items", []) if isinstance(grade, dict) else []
@@ -173,7 +173,7 @@ class Agent:
             feedback = json.dumps(last["grade"])[:2000]
             lesson = self.worker.ask(prompts.REFLECT,
                                      f"Task: {task}\n\nMy work:\n{last['answer'][:3000]}\n\n"
-                                     f"Feedback:\n{feedback}\n\n{last['run_output'][:1500]}")
+                                     f"Feedback:\n{feedback}\n\n{last['run_output'][:1500]}", think=False)
             log(f"Lesson: {lesson}")
             lessons.append(lesson)
             skill.add_lesson(lesson)

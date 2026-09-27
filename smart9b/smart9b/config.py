@@ -18,6 +18,14 @@ class ModelEndpoint:
     # Name of the environment variable holding the API key (never the key itself).
     api_key_env: str = ""
     temperature: float = 0.3
+    # Qwen3 / Qwen3.5 models think before answering unless the prompt ends in /no_think.
+    # When true, quick steps (picking notes, planning searches, short lessons) skip
+    # thinking for speed; solving, writing notes and grading still think.
+    no_think_suffix: bool = False
+    # Servers default to short replies / small context windows, which cut off thinking
+    # and research notes. 16k context fits three web sources plus the skill notes.
+    max_tokens: int = 4096
+    context_length: int = 16384
     timeout: int = 600
 
 
