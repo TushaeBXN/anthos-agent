@@ -1,8 +1,8 @@
 {
   "worker": {
-    "backend": "ollama",
-    "base_url": "http://localhost:11434",
-    "model": "qwen3.5:9b"
+    "backend": "openai",
+    "base_url": "http://localhost:1234/v1",
+    "model": "lukey03/Qwen3.5-9B-abliterated-MLX-8bit"
   },
   "teacher": {
     "backend": "openai",

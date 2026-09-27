@@ -38,15 +38,24 @@ task ──► do I have notes for this?  ── yes ─────────
 
 ## Setup on the Mac
 
+The example config is set up for an MLX model such as
+`lukey03/Qwen3.5-9B-abliterated-MLX-8bit` (about 9-10 GB of memory at 8-bit).
+MLX models don't run in Ollama; use LM Studio or `mlx_lm.server`, which both speak the
+OpenAI-style API smart9b uses.
+
 ```bash
-# 1. The model (use whatever name `ollama list` shows for your Qwen 9B)
-brew install ollama python@3.11
-ollama serve &            # or open the Ollama app
-ollama pull qwen3.5:9b    # skip if you already have it
+# 1a. The model, the easy way: LM Studio (https://lmstudio.ai)
+#     Search for the model, download it, load it, then Developer tab -> Start Server.
+#     It serves at http://localhost:1234/v1, which is what smart9b.example.json expects.
+
+# 1b. Or from the terminal with mlx-lm (then set base_url to http://localhost:8081/v1):
+pip install "mlx-lm>=0.20,<1"
+python -m mlx_lm server --model lukey03/Qwen3.5-9B-abliterated-MLX-8bit --port 8081
+#     If it errors about vision/processor files, the model needs mlx-vlm; use LM Studio instead.
 
 # 2. smart9b
 cd smart9b
-python3.11 -m venv .venv && source .venv/bin/activate
+python3.11 -m venv .venv && source .venv/bin/activate   # brew install python@3.11 if needed
 pip install -e .
 
 # 3. A data folder for its notes, journal and training data
@@ -54,8 +63,21 @@ mkdir -p ~/smart9b-data && cd ~/smart9b-data
 smart9b init              # creates smart9b.json and the starter skills
 ```
 
-Open `~/smart9b-data/smart9b.json` and set `worker.model` to your model's name. Delete the
-`teacher` block until you have a teacher to point it at.
+Open `~/smart9b-data/smart9b.json`:
+- `worker.model`: the model name your server shows (LM Studio lists it under the loaded model).
+- Delete the `teacher` block until you have a teacher to point it at.
+
+Using Ollama instead? Set `"backend": "ollama"`, `"base_url": "http://localhost:11434"` and
+the name `ollama list` shows.
+
+**Memory on a 16 GB Mac:** the 8-bit 9B leaves about 5-6 GB for macOS and everything else,
+which is fine for running it. It is very likely too tight for fine-tuning, so train on a 4-bit copy
+(see below). A 4-bit version also runs faster and leaves more headroom, with a small quality loss.
+
+**About "abliterated" models:** abliteration removes the model's ability to refuse. That can
+cost a little quality, and it matters for an agent that reads random web pages: text on a page
+can tell the model to do something, and it won't push back. smart9b only shows you code
+and asks before running it; leave `auto_run_code` off with this model.
 
 ## Using it
 
@@ -100,8 +122,13 @@ smart9b teach "write product descriptions" "clean messy csv" "fix a python error
 ```bash
 smart9b dataset                    # -> training_data/train.jsonl, valid.jsonl
 pip install -e ".[train]"
-MODEL=mlx-community/<your-qwen-9b>-4bit ./train_lora.sh
+MODEL=<a 4-bit MLX copy of your Qwen3.5 9B> ./train_lora.sh
 ```
+
+Train on a **4-bit** copy of your model: the 8-bit one plus training will very likely run out of memory on 16 GB.
+If you can't find a 4-bit MLX copy of the same abliterated model, make one from the
+original full-size (non-MLX) version of it:
+`python -m mlx_lm convert --hf-path <full-size model> -q --q-bits 4 --mlx-path qwen9b-4bit`
 
 Only work that was **verified by running code** or **approved by you** is used
 (add `--include-self-graded` to also use work the model only checked itself; it's noisier).

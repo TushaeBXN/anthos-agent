@@ -6,7 +6,7 @@
 # 8 layers trained, gradient checkpointing on. Close other apps while it runs.
 set -euo pipefail
 
-# The MLX 4-bit version of your Qwen model on Hugging Face (search "mlx-community qwen 9b 4bit").
+# A 4-bit MLX copy of your Qwen model (8-bit + training will very likely run out of memory on 16 GB).
 MODEL="${MODEL:?set MODEL, e.g. MODEL=mlx-community/<qwen-9b>-4bit ./train_lora.sh}"
 DATA="${DATA:-training_data}"
 ITERS="${ITERS:-600}"
