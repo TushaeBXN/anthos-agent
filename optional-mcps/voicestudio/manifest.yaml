@@ -1,0 +1,60 @@
+# Nous-approved MCP catalog entry.
+# Presence in this directory = approval. Merged via PR review.
+manifest_version: 1
+
+name: voicestudio
+description: Local voice cloning, text-to-speech, and transcription via VoiceStudio.
+source: https://github.com/debpalash/VoiceStudio
+
+# VoiceStudio (AGPL-3.0, k2-fsa/OmniVoice engine) mounts a Streamable HTTP MCP
+# server on its running backend at /mcp/. There is nothing to install on the
+# Anthos side — the user runs the VoiceStudio desktop app (or its Docker /
+# source backend) and Anthos's MCP client connects to the URL.
+#
+# Default backend port is 3900. Keep the trailing slash: `/mcp/` works on every
+# VoiceStudio version; older builds returned 405 for bare `/mcp`. If you moved
+# the backend with OMNIVOICE_PORT, edit the url in mcp_servers.voicestudio.
+transport:
+  type: http
+  url: http://127.0.0.1:3900/mcp/
+  # Identifies Anthos to VoiceStudio so it can be bound to its own voice
+  # profile ("per-agent voices"). Not a credential.
+  headers:
+    X-OmniVoice-Client-Id: anthos
+
+# The loopback MCP transport is unauthenticated by design (localhost only;
+# DNS-rebinding guard rejects non-localhost Host headers). Nothing to prompt.
+auth:
+  type: none
+
+# Tool selection at install time:
+# generate_speech, clone_voice, transcribe, list_voices, list_personalities,
+# list_languages, check_health. Leave default_enabled unset — the install-time
+# probe lists whatever the live backend exposes and pre-checks all of it.
+
+post_install: |
+  This entry connects to the MCP server built into VoiceStudio's backend.
+  Before Anthos can connect:
+
+    1. Install VoiceStudio (https://github.com/debpalash/VoiceStudio/releases)
+       and open it, or run its Docker/source backend.
+    2. Install the OmniVoice model when prompted (~2.3 GB). The first
+       generate_speech call downloads it otherwise, and may time out.
+    3. Confirm the backend answers at http://127.0.0.1:3900/mcp/
+
+  Start Anthos AFTER the backend is running so the tools are probed.
+
+  Anthos identifies itself with client id "anthos". To give it its own voice:
+    curl -X PUT localhost:3900/api/mcp/bindings \
+      -H 'Content-Type: application/json' \
+      -d '{"client_id":"anthos","label":"Anthos","profile_id":"<voice-profile-id>"}'
+
+  By default audio comes back inline as base64 WAV, which is costly in context.
+  To get file paths instead, set on the VoiceStudio backend's environment:
+    OMNIVOICE_MCP_OUTPUT_MODE=files
+    OMNIVOICE_MCP_BASE_PATH=<a directory both VoiceStudio and Anthos can see>
+
+  Only clone voices you have permission to use.
+
+  Re-run the tool checklist any time with:
+    anthos mcp configure voicestudio

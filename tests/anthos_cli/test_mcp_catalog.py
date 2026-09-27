@@ -307,6 +307,40 @@ class TestInstall:
         assert server["url"] == "https://mcp.example.com/sse"
         assert server["auth"] == "oauth"
 
+    def test_install_http_headers_written_to_server_config(self, catalog_dir):
+        body = _basic_manifest(
+            transport={
+                "type": "http",
+                "url": "http://127.0.0.1:3900/mcp/",
+                "headers": {"X-Client-Id": "anthos"},
+            },
+        )
+        _write_manifest(catalog_dir, "demo", body)
+
+        from anthos_cli.mcp_catalog import install_entry
+        from anthos_cli.config import load_config
+
+        install_entry(_entry("demo"), enable=True)
+
+        server = load_config()["mcp_servers"]["demo"]
+        assert server["url"] == "http://127.0.0.1:3900/mcp/"
+        assert server["headers"] == {"X-Client-Id": "anthos"}
+
+    @pytest.mark.parametrize(
+        "transport",
+        [
+            {"type": "http", "url": "http://x/mcp", "headers": ["X-A: b"]},
+            {"type": "http", "url": "http://x/mcp", "headers": {"X-A": 1}},
+            {"type": "stdio", "command": "srv", "headers": {"X-A": "b"}},
+        ],
+    )
+    def test_invalid_transport_headers_rejected(self, catalog_dir, transport):
+        _write_manifest(catalog_dir, "demo", _basic_manifest(transport=transport))
+
+        from anthos_cli.mcp_catalog import list_catalog
+
+        assert list_catalog() == []
+
     def test_install_required_env_missing_raises(self, catalog_dir, monkeypatch):
         body = _basic_manifest(
             auth={
