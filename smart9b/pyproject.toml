@@ -1,0 +1,19 @@
+[project]
+name = "smart9b"
+version = "0.1.0"
+description = "A self-teaching loop that makes a small local model smarter."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+train = ["mlx-lm>=0.20,<1"]
+test = ["pytest>=8,<10"]
+
+[project.scripts]
+smart9b = "smart9b.__main__:main"
+
+[tool.setuptools]
+packages = ["smart9b"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

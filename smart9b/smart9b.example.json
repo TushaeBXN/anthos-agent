@@ -1,0 +1,16 @@
+{
+  "worker": {
+    "backend": "ollama",
+    "base_url": "http://localhost:11434",
+    "model": "qwen3.5:9b"
+  },
+  "teacher": {
+    "backend": "openai",
+    "base_url": "https://YOUR-GLIMMER-HOST/v1",
+    "model": "meta-models/Muse-Glimmer-30B",
+    "api_key_env": "TEACHER_API_KEY"
+  },
+  "search_backend": "duckduckgo",
+  "max_attempts": 3,
+  "auto_run_code": false
+}
