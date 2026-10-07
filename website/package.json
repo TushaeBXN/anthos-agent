@@ -48,7 +48,7 @@
     "@opentelemetry/core": "^2.8.0",
     "http-proxy-middleware": "^3.0.6",
     "launch-editor": "^2.14.1",
-    "joi": "^17.13.4",
+    "joi": "^17.13.8",
     "webpack-dev-server": "^5.2.5"
   },
   "browserslist": {
