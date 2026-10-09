@@ -24,7 +24,7 @@ import time
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple
+from typing import Any, Dict, Generator, List, Optional, Sequence, Tuple
 
 from plugins.dealforge import rewards as R
 
@@ -200,7 +200,7 @@ class DealForge:
         return conn
 
     @contextmanager
-    def _tx(self) -> Iterator[sqlite3.Connection]:
+    def _tx(self) -> Generator[sqlite3.Connection, None, None]:
         conn = self._connect()
         try:
             conn.execute("BEGIN IMMEDIATE")
@@ -214,7 +214,7 @@ class DealForge:
             conn.close()
 
     @contextmanager
-    def _read(self) -> Iterator[sqlite3.Connection]:
+    def _read(self) -> Generator[sqlite3.Connection, None, None]:
         conn = self._connect()
         try:
             yield conn
@@ -340,7 +340,7 @@ class DealForge:
                     return row
         return None
 
-    def _insert_contact(self, conn, agent: str, now: float, name: str, handle=None,
+    def _insert_contact(self, conn, agent: str, now: float, name: Optional[str], handle=None,
                         phone=None, email=None, company=None, tags=None,
                         note: Optional[str] = None) -> Tuple[sqlite3.Row, bool]:
         if not name or not str(name).strip():
@@ -359,7 +359,7 @@ class DealForge:
             self._log(conn, agent, "note", now, contact_id=cid, note=note)
         return conn.execute("SELECT * FROM contacts WHERE id=?", (cid,)).fetchone(), True
 
-    def add_contact(self, agent: str, name: str, handle=None, phone=None, email=None,
+    def add_contact(self, agent: str, name: Optional[str], handle=None, phone=None, email=None,
                     company=None, tags=None, note=None) -> dict:
         now = _now()
         with self._tx() as conn:
@@ -490,7 +490,7 @@ class DealForge:
             d["loss_reason"] = row["loss_reason"]
         return d
 
-    def create_deal(self, agent: str, title: str, contact_id: Any = None, contact_name: Optional[str] = None,
+    def create_deal(self, agent: str, title: Optional[str], contact_id: Any = None, contact_name: Optional[str] = None,
                     handle: Optional[str] = None, value: Any = 0, currency: Optional[str] = None,
                     stage: Any = None, note: Optional[str] = None, next_action: Optional[str] = None,
                     next_action_due: Any = None) -> dict:

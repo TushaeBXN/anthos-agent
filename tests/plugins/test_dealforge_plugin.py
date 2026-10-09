@@ -135,7 +135,9 @@ def test_skill_description_meets_authoring_limit():
     import plugins.dealforge as plugin
 
     text = (Path(plugin.__file__).parent / "SKILL.md").read_text()
-    desc = re.search(r"^description: (.*)$", text, re.MULTILINE).group(1)
+    m = re.search(r"^description: (.*)$", text, re.MULTILINE)
+    assert m is not None
+    desc = m.group(1)
     assert len(desc) <= 60 and desc.endswith(".")
 
 
