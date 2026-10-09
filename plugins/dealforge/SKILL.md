@@ -1,6 +1,6 @@
 ---
 name: sales-pilot
-description: Run the QuestDesk CRM from chat and earn tokens.
+description: Run the DealForge CRM from chat and earn tokens.
 version: 0.1.0
 author: TushaeBXN, Anthos Agent
 license: MIT
@@ -10,9 +10,9 @@ metadata:
     category: productivity
 ---
 
-# QuestDesk Sales Pilot Skill
+# DealForge Sales Pilot Skill
 
-Operate the QuestDesk CRM while chatting with leads on Telegram (or any
+Operate the DealForge CRM while chatting with leads on Telegram (or any
 gateway platform): log contacts, move deals through the pipeline, keep the
 follow-up radar clear, and earn tokens + XP for real progress. It does not
 send messages to leads by itself — you still talk to them in the chat.
@@ -26,18 +26,18 @@ send messages to leads by itself — you still talk to them in the chat.
 
 ## Prerequisites
 
-- Plugin enabled: `plugins.enabled: [questdesk]` in `config.yaml`, and the
-  `questdesk` toolset enabled for the platform (`anthos tools`).
-- Optional: pick a niche pipeline with `anthos questdesk init --preset
+- Plugin enabled: `plugins.enabled: [dealforge]` in `config.yaml`, and the
+  `dealforge` toolset enabled for the platform (`anthos tools`).
+- Optional: pick a niche pipeline with `anthos dealforge init --preset
   <sales|ecommerce|clinic|realestate|services|creator>` (default: sales).
 
 ## How to Run
 
 Three tools, each with an `action`:
 
-- `questdesk_contact` — add / update / get / search / note
-- `questdesk_deal` — create / move / update / lose / get / list / board / radar / stages
-- `questdesk_rewards` — wallet / quests / leaderboard / catalog
+- `dealforge_contact` — add / update / get / search / note
+- `dealforge_deal` — create / move / update / lose / get / list / board / radar / stages
+- `dealforge_rewards` — wallet / quests / leaderboard / catalog
 
 Users can check the board without an agent turn: `/pipeline`,
 `/pipeline radar`, `/pipeline quests`, `/pipeline wallet`.
@@ -46,18 +46,18 @@ Users can check the board without an agent turn: `/pipeline`,
 
 | Goal | Call |
 |---|---|
-| New lead from this chat | `questdesk_deal` action=create, title, contact_name, handle, value, next_action, next_action_due |
-| Real progress happened | `questdesk_deal` action=move, deal_id, stage, note="what happened" |
-| Plan the follow-up | `questdesk_deal` action=update, next_action, next_action_due="2d" |
-| Deal is dead | `questdesk_deal` action=lose, loss_reason |
-| Who needs attention | `questdesk_deal` action=radar |
-| My progress | `questdesk_rewards` action=wallet |
+| New lead from this chat | `dealforge_deal` action=create, title, contact_name, handle, value, next_action, next_action_due |
+| Real progress happened | `dealforge_deal` action=move, deal_id, stage, note="what happened" |
+| Plan the follow-up | `dealforge_deal` action=update, next_action, next_action_due="2d" |
+| Deal is dead | `dealforge_deal` action=lose, loss_reason |
+| Who needs attention | `dealforge_deal` action=radar |
+| My progress | `dealforge_rewards` action=wallet |
 
 ## Procedure
 
-1. **Session start:** call `questdesk_deal` action=radar and
-   `questdesk_rewards` action=quests. Work overdue deals first.
-2. **Search before creating:** `questdesk_contact` action=search with the
+1. **Session start:** call `dealforge_deal` action=radar and
+   `dealforge_rewards` action=quests. Work overdue deals first.
+2. **Search before creating:** `dealforge_contact` action=search with the
    Telegram handle or name. Contact `add` also dedupes on handle, phone and
    email.
 3. **Create the deal in one call** with `contact_name` + `handle` when the
@@ -84,7 +84,7 @@ Users can check the board without an agent turn: `/pipeline`,
 
 ## Verification
 
-- `questdesk_deal` action=get shows the deal's activity trail and
+- `dealforge_deal` action=get shows the deal's activity trail and
   `tokens_earned`.
 - `/pipeline` board totals match what you logged.
-- `anthos questdesk export` writes a CSV of every deal for a human check.
+- `anthos dealforge export` writes a CSV of every deal for a human check.

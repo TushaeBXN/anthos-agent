@@ -1,4 +1,4 @@
-"""QuestDesk model tools — three action-dispatched tools, one toolset.
+"""DealForge model tools — three action-dispatched tools, one toolset.
 
 Three tools instead of fifteen keeps the per-call schema footprint small
 while still covering the whole CRM surface.
@@ -12,21 +12,21 @@ from typing import Any, Callable, Dict
 
 from tools.registry import tool_error, tool_result
 
-from plugins.questdesk import rewards as R
-from plugins.questdesk.store import QuestDesk, QuestDeskError
+from plugins.dealforge import rewards as R
+from plugins.dealforge.store import DealForge, DealForgeError
 
 logger = logging.getLogger(__name__)
 
 _AGENT_RE = re.compile(r"[^\w .@-]+")
 
 
-def check_questdesk_available() -> bool:
+def check_dealforge_available() -> bool:
     # Pure local SQLite — available whenever the plugin is enabled.
     return True
 
 
-def _desk() -> QuestDesk:
-    return QuestDesk()
+def _desk() -> DealForge:
+    return DealForge()
 
 
 def resolve_agent(raw: Any = None) -> str:
@@ -46,11 +46,11 @@ def resolve_agent(raw: Any = None) -> str:
 def _run(fn: Callable[[], dict]) -> str:
     try:
         return tool_result({"success": True, **fn()})
-    except QuestDeskError as exc:
+    except DealForgeError as exc:
         return tool_error(str(exc), success=False)
     except Exception as exc:  # pragma: no cover — defensive
-        logger.exception("questdesk tool failed")
-        return tool_error(f"QuestDesk failed: {type(exc).__name__}: {exc}", success=False)
+        logger.exception("dealforge tool failed")
+        return tool_error(f"DealForge failed: {type(exc).__name__}: {exc}", success=False)
 
 
 _AGENT_PROP = {
@@ -58,10 +58,10 @@ _AGENT_PROP = {
     "description": "Name credited with any tokens earned. Defaults to the active profile.",
 }
 
-QUESTDESK_CONTACT_SCHEMA: Dict[str, Any] = {
-    "name": "questdesk_contact",
+DEALFORGE_CONTACT_SCHEMA: Dict[str, Any] = {
+    "name": "dealforge_contact",
     "description": (
-        "QuestDesk CRM contacts. add (dedupes on handle/phone/email), update, get (with deals + "
+        "DealForge CRM contacts. add (dedupes on handle/phone/email), update, get (with deals + "
         "history), search, note (log an interaction on a contact or deal)."
     ),
     "parameters": {
@@ -85,10 +85,10 @@ QUESTDESK_CONTACT_SCHEMA: Dict[str, Any] = {
     },
 }
 
-QUESTDESK_DEAL_SCHEMA: Dict[str, Any] = {
-    "name": "questdesk_deal",
+DEALFORGE_DEAL_SCHEMA: Dict[str, Any] = {
+    "name": "dealforge_deal",
     "description": (
-        "QuestDesk CRM pipeline. create, move (advancing needs a note with evidence), update, lose "
+        "DealForge CRM pipeline. create, move (advancing needs a note with evidence), update, lose "
         "(needs loss_reason), get, list, board (pipeline snapshot), radar (deals needing follow-up), "
         "stages. Real progress mints tokens + XP for the agent; results include rewards and next_goal."
     ),
@@ -121,9 +121,9 @@ QUESTDESK_DEAL_SCHEMA: Dict[str, Any] = {
     },
 }
 
-QUESTDESK_REWARDS_SCHEMA: Dict[str, Any] = {
-    "name": "questdesk_rewards",
-    "description": "QuestDesk token rewards: wallet (XP, level, tokens), quests (today's), leaderboard, catalog.",
+DEALFORGE_REWARDS_SCHEMA: Dict[str, Any] = {
+    "name": "dealforge_rewards",
+    "description": "DealForge token rewards: wallet (XP, level, tokens), quests (today's), leaderboard, catalog.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -136,7 +136,7 @@ QUESTDESK_REWARDS_SCHEMA: Dict[str, Any] = {
 }
 
 
-def handle_questdesk_contact(args: dict, **_kw) -> str:
+def handle_dealforge_contact(args: dict, **_kw) -> str:
     action = (args.get("action") or "").strip().lower()
     agent = resolve_agent(args.get("agent"))
 
@@ -155,12 +155,12 @@ def handle_questdesk_contact(args: dict, **_kw) -> str:
             return desk.search_contacts(args.get("query") or "", args.get("limit") or 10)
         if action == "note":
             return desk.add_note(agent, args.get("note") or "", args.get("contact_id"), args.get("deal_id"))
-        raise QuestDeskError("action must be one of: add, update, get, search, note")
+        raise DealForgeError("action must be one of: add, update, get, search, note")
 
     return _run(go)
 
 
-def handle_questdesk_deal(args: dict, **_kw) -> str:
+def handle_dealforge_deal(args: dict, **_kw) -> str:
     action = (args.get("action") or "").strip().lower()
     agent = resolve_agent(args.get("agent"))
 
@@ -195,12 +195,12 @@ def handle_questdesk_deal(args: dict, **_kw) -> str:
             return desk.radar(stale_days=args.get("stale_days") or 7, limit=args.get("limit") or 10)
         if action == "stages":
             return {"stages": desk.stages()}
-        raise QuestDeskError("action must be one of: create, move, update, lose, get, list, board, radar, stages")
+        raise DealForgeError("action must be one of: create, move, update, lose, get, list, board, radar, stages")
 
     return _run(go)
 
 
-def handle_questdesk_rewards(args: dict, **_kw) -> str:
+def handle_dealforge_rewards(args: dict, **_kw) -> str:
     action = (args.get("action") or "").strip().lower()
     agent = resolve_agent(args.get("agent"))
 
@@ -223,6 +223,6 @@ def handle_questdesk_rewards(args: dict, **_kw) -> str:
                     "Backward moves never mint tokens.",
                 ],
             }
-        raise QuestDeskError("action must be one of: wallet, quests, leaderboard, catalog")
+        raise DealForgeError("action must be one of: wallet, quests, leaderboard, catalog")
 
     return _run(go)

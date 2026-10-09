@@ -1,6 +1,6 @@
-"""QuestDesk storage + reward engine (SQLite, profile-scoped).
+"""DealForge storage + reward engine (SQLite, profile-scoped).
 
-One database per profile at ``<ANTHOS_HOME>/questdesk/questdesk.db``.
+One database per profile at ``<ANTHOS_HOME>/dealforge/dealforge.db``.
 Every mutating call runs in a single ``BEGIN IMMEDIATE`` transaction so the
 deal change, the activity log row and any minted tokens land atomically —
 concurrent gateway sessions can't double-mint.
@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple
 
-from plugins.questdesk import rewards as R
+from plugins.dealforge import rewards as R
 
 
 def _now() -> float:
@@ -37,10 +37,10 @@ def _now() -> float:
 def default_db_path() -> Path:
     from anthos_constants import get_anthos_home
 
-    return Path(get_anthos_home()) / "questdesk" / "questdesk.db"
+    return Path(get_anthos_home()) / "dealforge" / "dealforge.db"
 
 
-class QuestDeskError(ValueError):
+class DealForgeError(ValueError):
     """User-facing validation error (bad id, bad stage, missing evidence)."""
 
 
@@ -153,7 +153,7 @@ def parse_due(raw: Any, now: float) -> Optional[float]:
     try:
         dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
     except ValueError:
-        raise QuestDeskError(
+        raise DealForgeError(
             f"Can't parse due '{text}'. Use 30m / 4h / 3d / 1w, YYYY-MM-DD, or ISO-8601."
         )
     if dt.tzinfo is None:
@@ -178,7 +178,7 @@ def lead_score(position: int, stage_count: int, value: float, idle_days: float) 
     return int(round(min(100.0, progress + recency + size)))
 
 
-class QuestDesk:
+class DealForge:
     def __init__(self, db_path: Optional[Path] = None) -> None:
         self.db_path = Path(db_path) if db_path else default_db_path()
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -257,23 +257,23 @@ class QuestDesk:
         elif preset:
             key = preset.strip().lower()
             if key not in PRESETS:
-                raise QuestDeskError(f"Unknown preset '{preset}'. Choose: {', '.join(PRESETS)}")
+                raise DealForgeError(f"Unknown preset '{preset}'. Choose: {', '.join(PRESETS)}")
             clean = list(PRESETS[key])
         else:
-            raise QuestDeskError("Pass a preset or a list of stage labels.")
+            raise DealForgeError("Pass a preset or a list of stage labels.")
         if not (R.MIN_STAGES <= len(clean) <= R.MAX_STAGES):
-            raise QuestDeskError(f"A pipeline needs {R.MIN_STAGES}–{R.MAX_STAGES} stages (got {len(clean)}).")
+            raise DealForgeError(f"A pipeline needs {R.MIN_STAGES}–{R.MAX_STAGES} stages (got {len(clean)}).")
         slugs = [slugify(l) for l in clean]
         if len(set(slugs)) != len(slugs):
-            raise QuestDeskError("Stage labels must be distinct.")
+            raise DealForgeError("Stage labels must be distinct.")
         with self._tx() as conn:
             old = self._stages(conn)
             has_deals = conn.execute("SELECT 1 FROM deals LIMIT 1").fetchone()
             if has_deals and len(old) != len(clean):
-                raise QuestDeskError(
+                raise DealForgeError(
                     f"Deals already exist on a {len(old)}-stage pipeline; a new pipeline "
                     f"must keep {len(old)} stages (positions are relabelled in place). "
-                    "Export with `anthos questdesk export` and start a fresh profile to change the shape."
+                    "Export with `anthos dealforge export` and start a fresh profile to change the shape."
                 )
             remap = {o["key"]: slugs[o["position"]] for o in old}
             self._write_stages(conn, clean)
@@ -284,7 +284,7 @@ class QuestDesk:
 
     def _resolve_stage(self, stages: List[dict], stage: Any) -> dict:
         if stage is None or (isinstance(stage, str) and not stage.strip()):
-            raise QuestDeskError("stage is required.")
+            raise DealForgeError("stage is required.")
         text = str(stage).strip()
         if text.lstrip("-").isdigit():
             pos = int(text)
@@ -296,7 +296,7 @@ class QuestDesk:
             if s["key"] == want or s["label"].lower() == text.lower():
                 return s
         options = ", ".join(f"{s['position']}={s['label']}" for s in stages)
-        raise QuestDeskError(f"Unknown stage '{text}'. Stages: {options}")
+        raise DealForgeError(f"Unknown stage '{text}'. Stages: {options}")
 
     # -- contacts ------------------------------------------------------------
 
@@ -304,10 +304,10 @@ class QuestDesk:
         try:
             cid = int(contact_id)
         except (TypeError, ValueError):
-            raise QuestDeskError("contact_id must be an integer.")
+            raise DealForgeError("contact_id must be an integer.")
         row = conn.execute("SELECT * FROM contacts WHERE id=?", (cid,)).fetchone()
         if not row:
-            raise QuestDeskError(f"No contact #{cid}.")
+            raise DealForgeError(f"No contact #{cid}.")
         return row
 
     @staticmethod
@@ -344,7 +344,7 @@ class QuestDesk:
                         phone=None, email=None, company=None, tags=None,
                         note: Optional[str] = None) -> Tuple[sqlite3.Row, bool]:
         if not name or not str(name).strip():
-            raise QuestDeskError("name is required to add a contact.")
+            raise DealForgeError("name is required to add a contact.")
         handle = normalize_handle(handle)
         dup = self._find_duplicate(conn, handle, phone, email)
         if dup:
@@ -389,7 +389,7 @@ class QuestDesk:
                 sets.append(f"{key}=?")
                 vals.append(val)
             if not sets:
-                raise QuestDeskError("Nothing to update — pass at least one contact field.")
+                raise DealForgeError("Nothing to update — pass at least one contact field.")
             sets.append("updated_at=?")
             vals.extend([now, row["id"]])
             conn.execute(f"UPDATE contacts SET {', '.join(sets)} WHERE id=?", vals)
@@ -430,9 +430,9 @@ class QuestDesk:
 
     def add_note(self, agent: str, note: str, contact_id: Any = None, deal_id: Any = None) -> dict:
         if not note or not note.strip():
-            raise QuestDeskError("note text is required.")
+            raise DealForgeError("note text is required.")
         if contact_id is None and deal_id is None:
-            raise QuestDeskError("Pass contact_id or deal_id for the note.")
+            raise DealForgeError("Pass contact_id or deal_id for the note.")
         now = _now()
         with self._tx() as conn:
             xp_before = self._xp(conn, agent)
@@ -456,10 +456,10 @@ class QuestDesk:
         try:
             did = int(deal_id)
         except (TypeError, ValueError):
-            raise QuestDeskError("deal_id must be an integer.")
+            raise DealForgeError("deal_id must be an integer.")
         row = conn.execute("SELECT * FROM deals WHERE id=?", (did,)).fetchone()
         if not row:
-            raise QuestDeskError(f"No deal #{did}.")
+            raise DealForgeError(f"No deal #{did}.")
         return row
 
     def _deal_dict(self, row: sqlite3.Row, stages: List[dict], now: Optional[float] = None) -> dict:
@@ -495,7 +495,7 @@ class QuestDesk:
                     stage: Any = None, note: Optional[str] = None, next_action: Optional[str] = None,
                     next_action_due: Any = None) -> dict:
         if not title or not str(title).strip():
-            raise QuestDeskError("title is required to create a deal.")
+            raise DealForgeError("title is required to create a deal.")
         now = _now()
         with self._tx() as conn:
             xp_before = self._xp(conn, agent)
@@ -505,7 +505,7 @@ class QuestDesk:
             elif contact_name or handle:
                 contact, _ = self._insert_contact(conn, agent, now, contact_name or handle, handle=handle)
             else:
-                raise QuestDeskError("Pass contact_id, or contact_name/handle to auto-create the contact.")
+                raise DealForgeError("Pass contact_id, or contact_name/handle to auto-create the contact.")
             st = self._resolve_stage(stages, stage) if stage is not None else stages[0]
             due = parse_due(next_action_due, now)
             cur = conn.execute(
@@ -552,9 +552,9 @@ class QuestDesk:
             to_pos = target["position"]
             forward = to_pos > cur_pos
             if to_pos == cur_pos and deal["status"] != "lost":
-                raise QuestDeskError(f"Deal #{deal['id']} is already in '{target['label']}'.")
+                raise DealForgeError(f"Deal #{deal['id']} is already in '{target['label']}'.")
             if forward and len((note or "").strip()) < R.MIN_EVIDENCE_CHARS:
-                raise QuestDeskError(
+                raise DealForgeError(
                     f"Advancing needs evidence: pass a note (≥{R.MIN_EVIDENCE_CHARS} chars) saying what "
                     "happened — e.g. 'Client confirmed budget on call, sending proposal'."
                 )
@@ -634,7 +634,7 @@ class QuestDesk:
             if next_action_due is not None:
                 sets.append("next_action_due=?"); vals.append(parse_due(next_action_due, now))
             if not sets:
-                raise QuestDeskError("Nothing to update — pass title, value, currency, next_action or next_action_due.")
+                raise DealForgeError("Nothing to update — pass title, value, currency, next_action or next_action_due.")
             sets += ["updated_at=?", "last_activity_at=?"]
             vals += [now, now, deal["id"]]
             conn.execute(f"UPDATE deals SET {', '.join(sets)} WHERE id=?", vals)
@@ -649,7 +649,7 @@ class QuestDesk:
     def lose_deal(self, agent: str, deal_id: Any, reason: Optional[str]) -> dict:
         reason = (reason or "").strip()
         if len(reason) < R.MIN_LOSS_REASON_CHARS:
-            raise QuestDeskError(
+            raise DealForgeError(
                 f"Pass a loss_reason (≥{R.MIN_LOSS_REASON_CHARS} chars) — e.g. 'Chose competitor on price'."
             )
         now = _now()
@@ -657,7 +657,7 @@ class QuestDesk:
             xp_before = self._xp(conn, agent)
             deal = self._deal_row(conn, deal_id)
             if deal["status"] != "open":
-                raise QuestDeskError(f"Deal #{deal['id']} is already {deal['status']}.")
+                raise DealForgeError(f"Deal #{deal['id']} is already {deal['status']}.")
             conn.execute(
                 "UPDATE deals SET status='lost', loss_reason=?, closed_at=?, updated_at=?, last_activity_at=?"
                 " WHERE id=?", (reason, now, now, now, deal["id"]),
@@ -1004,7 +1004,7 @@ def _money(raw: Any) -> float:
     try:
         val = float(str(raw).replace(",", "").strip())
     except ValueError:
-        raise QuestDeskError(f"value must be a number (got '{raw}').")
+        raise DealForgeError(f"value must be a number (got '{raw}').")
     if val < 0 or math.isinf(val) or math.isnan(val):
-        raise QuestDeskError("value must be a non-negative number.")
+        raise DealForgeError("value must be a non-negative number.")
     return round(val, 2)

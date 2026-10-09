@@ -1,11 +1,11 @@
-# QuestDesk 🗺️🪙
+# DealForge 🗺️🪙
 
 A gamified sales CRM for Anthos that works in Telegram first. The agent
 that chats with your leads also runs the pipeline, and it earns
 **tokens + XP** for every real step it pushes a deal forward.
 
 Inspired by [DeskcommCRM](https://github.com/melgarafael/DeskcommCRM) (MIT).
-DeskcommCRM is a full Next.js + Supabase + WhatsApp stack. QuestDesk keeps its
+DeskcommCRM is a full Next.js + Supabase + WhatsApp stack. DealForge keeps its
 best ideas (niche pipeline wording, contact records, a follow-up radar,
 agents that *run* the CRM) and uses Anthos's existing messaging gateway
 instead of a separate web app. So it works on Telegram, and on every other
@@ -16,29 +16,29 @@ platform Anthos supports, with zero extra infrastructure.
 ```yaml
 # ~/.anthos/config.yaml
 plugins:
-  enabled: [questdesk]
+  enabled: [dealforge]
 ```
 
-Then enable the `questdesk` toolset for your platform with `anthos tools`, and
+Then enable the `dealforge` toolset for your platform with `anthos tools`, and
 optionally pick a pipeline:
 
 ```bash
-anthos questdesk presets                 # sales, ecommerce, clinic, realestate, services, creator
-anthos questdesk init --preset clinic    # or: --stages "Lead,Call,Signed,Paid"
+anthos dealforge presets                 # sales, ecommerce, clinic, realestate, services, creator
+anthos dealforge init --preset clinic    # or: --stages "Lead,Call,Signed,Paid"
 ```
 
-Data lives in `<ANTHOS_HOME>/questdesk/questdesk.db` (one per profile).
+Data lives in `<ANTHOS_HOME>/dealforge/dealforge.db` (one per profile).
 
 ## What you get
 
 | Surface | What |
 |---|---|
-| `questdesk_contact` | add (auto-dedupe on handle/phone/email), update, get, search, note |
-| `questdesk_deal` | create (auto-creates the contact), move, update, lose, get, list, board, radar, stages |
-| `questdesk_rewards` | wallet, quests, leaderboard, catalog |
+| `dealforge_contact` | add (auto-dedupe on handle/phone/email), update, get, search, note |
+| `dealforge_deal` | create (auto-creates the contact), move, update, lose, get, list, board, radar, stages |
+| `dealforge_rewards` | wallet, quests, leaderboard, catalog |
 | `/pipeline [view]` | Board / radar / quests / wallet / leaderboard in chat, with no agent turn |
-| `anthos questdesk …` | init, presets, board, radar, quests, wallet, leaderboard, catalog, export (CSV) |
-| Skill `questdesk:sales-pilot` | The playbook the agent follows |
+| `anthos dealforge …` | init, presets, board, radar, quests, wallet, leaderboard, catalog, export (CSV) |
+| Skill `dealforge:sales-pilot` | The playbook the agent follows |
 
 ## The token economy
 

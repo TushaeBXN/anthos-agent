@@ -1,4 +1,4 @@
-"""Tests for the QuestDesk plugin (gamified Telegram-first CRM).
+"""Tests for the DealForge plugin (gamified Telegram-first CRM).
 
 Exercises the real SQLite store under a temp ANTHOS_HOME through the tool
 handlers the model calls. The clock is driven via ``store._now`` so dwell,
@@ -33,7 +33,7 @@ class Clock:
 
 @pytest.fixture
 def clock(monkeypatch):
-    from plugins.questdesk import store
+    from plugins.dealforge import store
 
     c = Clock()
     monkeypatch.setattr(store, "_now", c)
@@ -41,21 +41,21 @@ def clock(monkeypatch):
 
 
 def deal(args):
-    from plugins.questdesk.tools import handle_questdesk_deal
+    from plugins.dealforge.tools import handle_dealforge_deal
 
-    return json.loads(handle_questdesk_deal({"agent": "closer", **args}))
+    return json.loads(handle_dealforge_deal({"agent": "closer", **args}))
 
 
 def contact(args):
-    from plugins.questdesk.tools import handle_questdesk_contact
+    from plugins.dealforge.tools import handle_dealforge_contact
 
-    return json.loads(handle_questdesk_contact({"agent": "closer", **args}))
+    return json.loads(handle_dealforge_contact({"agent": "closer", **args}))
 
 
 def rewards(args):
-    from plugins.questdesk.tools import handle_questdesk_rewards
+    from plugins.dealforge.tools import handle_dealforge_rewards
 
-    return json.loads(handle_questdesk_rewards({"agent": "closer", **args}))
+    return json.loads(handle_dealforge_rewards({"agent": "closer", **args}))
 
 
 def token_ids(result):
@@ -79,9 +79,9 @@ def walk(deal_id, clock, stages, step=3600):
 
 
 def labels():
-    from plugins.questdesk.store import QuestDesk
+    from plugins.dealforge.store import DealForge
 
-    return [s["label"] for s in QuestDesk().stages()]
+    return [s["label"] for s in DealForge().stages()]
 
 
 # ---------------------------------------------------------------------------
@@ -89,7 +89,7 @@ def labels():
 # ---------------------------------------------------------------------------
 
 def test_register_wires_tools_cli_slash_and_skill():
-    import plugins.questdesk as plugin
+    import plugins.dealforge as plugin
 
     calls = {"tools": [], "cli": [], "cmd": [], "skill": []}
 
@@ -108,11 +108,11 @@ def test_register_wires_tools_cli_slash_and_skill():
             calls["skill"].append(name)
 
     plugin.register(Ctx())
-    assert {t["toolset"] for t in calls["tools"]} == {"questdesk"}
+    assert {t["toolset"] for t in calls["tools"]} == {"dealforge"}
     for t in calls["tools"]:
         assert t["schema"]["name"] == t["name"]
         assert t["check_fn"]() is True
-    assert calls["cli"] == ["questdesk"]
+    assert calls["cli"] == ["dealforge"]
     assert calls["cmd"] == ["pipeline"]
     assert calls["skill"] == ["sales-pilot"]
 
@@ -122,7 +122,7 @@ def test_manifest_lists_every_registered_tool():
 
     import yaml
 
-    import plugins.questdesk as plugin
+    import plugins.dealforge as plugin
 
     manifest = yaml.safe_load((Path(plugin.__file__).parent / "plugin.yaml").read_text())
     assert set(manifest["provides_tools"]) == {name for name, *_ in plugin._TOOLS}
@@ -132,7 +132,7 @@ def test_skill_description_meets_authoring_limit():
     import re
     from pathlib import Path
 
-    import plugins.questdesk as plugin
+    import plugins.dealforge as plugin
 
     text = (Path(plugin.__file__).parent / "SKILL.md").read_text()
     desc = re.search(r"^description: (.*)$", text, re.MULTILINE).group(1)
@@ -150,7 +150,7 @@ def test_full_journey_mints_every_stage_token_then_odyssey_and_lightning(clock):
     stages = labels()
     results = walk(did, clock, stages[1:])
 
-    from plugins.questdesk.rewards import STAGE_TOKENS
+    from plugins.dealforge.rewards import STAGE_TOKENS
 
     minted = [t for res in results for t in token_ids(res)]
     for pos in range(1, len(stages)):
@@ -248,7 +248,7 @@ def test_lose_needs_reason_and_earns_honor_once(clock):
 
 
 def test_daily_quest_and_trifecta_pay_out_once(clock, monkeypatch):
-    from plugins.questdesk import rewards as R
+    from plugins.dealforge import rewards as R
 
     picked = [q for q in R.QUEST_POOL if q.id in ("new_deals_2", "plan_3", "notes_4")]
     monkeypatch.setattr(R, "daily_quests", lambda day: picked)
@@ -267,7 +267,7 @@ def test_daily_quest_and_trifecta_pay_out_once(clock, monkeypatch):
 
 
 def test_level_up_reported_when_threshold_crossed(clock):
-    from plugins.questdesk import rewards as R
+    from plugins.dealforge import rewards as R
 
     did = new_deal()["deal"]["id"]
     results = walk(did, clock, labels()[1:])
@@ -320,16 +320,16 @@ def test_radar_flags_overdue_first(clock):
 
 
 def test_pipeline_preset_and_relabel_rules(clock):
-    from plugins.questdesk.store import PRESETS, QuestDesk, QuestDeskError
+    from plugins.dealforge.store import PRESETS, DealForge, DealForgeError
 
-    desk = QuestDesk()
+    desk = DealForge()
     desk.set_pipeline(preset="clinic")
     assert labels() == list(PRESETS["clinic"])
     did = new_deal()["deal"]["id"]
     # Same stage count relabels in place and keeps the deal's position.
     desk.set_pipeline(labels=[f"S{i}" for i in range(len(PRESETS["clinic"]))])
     assert deal({"action": "get", "deal_id": did})["deal"]["stage"] == "S0"
-    with pytest.raises(QuestDeskError):
+    with pytest.raises(DealForgeError):
         desk.set_pipeline(labels=["A", "B", "C"])
 
 
@@ -342,17 +342,17 @@ def test_errors_are_json_not_exceptions(clock):
 def test_pipeline_slash_and_cli_views(clock, capsys):
     import argparse
 
-    from plugins.questdesk.cli import pipeline_slash, questdesk_command, register_cli
+    from plugins.dealforge.cli import pipeline_slash, dealforge_command, register_cli
 
     new_deal()
-    assert "QuestDesk pipeline" in pipeline_slash("")
+    assert "DealForge pipeline" in pipeline_slash("")
     for view in ("radar", "quests", "wallet", "leaderboard", "catalog"):
         assert pipeline_slash(view).strip()
     assert pipeline_slash("nope").startswith("⚠️")
 
     parser = argparse.ArgumentParser()
     register_cli(parser)
-    assert questdesk_command(parser.parse_args(["init", "--stages", "A,B,C,D,E,F"])) == 0
-    assert questdesk_command(parser.parse_args(["board"])) == 0
-    assert questdesk_command(parser.parse_args(["export"])) == 0
+    assert dealforge_command(parser.parse_args(["init", "--stages", "A,B,C,D,E,F"])) == 0
+    assert dealforge_command(parser.parse_args(["board"])) == 0
+    assert dealforge_command(parser.parse_args(["export"])) == 0
     assert "Exported 1 deal" in capsys.readouterr().out

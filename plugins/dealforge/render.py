@@ -19,7 +19,7 @@ def _bar(done: int, total: int, width: int = 10) -> str:
 
 
 def board(b: dict) -> str:
-    lines = ["📊 QuestDesk pipeline"]
+    lines = ["📊 DealForge pipeline"]
     for col in b["columns"]:
         lines.append(f"{col['token'].split()[0]} {col['stage']} — {col['count']} deal(s), {_money(col['value'])}")
         for d in col["top"]:
@@ -69,7 +69,7 @@ def leaderboard(lb: dict) -> str:
     if not lb["leaders"]:
         return "🏁 Leaderboard is empty — first token wins the top spot."
     medals = {1: "🥇", 2: "🥈", 3: "🥉"}
-    lines = ["🏁 QuestDesk leaderboard"]
+    lines = ["🏁 DealForge leaderboard"]
     for row in lb["leaders"]:
         place = medals.get(row["rank"], f"{row['rank']}.")
         lines.append(f"{place} {row['agent']} — {row['xp']} XP · {row['title']} · 🏆×{row['odysseys']}")

@@ -1,9 +1,9 @@
-name: questdesk
+name: dealforge
 version: 0.1.0
 description: "Gamified Telegram-first sales CRM — contacts, niche pipelines, follow-up radar, and stage tokens + XP that agents earn by moving deals all the way through. Inspired by DeskcommCRM (MIT). Local SQLite per profile."
 author: TushaeBXN
 kind: standalone
 provides_tools:
-  - questdesk_contact
-  - questdesk_deal
-  - questdesk_rewards
+  - dealforge_contact
+  - dealforge_deal
+  - dealforge_rewards

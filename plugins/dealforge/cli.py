@@ -1,8 +1,8 @@
-"""``anthos questdesk`` CLI + the ``/pipeline`` in-chat slash command.
+"""``anthos dealforge`` CLI + the ``/pipeline`` in-chat slash command.
 
-  anthos questdesk init [--preset NAME | --stages "A,B,C"]
-  anthos questdesk presets | board | radar | quests | wallet | leaderboard | catalog
-  anthos questdesk export [--out PATH]
+  anthos dealforge init [--preset NAME | --stages "A,B,C"]
+  anthos dealforge presets | board | radar | quests | wallet | leaderboard | catalog
+  anthos dealforge export [--out PATH]
 
 ``/pipeline [board|radar|quests|wallet|leaderboard|catalog]`` renders the same
 views as compact plain text, so a Telegram user can check the board without
@@ -14,15 +14,15 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from plugins.questdesk import render
-from plugins.questdesk import rewards as R
-from plugins.questdesk.store import PRESETS, QuestDesk, QuestDeskError
-from plugins.questdesk.tools import resolve_agent
+from plugins.dealforge import render
+from plugins.dealforge import rewards as R
+from plugins.dealforge.store import PRESETS, DealForge, DealForgeError
+from plugins.dealforge.tools import resolve_agent
 
 _VIEWS = ("board", "radar", "quests", "wallet", "leaderboard", "catalog")
 
 
-def _view(desk: QuestDesk, view: str, agent: str) -> str:
+def _view(desk: DealForge, view: str, agent: str) -> str:
     if view == "board":
         return render.board(desk.board())
     if view == "radar":
@@ -35,14 +35,14 @@ def _view(desk: QuestDesk, view: str, agent: str) -> str:
         return render.leaderboard(desk.leaderboard())
     if view == "catalog":
         return render.catalog(desk.stages(), [t.as_dict() for t in R.SPECIAL_TOKENS.values()])
-    raise QuestDeskError(f"Unknown view '{view}'. Try: {', '.join(_VIEWS)}")
+    raise DealForgeError(f"Unknown view '{view}'. Try: {', '.join(_VIEWS)}")
 
 
 def pipeline_slash(raw_args: str = "") -> str:
     """Handler for ``/pipeline`` in CLI and gateway sessions."""
     view = (raw_args or "").strip().split()[0].lower() if (raw_args or "").strip() else "board"
     try:
-        desk = QuestDesk()
+        desk = DealForge()
         agent = resolve_agent()
         text = _view(desk, view, agent)
         if view == "board":
@@ -50,12 +50,12 @@ def pipeline_slash(raw_args: str = "") -> str:
             if radar["count"]:
                 text += f"\n🛰️ {radar['count']} deal(s) on the follow-up radar — /pipeline radar"
         return text
-    except QuestDeskError as exc:
+    except DealForgeError as exc:
         return f"⚠️ {exc}"
 
 
 def register_cli(subparser: argparse.ArgumentParser) -> None:
-    subs = subparser.add_subparsers(dest="questdesk_command")
+    subs = subparser.add_subparsers(dest="dealforge_command")
     init_p = subs.add_parser("init", help="Choose the pipeline stages")
     group = init_p.add_mutually_exclusive_group(required=True)
     group.add_argument("--preset", choices=sorted(PRESETS), help="Built-in niche pipeline")
@@ -66,20 +66,20 @@ def register_cli(subparser: argparse.ArgumentParser) -> None:
         if view in ("wallet", "quests"):
             p.add_argument("--agent", help="Agent name (default: active profile)")
     exp = subs.add_parser("export", help="Export deals + contacts to CSV")
-    exp.add_argument("--out", help="Output path (default: <ANTHOS_HOME>/questdesk/export.csv)")
+    exp.add_argument("--out", help="Output path (default: <ANTHOS_HOME>/dealforge/export.csv)")
 
 
-def questdesk_command(args: argparse.Namespace) -> int:
-    sub = getattr(args, "questdesk_command", None)
+def dealforge_command(args: argparse.Namespace) -> int:
+    sub = getattr(args, "dealforge_command", None)
     if not sub:
-        print("usage: anthos questdesk {init,presets,board,radar,quests,wallet,leaderboard,catalog,export}")
+        print("usage: anthos dealforge {init,presets,board,radar,quests,wallet,leaderboard,catalog,export}")
         return 2
     try:
         if sub == "presets":
             for name, labels in PRESETS.items():
                 print(f"{name:<11} {' → '.join(labels)}")
             return 0
-        desk = QuestDesk()
+        desk = DealForge()
         if sub == "init":
             labels = [s for s in (args.stages or "").split(",")] if args.stages else None
             stages = desk.set_pipeline(preset=args.preset, labels=labels)
@@ -92,11 +92,11 @@ def questdesk_command(args: argparse.Namespace) -> int:
 
             out = Path(args.out) if args.out else desk.db_path.parent / "export.csv"
             n = desk.export_csv(out)
-            shown = str(out) if args.out else f"{display_anthos_home()}/questdesk/export.csv"
+            shown = str(out) if args.out else f"{display_anthos_home()}/dealforge/export.csv"
             print(f"Exported {n} deal(s) to {shown}")
             return 0
         print(_view(desk, sub, resolve_agent(getattr(args, "agent", None))))
         return 0
-    except QuestDeskError as exc:
+    except DealForgeError as exc:
         print(f"error: {exc}")
         return 1

@@ -1,4 +1,4 @@
-"""QuestDesk reward catalog — tokens, XP curve, ranks, daily quests.
+"""DealForge reward catalog — tokens, XP curve, ranks, daily quests.
 
 Pure data + pure functions. No I/O here; ``store.py`` owns persistence and
 decides *when* a token is earned. Keeping the catalog separate means the
