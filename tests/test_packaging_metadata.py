@@ -265,3 +265,23 @@ def test_locale_catalogs_ship_in_both_wheel_and_sdist():
     on_disk = list((REPO_ROOT / "locales").glob("*.yaml"))
     assert on_disk, "expected locales/*.yaml catalogs on disk"
 
+
+
+def test_vendored_third_party_stays_out_of_distributions():
+    """third_party/ holds separately licensed upstream code (VoiceStudio is
+    AGPL-3.0). It must never ship inside the MIT anthos-agent wheel, sdist, or
+    Docker build context, and each vendored tree must keep its licence text.
+    """
+    data = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    includes = data["tool"]["setuptools"]["packages"]["find"]["include"]
+    assert not any(pat.split(".")[0] == "third_party" for pat in includes)
+
+    manifest = (REPO_ROOT / "MANIFEST.in").read_text(encoding="utf-8")
+    assert "prune third_party" in manifest.splitlines()
+
+    dockerignore = (REPO_ROOT / ".dockerignore").read_text(encoding="utf-8")
+    assert "third_party/" in dockerignore.splitlines()
+
+    vendored = [p for p in (REPO_ROOT / "third_party").iterdir() if p.is_dir()]
+    for tree in vendored:
+        assert (tree / "LICENSE").is_file(), f"{tree.name} lost its LICENSE"

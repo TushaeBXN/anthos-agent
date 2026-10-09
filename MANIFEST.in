@@ -7,5 +7,8 @@ graft locales
 # built from the sdist (e.g. Homebrew, downstream packagers). package-data
 # below covers the wheel; this covers the sdist. See #34034 / #28149.
 recursive-include plugins plugin.yaml plugin.yml
+# Vendored third-party source (third_party/README.md) is not part of the
+# anthos-agent distribution and keeps its own licence.
+prune third_party
 global-exclude __pycache__
 global-exclude *.py[cod]

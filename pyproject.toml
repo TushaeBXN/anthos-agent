@@ -324,6 +324,7 @@ locales = ["locales/*.yaml"]
 # entry; tests/test_packaging_metadata.py enforces an entry per optional-mcps/<name>.
 "optional-mcps/linear" = ["optional-mcps/linear/manifest.yaml"]
 "optional-mcps/n8n" = ["optional-mcps/n8n/manifest.yaml"]
+"optional-mcps/voicestudio" = ["optional-mcps/voicestudio/manifest.yaml"]
 
 [tool.setuptools.package-data]
 anthos_cli = ["web_dist/**/*", "tui_dist/**/*", "scripts/install.sh", "scripts/install.ps1"]
@@ -358,12 +359,18 @@ addopts = "-m 'not integration'"
 [tool.ty.environment]
 python-version = "3.13"
 
+[tool.ty.src]
+# Vendored upstream projects keep their own conventions and tooling.
+exclude = ["third_party"]
+
 [tool.ty.rules]
 unknown-argument = "warn"
 redundant-cast = "ignore"
 
 [tool.ruff]
 preview = true  # required for PLW1514 (unspecified-encoding) — preview rule
+# Vendored upstream projects keep their own conventions and tooling.
+extend-exclude = ["third_party"]
 
 [tool.ruff.lint]
 # All other lints are intentionally disabled (see comment history on this

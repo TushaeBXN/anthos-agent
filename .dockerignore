@@ -37,6 +37,9 @@ ui-tui/packages/hermes-ink/dist/
 # CI/CD
 .github
 
+# Vendored third-party source — not used by the Anthos image (third_party/README.md)
+third_party/
+
 # Environment files
 .env
 .env.*

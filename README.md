@@ -56,3 +56,8 @@ Anthos Agent is a fork of [Anthos Agent](https://github.com/TushaeBXN/anthos-age
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.
+
+Vendored code under [`third_party/`](third_party/README.md) keeps its own
+licence. [VoiceStudio](third_party/voicestudio) is AGPL-3.0. It is not part of the
+`anthos-agent` package; see [`third_party/README.md`](third_party/README.md)
+for its terms and your obligations.
