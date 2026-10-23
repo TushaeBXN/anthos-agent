@@ -47,7 +47,7 @@
     "@babel/core": "^7.29.6",
     "@opentelemetry/core": "^2.8.0",
     "http-proxy-middleware": "^3.0.6",
-    "launch-editor": "^2.14.1",
+    "launch-editor": "^2.14.2",
     "joi": "^17.13.4",
     "webpack-dev-server": "^5.2.5"
   },
