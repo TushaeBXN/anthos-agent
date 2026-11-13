@@ -21,7 +21,7 @@ Configure and use Honcho memory with Anthos -- cross-session user modeling, mult
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `Honcho`, `Memory`, `Profiles`, `Observation`, `Dialectic`, `User-Modeling`, `Session-Summary` |
-| Related skills | [`anthos-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-anthos-agent) |
+| Related skills | [`anthos-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-hermes-agent) |
 
 ## Reference: full SKILL.md
 
