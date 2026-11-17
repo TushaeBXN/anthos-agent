@@ -43,7 +43,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Vercel Deploy
-        run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          # The hook is optional. Without the secret, curl gets an empty URL
+          # and fails the whole workflow, so skip instead.
+          if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+            echo "::notice::VERCEL_DEPLOY_HOOK is not set; skipping Vercel deploy"
+            exit 0
+          fi
+          curl -fsS -X POST "$VERCEL_DEPLOY_HOOK"
 
   deploy-docs:
     if: github.repository == 'TushaeBXN/anthos-agent'
@@ -133,7 +142,7 @@ jobs:
 
           echo "Downloading currently live skills index"
           if curl -fsSL --retry 3 --retry-delay 5 \
-            "https://anthos-agent.anthosai.com/docs/api/skills-index.json" \
+            "https://tushaebxn.github.io/anthos-agent/docs/api/skills-index.json" \
             -o "$INDEX_PATH" && validate_index; then
             exit 0
           fi
@@ -162,7 +171,7 @@ jobs:
           mkdir -p _site/docs
           cp -r website/build/* _site/docs/
           # llms.txt / llms-full.txt are also published at the site root
-          # (https://anthos-agent.anthosai.com/llms.txt) because some
+          # (https://tushaebxn.github.io/anthos-agent/llms.txt) because some
           # agents and IDE plugins probe the classic root-level path rather
           # than /docs/llms.txt. Same file, two URLs, one source of truth.
           if [ -f website/build/llms.txt ]; then

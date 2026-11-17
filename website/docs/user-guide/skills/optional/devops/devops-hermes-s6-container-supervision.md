@@ -14,14 +14,14 @@ Modify, debug, or extend the s6-overlay supervision tree inside the Anthos Agent
 
 | | |
 |---|---|
-| Source | Optional — install with `anthos skills install official/devops/anthos-s6-container-supervision` |
-| Path | `optional-skills/devops/anthos-s6-container-supervision` |
+| Source | Optional — install with `anthos skills install official/devops/hermes-s6-container-supervision` |
+| Path | `optional-skills/devops/hermes-s6-container-supervision` |
 | Version | `1.0.0` |
 | Author | Anthos Agent |
 | License | MIT |
 | Platforms | linux |
 | Tags | `docker`, `s6`, `supervision`, `gateway`, `profiles` |
-| Related skills | [`anthos-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-anthos-agent), `anthos-agent-dev` |
+| Related skills | [`anthos-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-hermes-agent), `anthos-agent-dev` |
 
 ## Reference: full SKILL.md
 

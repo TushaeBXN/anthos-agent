@@ -53,4 +53,20 @@ jobs:
       - name: Trigger Deploy Site workflow
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh workflow run deploy-site.yml --repo ${{ github.repository }} -f skills_index_run_id=${{ github.run_id }}
+        run: |
+          # build_skills_index.py crawls GitHub with the same GITHUB_TOKEN and
+          # can use up its hourly API quota, which made this dispatch fail
+          # with HTTP 403. Wait for the quota to reset and retry.
+          for attempt in 1 2 3; do
+            if gh workflow run deploy-site.yml --repo "${{ github.repository }}" -f skills_index_run_id="${{ github.run_id }}"; then
+              exit 0
+            fi
+            reset=$(gh api rate_limit --jq '.resources.core.reset' 2>/dev/null || echo 0)
+            wait=$(( reset - $(date +%s) + 15 ))
+            if [ "$wait" -lt 30 ]; then wait=30; fi
+            if [ "$wait" -gt 3700 ]; then wait=3700; fi
+            echo "::warning::Dispatch failed (attempt $attempt); retrying in ${wait}s"
+            sleep "$wait"
+          done
+          echo "::error::Could not trigger deploy-site.yml after 3 attempts"
+          exit 1
